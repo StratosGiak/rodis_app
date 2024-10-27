@@ -1,0 +1,26 @@
+name: indevche
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  provider:
+  http:
+  intl:
+  collection:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+assets:
+  - assets/images/logo.png
+
+flutter:
+  uses-material-design: true
