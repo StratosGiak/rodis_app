@@ -124,44 +124,83 @@ class _RecordListState extends State<RecordList> {
   }
 }
 
-class RecordRow extends StatelessWidget {
-  const RecordRow({super.key, this.index = 0});
+class RecordRow extends StatefulWidget {
+  const RecordRow({
+    super.key,
+    this.index = 0,
+    this.initialExpanded = false,
+  });
 
   final int index;
+  final bool initialExpanded;
+  @override
+  State<RecordRow> createState() => _RecordRowState();
+}
+
+class _RecordRowState extends State<RecordRow> {
+  late var _expanded = widget.initialExpanded;
+
+  @override
+  void didUpdateWidget(covariant RecordRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialExpanded != widget.initialExpanded) {
+      _expanded = widget.initialExpanded;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final record = context.watch<Record>();
-
-    return InkWell(
-      splashFactory: InkSparkle.splashFactory,
-      onTap: () {},
-      child: Ink(
-        color: index % 2 == 0
-            ? Colors.white
-            : Theme.of(context).scaffoldBackgroundColor,
-        child: Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.keyboard_arrow_right),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        InkWell(
+          splashFactory: InkSparkle.splashFactory,
+          onTap: () {},
+          child: Ink(
+            color: widget.index % 2 == 0
+                ? Colors.white
+                : Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: IconButton(
+                      onPressed: () {
+                        setState(() => _expanded = !_expanded);
+                      },
+                      icon: AnimatedRotation(
+                        duration: const Duration(milliseconds: 183),
+                        curve: Curves.easeInOut,
+                        turns: _expanded ? 0.25 : 0,
+                        child: const Icon(Icons.keyboard_arrow_right),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                RecordCell(text: record.name),
+                RecordCell(text: record.phoneMobile),
+                RecordCell(text: record.product),
+                RecordCell(text: record.manufacturer),
+                RecordCell(
+                  text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
+                ),
+                RecordCell(text: record.status),
+              ],
             ),
-            RecordCell(text: record.name),
-            RecordCell(text: record.phoneMobile),
-            RecordCell(text: record.product),
-            RecordCell(text: record.manufacturer),
-            RecordCell(
-              text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
-            ),
-            RecordCell(text: record.status),
-          ],
+          ),
         ),
-      ),
+        ClipRect(
+          child: AnimatedAlign(
+            duration: const Duration(milliseconds: 183),
+            curve: Curves.easeInOut,
+            alignment: Alignment.bottomCenter,
+            heightFactor: _expanded ? 1 : 0,
+            child: Text("Hello"),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -397,6 +436,71 @@ class _SearchBarState extends State<SearchBar> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ExpandThingy extends StatefulWidget {
+  const ExpandThingy({
+    super.key,
+    required this.title,
+    required this.child,
+    this.initialExpanded = false,
+  });
+
+  final Widget title;
+  final Widget child;
+  final bool initialExpanded;
+
+  @override
+  State<ExpandThingy> createState() => _ExpandThingyState();
+}
+
+class _ExpandThingyState extends State<ExpandThingy> {
+  late var _expanded = widget.initialExpanded;
+
+  @override
+  void didUpdateWidget(covariant ExpandThingy oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialExpanded != widget.initialExpanded) {
+      _expanded = widget.initialExpanded;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicWidth(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ClipRect(
+            child: AnimatedAlign(
+              duration: const Duration(milliseconds: 183),
+              curve: Curves.easeInOut,
+              alignment: Alignment.bottomCenter,
+              heightFactor: _expanded ? 1 : 0,
+              child: widget.child,
+            ),
+          ),
+          //widget.title
+          Row(
+            children: [
+              widget.title,
+              IconButton(
+                onPressed: () {
+                  setState(() => _expanded = !_expanded);
+                },
+                icon: AnimatedRotation(
+                  duration: const Duration(milliseconds: 183),
+                  curve: Curves.easeInOut,
+                  turns: _expanded ? 0 : .5,
+                  child: const Icon(Icons.arrow_downward),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
