@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:indevche/add_record_screen.dart';
 import 'package:indevche/record.dart';
+import 'package:indevche/welcome.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -33,6 +34,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final name = context.watch<User>().name;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => Records()),
@@ -40,7 +42,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
       ],
       builder: (context, child) => Scaffold(
         appBar: AppBar(
-          title: const Text("Επισκευές"),
+          title: Text("Επισκευές ($name)"),
           actions: [
             IconButton(
               onPressed: () async {

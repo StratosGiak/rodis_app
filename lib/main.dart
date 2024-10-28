@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:indevche/record_list_screen.dart';
+import 'package:indevche/welcome.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
@@ -13,9 +13,9 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const RecordListScreen(),
+      home: const WelcomeScreen(),
       theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
     );
