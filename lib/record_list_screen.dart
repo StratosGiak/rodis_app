@@ -67,6 +67,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SearchBar(),
+            const RecordListHeader(),
             const Expanded(child: RecordList()),
           ],
         ),
@@ -97,20 +98,12 @@ class _RecordListState extends State<RecordList> {
         .toList();
     filtered.sort(recordView.sorter);
 
-    return Scrollbar(
-      child: CustomScrollView(
-        primary: true,
-        slivers: [
-          const SliverRecordListHeader(),
-          SliverList.builder(
-            key: UniqueKey(),
-            itemCount: filtered.length,
-            itemBuilder: (context, index) => ChangeNotifierProvider.value(
-              value: filtered[index],
-              builder: (context, child) => RecordRow(index: index),
-            ),
-          ),
-        ],
+    return ListView.builder(
+      primary: true,
+      itemCount: filtered.length,
+      itemBuilder: (context, index) => ChangeNotifierProvider.value(
+        value: filtered[index],
+        builder: (context, child) => RecordRow(index: index),
       ),
     );
   }
@@ -185,91 +178,15 @@ class RecordCell extends StatelessWidget {
   }
 }
 
-class SliverRecordListHeader extends StatelessWidget {
-  const SliverRecordListHeader({super.key});
+class RecordListHeader extends StatelessWidget {
+  const RecordListHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
     final sorter = context.watch<RecordView>();
-    return SliverPersistentHeader(
-      key: UniqueKey(),
-      pinned: true,
-      floating: false,
-      delegate: SliverRecordListHeaderDelegate(
-        height: 50,
-        columns: [
-          const Expanded(
-            flex: 2,
-            child: SizedBox(
-              width: 48,
-            ),
-          ),
-          RecordListHeaderItem(
-            title: "Πελάτης",
-            onTap: () => sorter.setSort(COLUMN.name),
-            visible: sorter.column == COLUMN.name,
-            reverse: sorter.reverse,
-          ),
-          RecordListHeaderItem(
-            title: "Τηλέφωνο",
-            onTap: () => sorter.setSort(COLUMN.phone),
-            visible: sorter.column == COLUMN.phone,
-            reverse: sorter.reverse,
-          ),
-          RecordListHeaderItem(
-            title: "Είδος",
-            onTap: () => sorter.setSort(COLUMN.product),
-            visible: sorter.column == COLUMN.product,
-            reverse: sorter.reverse,
-          ),
-          RecordListHeaderItem(
-            title: "Μάρκα",
-            onTap: () => sorter.setSort(COLUMN.manufacturer),
-            visible: sorter.column == COLUMN.manufacturer,
-            reverse: sorter.reverse,
-          ),
-          RecordListHeaderItem(
-            title: "Ημερομηνία",
-            onTap: () => sorter.setSort(COLUMN.date),
-            visible: sorter.column == COLUMN.date,
-            reverse: sorter.reverse,
-          ),
-          RecordListHeaderItem(
-            title: "Κατάσταση",
-            onTap: () => sorter.setSort(COLUMN.status),
-            visible: sorter.column == COLUMN.status,
-            reverse: sorter.reverse,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SliverRecordListHeaderDelegate implements SliverPersistentHeaderDelegate {
-  const SliverRecordListHeaderDelegate({
-    required this.height,
-    required this.columns,
-  })  : maxExtent = height,
-        minExtent = height;
-
-  final double height;
-  @override
-  final double minExtent;
-  @override
-  final double maxExtent;
-
-  final List<Widget> columns;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
     return Material(
       child: Container(
-        height: height,
+        height: 50,
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
@@ -280,27 +197,54 @@ class SliverRecordListHeaderDelegate implements SliverPersistentHeaderDelegate {
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: columns,
+          children: [
+            const Expanded(
+              flex: 2,
+              child: SizedBox(
+                width: 48,
+              ),
+            ),
+            RecordListHeaderItem(
+              title: "Πελάτης",
+              onTap: () => sorter.setSort(COLUMN.name),
+              visible: sorter.column == COLUMN.name,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Τηλέφωνο",
+              onTap: () => sorter.setSort(COLUMN.phone),
+              visible: sorter.column == COLUMN.phone,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Είδος",
+              onTap: () => sorter.setSort(COLUMN.product),
+              visible: sorter.column == COLUMN.product,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Μάρκα",
+              onTap: () => sorter.setSort(COLUMN.manufacturer),
+              visible: sorter.column == COLUMN.manufacturer,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Ημερομηνία",
+              onTap: () => sorter.setSort(COLUMN.date),
+              visible: sorter.column == COLUMN.date,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Κατάσταση",
+              onTap: () => sorter.setSort(COLUMN.status),
+              visible: sorter.column == COLUMN.status,
+              reverse: sorter.reverse,
+            ),
+          ],
         ),
       ),
     );
   }
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      false;
-
-  @override
-  get showOnScreenConfiguration => null;
-
-  @override
-  get snapConfiguration => null;
-
-  @override
-  get stretchConfiguration => null;
-
-  @override
-  get vsync => null;
 }
 
 class RecordListHeaderItem extends StatelessWidget {
