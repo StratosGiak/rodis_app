@@ -15,17 +15,20 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/logo.png'),
-            const SizedBox(
-              height: 60.0,
-            ),
-            const LoginForm(),
-          ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/logo.png'),
+              const SizedBox(
+                height: 60.0,
+              ),
+              const LoginForm(),
+            ],
+          ),
         ),
       ),
     );
