@@ -96,18 +96,29 @@ class _RecordListState extends State<RecordList> {
   @override
   Widget build(BuildContext context) {
     final records = context.watch<Records>().records;
+    if (records.isEmpty) {
+      return const Center(
+        child: Text(
+          "Δε βρέθηκαν επισκευές",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        ),
+      );
+    }
+
     final recordView = context.watch<RecordView>();
     final filtered = records
         .where((record) => recordView.filter(record, recordView.filterValue))
         .toList();
     filtered.sort(recordView.sorter);
 
-    return ListView.builder(
-      primary: true,
-      itemCount: filtered.length,
-      itemBuilder: (context, index) => ChangeNotifierProvider.value(
-        value: filtered[index],
-        builder: (context, child) => RecordRow(index: index),
+    return Scrollbar(
+      child: ListView.builder(
+        primary: true,
+        itemCount: filtered.length,
+        itemBuilder: (context, index) => ChangeNotifierProvider.value(
+          value: filtered[index],
+          builder: (context, child) => RecordRow(index: index),
+        ),
       ),
     );
   }
@@ -124,7 +135,7 @@ class RecordRow extends StatelessWidget {
 
     return InkWell(
       splashFactory: InkSparkle.splashFactory,
-      onTap: () => log(record.name),
+      onTap: () {},
       child: Ink(
         color: index % 2 == 0
             ? Colors.white
@@ -135,9 +146,7 @@ class RecordRow extends StatelessWidget {
               flex: 2,
               child: Center(
                 child: IconButton(
-                  onPressed: () {
-                    log("HELLO");
-                  },
+                  onPressed: () {},
                   icon: const Icon(Icons.keyboard_arrow_right),
                 ),
               ),
@@ -317,7 +326,7 @@ class SearchBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(right: 6.0, top: 4.0),
           child: Container(
-            padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.only(left: 12.0),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10.0),
@@ -354,6 +363,7 @@ class SearchBar extends StatelessWidget {
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
+                      DropdownMenuEntry(value: COLUMN.product, label: "Είδος"),
                     ],
                     onSelected: (value) => context
                         .read<RecordView>()
