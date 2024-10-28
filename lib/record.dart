@@ -193,6 +193,6 @@ class RecordView extends ChangeNotifier {
         filter = (record, value) => record.status.toLowerCase().contains(value);
         break;
     }
-    notifyListeners();
+    if (filterValue.isNotEmpty) notifyListeners();
   }
 }

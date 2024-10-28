@@ -16,8 +16,6 @@ class RecordListScreen extends StatefulWidget {
 }
 
 class _RecordListScreenState extends State<RecordListScreen> {
-  int counter = 1;
-
   void onAddPressed(BuildContext context) async {
     await Navigator.push(
       context,
@@ -99,6 +97,7 @@ class _RecordListState extends State<RecordList> {
 
     return Scrollbar(
       child: CustomScrollView(
+        primary: true,
         slivers: [
           const SliverRecordListHeader(),
           SliverList.builder(
@@ -133,15 +132,25 @@ class RecordRow extends StatelessWidget {
             : Theme.of(context).scaffoldBackgroundColor,
         child: Row(
           children: [
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: IconButton(
+                  onPressed: () {
+                    log("HELLO");
+                  },
+                  icon: const Icon(Icons.keyboard_arrow_right),
+                ),
+              ),
+            ),
             RecordCell(text: record.name),
             RecordCell(text: record.phoneMobile),
             RecordCell(text: record.product),
             RecordCell(text: record.manufacturer),
             RecordCell(
-              flex: 1,
-              text: DateFormat('dd/MM/yyyy | hh:mm:ss').format(record.date),
+              text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
             ),
-            RecordCell(flex: 1, text: record.status),
+            RecordCell(text: record.status),
           ],
         ),
       ),
@@ -153,7 +162,7 @@ class RecordCell extends StatelessWidget {
   const RecordCell({
     super.key,
     required this.text,
-    this.flex = 1,
+    this.flex = 7,
   });
 
   final int flex;
@@ -187,6 +196,12 @@ class SliverRecordListHeader extends StatelessWidget {
       delegate: SliverRecordListHeaderDelegate(
         height: 50,
         columns: [
+          const Expanded(
+            flex: 2,
+            child: SizedBox(
+              width: 48,
+            ),
+          ),
           RecordListHeaderItem(
             title: "Πελάτης",
             onTap: () => sorter.setSort(COLUMN.name),
@@ -242,7 +257,7 @@ class SliverRecordListHeaderDelegate implements SliverPersistentHeaderDelegate {
   @override
   final double maxExtent;
 
-  final List<RecordListHeaderItem> columns;
+  final List<Widget> columns;
 
   @override
   Widget build(
@@ -250,19 +265,21 @@ class SliverRecordListHeaderDelegate implements SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: 2,
+    return Material(
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(context).primaryColor,
+              width: 2,
+            ),
           ),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: columns,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: columns,
+        ),
       ),
     );
   }
@@ -289,7 +306,7 @@ class RecordListHeaderItem extends StatelessWidget {
     super.key,
     required this.title,
     this.onTap,
-    this.flex = 1,
+    this.flex = 7,
     required this.visible,
     required this.reverse,
   });
@@ -304,38 +321,33 @@ class RecordListHeaderItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       flex: flex,
-      child: Material(
-        child: InkWell(
-          splashFactory: InkSparkle.splashFactory,
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
-                  ),
+      child: InkWell(
+        splashFactory: InkSparkle.splashFactory,
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Flexible(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Visibility(
-                  visible: visible,
-                  maintainSize: true,
-                  maintainAnimation: true,
-                  maintainState: true,
-                  child: Icon(
-                    reverse ? Icons.arrow_drop_down : Icons.arrow_drop_up,
-                    size: 30,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Visibility(
+              visible: visible,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: Icon(
+                reverse ? Icons.arrow_drop_down : Icons.arrow_drop_up,
+                size: 30,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -371,14 +383,16 @@ class SearchBar extends StatelessWidget {
             const SizedBox(
               width: 20,
             ),
-            SizedBox(
-              width: 400,
-              child: TextField(
-                controller: controller,
-                decoration: const InputDecoration(hintText: "Αναζήτηση"),
-                onChanged: (value) => context
-                    .read<RecordView>()
-                    .setFilterValue(controller.text.toLowerCase()),
+            Flexible(
+              child: SizedBox(
+                width: 400,
+                child: TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(hintText: "Αναζήτηση"),
+                  onChanged: (value) => context
+                      .read<RecordView>()
+                      .setFilterValue(controller.text.toLowerCase()),
+                ),
               ),
             ),
           ],
