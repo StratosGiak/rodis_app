@@ -93,13 +93,13 @@ class _LoginFormState extends State<LoginForm> {
           //mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(
-              height: 72,
+              height: 80,
               child: TextFormField(
                 controller: usernameController,
                 validator: (value) =>
                     value == null || value.isEmpty ? "Εισάγετε username" : null,
                 decoration: const InputDecoration(
-                  hintText: "Username",
+                  labelText: "Username",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -108,14 +108,14 @@ class _LoginFormState extends State<LoginForm> {
               height: 20.0,
             ),
             SizedBox(
-              height: 72,
+              height: 80,
               child: TextFormField(
                 controller: passwordController,
                 obscureText: true,
                 validator: (value) =>
                     value == null || value.isEmpty ? "Εισάγετε password" : null,
                 decoration: const InputDecoration(
-                  hintText: "Password",
+                  labelText: "Password",
                   border: OutlineInputBorder(),
                 ),
               ),
