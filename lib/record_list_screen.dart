@@ -28,6 +28,20 @@ class _RecordListScreenState extends State<RecordListScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
+  void getRecords() async {
+    final records = context.read<Records>();
+    // records.records[0].setName("$counter");
+    // records.addRecord(Record("Name $counter", "id $counter"));
+    // counter++;
+    final response =
+        await http.get(Uri.parse('http://192.168.1.22/api/records/all'));
+    final json =
+        (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
+    final list = json.map((element) => Record.fromJSON(element)).toList();
+    records.addRecords(list);
+    records.addRecords(list);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +52,6 @@ class _RecordListScreenState extends State<RecordListScreen> {
     final name = context.watch<User>().name;
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => Records()),
         ChangeNotifierProvider(create: (context) => RecordView()),
       ],
       builder: (context, child) => GestureDetector(
@@ -48,20 +61,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
             title: Text("Επισκευές ($name)"),
             actions: [
               IconButton(
-                onPressed: () async {
-                  final records = context.read<Records>();
-                  // records.records[0].setName("$counter");
-                  // records.addRecord(Record("Name $counter", "id $counter"));
-                  // counter++;
-                  final response = await http
-                      .get(Uri.parse('http://192.168.1.22/api/records/all'));
-                  final json = (jsonDecode(response.body) as List)
-                      .cast<Map<String, dynamic>>();
-                  final list =
-                      json.map((element) => Record.fromJSON(element)).toList();
-                  records.addRecords(list);
-                  records.addRecords(list);
-                },
+                onPressed: getRecords,
                 icon: const Icon(Icons.add),
               ),
             ],
