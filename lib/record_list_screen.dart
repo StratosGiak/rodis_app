@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:indevche/add_record_screen.dart';
 import 'package:indevche/record.dart';
 import 'package:indevche/welcome.dart';
@@ -40,41 +41,44 @@ class _RecordListScreenState extends State<RecordListScreen> {
         ChangeNotifierProvider(create: (context) => Records()),
         ChangeNotifierProvider(create: (context) => RecordView()),
       ],
-      builder: (context, child) => Scaffold(
-        appBar: AppBar(
-          title: Text("Επισκευές ($name)"),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                final records = context.read<Records>();
-                // records.records[0].setName("$counter");
-                // records.addRecord(Record("Name $counter", "id $counter"));
-                // counter++;
-                final response = await http
-                    .get(Uri.parse('http://192.168.1.22/api/records/all'));
-                final json = (jsonDecode(response.body) as List)
-                    .cast<Map<String, dynamic>>();
-                final list =
-                    json.map((element) => Record.fromJSON(element)).toList();
-                records.addRecords(list);
-                records.addRecords(list);
-              },
-              icon: const Icon(Icons.add),
-            ),
-          ],
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SearchBar(),
-            const RecordListHeader(),
-            const Expanded(child: RecordList()),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => onAddPressed(context),
-          label: const Text("Νέα επισκευή"),
-          icon: const Icon(Icons.add),
+      builder: (context, child) => GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Επισκευές ($name)"),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  final records = context.read<Records>();
+                  // records.records[0].setName("$counter");
+                  // records.addRecord(Record("Name $counter", "id $counter"));
+                  // counter++;
+                  final response = await http
+                      .get(Uri.parse('http://192.168.1.22/api/records/all'));
+                  final json = (jsonDecode(response.body) as List)
+                      .cast<Map<String, dynamic>>();
+                  final list =
+                      json.map((element) => Record.fromJSON(element)).toList();
+                  records.addRecords(list);
+                  records.addRecords(list);
+                },
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SearchBar(),
+              const RecordListHeader(),
+              const Expanded(child: RecordList()),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => onAddPressed(context),
+            label: const Text("Νέα επισκευή"),
+            icon: const Icon(Icons.add),
+          ),
         ),
       ),
     );
@@ -310,38 +314,55 @@ class SearchBar extends StatelessWidget {
     return Material(
       child: Align(
         alignment: Alignment.centerRight,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownMenu<COLUMN>(
-              initialSelection: COLUMN.name,
-              inputDecorationTheme: const InputDecorationTheme(
-                border: InputBorder.none,
-              ),
-              dropdownMenuEntries: const [
-                DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
-                DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
-              ],
-              onSelected: (value) => context
-                  .read<RecordView>()
-                  .setFilterType(value ?? COLUMN.name),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 6.0, top: 4.0),
+          child: Container(
+            padding: const EdgeInsets.only(left: 10.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            const SizedBox(
-              width: 20,
-            ),
-            Flexible(
-              child: SizedBox(
-                width: 400,
-                child: TextField(
-                  controller: controller,
-                  decoration: const InputDecoration(hintText: "Αναζήτηση"),
-                  onChanged: (value) => context
-                      .read<RecordView>()
-                      .setFilterValue(controller.text.toLowerCase()),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: SizedBox(
+                    width: 400,
+                    child: TextField(
+                      controller: controller,
+                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                      decoration: const InputDecoration(labelText: "Αναζήτηση"),
+                      onChanged: (value) => context
+                          .read<RecordView>()
+                          .setFilterValue(controller.text.toLowerCase()),
+                    ),
+                  ),
                 ),
-              ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.15),
+                    borderRadius: const BorderRadius.horizontal(
+                      right: Radius.circular(10.0),
+                    ),
+                  ),
+                  child: DropdownMenu<COLUMN>(
+                    initialSelection: COLUMN.name,
+                    inputDecorationTheme: const InputDecorationTheme(
+                      contentPadding: EdgeInsets.only(left: 16.0),
+                      border: InputBorder.none,
+                    ),
+                    dropdownMenuEntries: const [
+                      DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
+                      DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
+                    ],
+                    onSelected: (value) => context
+                        .read<RecordView>()
+                        .setFilterType(value ?? COLUMN.name),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
