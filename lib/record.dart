@@ -93,7 +93,9 @@ class Record extends ChangeNotifier {
 
   Record.fromJSON(Map<String, dynamic> map)
       : id = map['id'] as int,
-        date = (map['datek'] ?? DateTime.now()) as DateTime,
+        date = map['datek'] != null
+            ? DateTime.tryParse(map['datek']) ?? DateTime.now()
+            : DateTime.now(),
         name = map['onomatep'] as String,
         phoneHome = map['tilefono'] as String,
         phoneMobile = map['kinito'] as String,
@@ -109,7 +111,9 @@ class Record extends ChangeNotifier {
         photo = map['photo1'] as String,
         mechanic = map['mastoras'] as String,
         hasWarranty = map['warranty'] == 1,
-        warrantyDate = (map['datekwarr'] ?? DateTime.now()) as DateTime,
+        warrantyDate = map['datekwarr'] != null
+            ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
+            : DateTime.now(),
         status = map['katastasi'] as String;
 }
 
