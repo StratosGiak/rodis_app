@@ -352,9 +352,15 @@ class _SearchBarState extends State<SearchBar> {
                       controller: controller,
                       inputFormatters: [LengthLimitingTextInputFormatter(50)],
                       decoration: const InputDecoration(labelText: "Αναζήτηση"),
-                      onChanged: (value) => context
-                          .read<RecordView>()
-                          .setFilterValue(controller.text.toLowerCase()),
+                      onChanged: (value) {
+                        final view = context.read<RecordView>();
+                        if (view.filterValue == value.toLowerCase()) {
+                          return;
+                        }
+                        context
+                            .read<RecordView>()
+                            .setFilterValue(value.toLowerCase());
+                      },
                     ),
                   ),
                 ),
@@ -376,9 +382,15 @@ class _SearchBarState extends State<SearchBar> {
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
                       DropdownMenuEntry(value: COLUMN.product, label: "Είδος"),
                     ],
-                    onSelected: (value) => context
-                        .read<RecordView>()
-                        .setFilterType(value ?? COLUMN.name),
+                    onSelected: (value) {
+                      final view = context.read<RecordView>();
+                      if (view.filterType == value) {
+                        return;
+                      }
+                      context
+                          .read<RecordView>()
+                          .setFilterType(value ?? COLUMN.name);
+                    },
                   ),
                 ),
               ],
