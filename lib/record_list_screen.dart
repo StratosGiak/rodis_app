@@ -313,10 +313,21 @@ class RecordListHeaderItem extends StatelessWidget {
   }
 }
 
-class SearchBar extends StatelessWidget {
-  SearchBar({super.key});
+class SearchBar extends StatefulWidget {
+  const SearchBar({super.key});
 
+  @override
+  State<SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
   final TextEditingController controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
