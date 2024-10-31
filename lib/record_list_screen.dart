@@ -50,7 +50,6 @@ class _RecordListScreenState extends State<RecordListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = context.watch<User>().name;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => RecordView()),
@@ -59,7 +58,10 @@ class _RecordListScreenState extends State<RecordListScreen> {
         onTap: () => FocusScope.of(context).requestFocus(node),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Επισκευές ($name)"),
+            title: Consumer<User>(
+              builder: (context, value, child) =>
+                  Text("Επισκευές (${value.name})"),
+            ),
             actions: [
               IconButton(
                 onPressed: getRecords,

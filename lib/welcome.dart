@@ -56,8 +56,6 @@ class _LoginFormState extends State<LoginForm> {
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     final list = json.map((element) => Record.fromJSON(element)).toList();
     records.addRecords(list);
-    records.addRecords(list);
-    records.addRecords(list);
   }
 
   Future<void> onSubmit() async {
