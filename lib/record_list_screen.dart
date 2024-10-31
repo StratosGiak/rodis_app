@@ -18,6 +18,7 @@ class RecordListScreen extends StatefulWidget {
 }
 
 class _RecordListScreenState extends State<RecordListScreen> {
+  final node = FocusNode();
   void onAddPressed(BuildContext context) async {
     await Navigator.push(
       context,
@@ -55,7 +56,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
         ChangeNotifierProvider(create: (context) => RecordView()),
       ],
       builder: (context, child) => GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        onTap: () => FocusScope.of(context).requestFocus(node),
         child: Scaffold(
           appBar: AppBar(
             title: Text("Επισκευές ($name)"),
