@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
 import 'package:indevche/record_list_screen.dart';
 import 'package:http/http.dart' as http;
@@ -50,8 +51,7 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> getRecords(int id) async {
     final records = context.read<Records>();
-    final response =
-        await http.get(Uri.parse('http://192.168.1.22/api/recordsBy/$id'));
+    final response = await http.get(Uri.parse('$apiUrl/recordsBy/$id'));
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     final list = json.map((element) => Record.fromJSON(element)).toList();
@@ -61,7 +61,7 @@ class _LoginFormState extends State<LoginForm> {
   Future<void> onSubmit() async {
     if (_formKey.currentState!.validate()) {
       final response = await http.post(
-        Uri.parse("http://192.168.1.22/api/login"),
+        Uri.parse("$apiUrl/login"),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({
           "username": usernameController.text,

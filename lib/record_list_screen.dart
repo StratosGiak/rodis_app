@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:indevche/add_record_screen.dart';
+import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
 import 'package:indevche/welcome.dart';
 import 'package:intl/intl.dart';
@@ -31,11 +32,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
 
   void getRecords() async {
     final records = context.read<Records>();
-    // records.records[0].setName("$counter");
-    // records.addRecord(Record("Name $counter", "id $counter"));
-    // counter++;
-    final response =
-        await http.get(Uri.parse('http://192.168.1.22/api/records/all'));
+    final response = await http.get(Uri.parse('$apiUrl/records/all'));
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     final list = json.map((element) => Record.fromJSON(element)).toList();
@@ -69,12 +66,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
               ),
             ],
           ),
-          body: Column(
+          body: const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SearchBar(),
-              const RecordListHeader(),
-              const Expanded(child: RecordList()),
+              RecordListHeader(),
+              Expanded(child: RecordList()),
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
