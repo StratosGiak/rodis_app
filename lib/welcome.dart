@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:indevche/constants.dart';
@@ -48,6 +49,7 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final waiting = ValueNotifier(false);
 
   Future<void> getRecords(int id) async {
     final records = context.read<Records>();
@@ -55,11 +57,13 @@ class _LoginFormState extends State<LoginForm> {
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     final list = json.map((element) => Record.fromJSON(element)).toList();
-    records.addRecords(list);
+    records.setRecords(list);
   }
 
   Future<void> onSubmit() async {
+    if (waiting.value) return;
     if (_formKey.currentState!.validate()) {
+      waiting.value = true;
       final response = await http.post(
         Uri.parse("$apiUrl/login"),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
@@ -72,12 +76,13 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode != 200) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Λάθος στοιχεία')));
+        waiting.value = false;
         return;
       }
       final {'token': token, 'user': user} =
           jsonDecode(response.body) as Map<String, dynamic>;
       await getRecords(user['id']);
-      Navigator.pushReplacement(
+      await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => Provider(
@@ -91,6 +96,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
         ),
       );
+      waiting.value = false;
     }
   }
 
@@ -109,7 +115,6 @@ class _LoginFormState extends State<LoginForm> {
         width: 350,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          //mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(
               height: 80,
@@ -153,7 +158,25 @@ class _LoginFormState extends State<LoginForm> {
                     backgroundColor:
                         Theme.of(context).primaryColor.withOpacity(0.35),
                   ),
-                  child: const Text("Log in"),
+                  child: ValueListenableBuilder(
+                    valueListenable: waiting,
+                    builder: (context, value, child) => AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      transitionBuilder: (child, animation) => ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      ),
+                      child: value
+                          ? const SizedBox(
+                              height: 15,
+                              width: 15,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3.0,
+                              ),
+                            )
+                          : const Text("Log in"),
+                    ),
+                  ),
                 ),
               ),
             ),
