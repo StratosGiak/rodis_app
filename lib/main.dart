@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:indevche/record.dart';
 import 'package:indevche/welcome.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   debugPaintSizeEnabled = false;
