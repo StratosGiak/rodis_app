@@ -34,9 +34,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final constants = context.watch<Constants>();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => RecordView()),
+        ChangeNotifierProvider(
+          create: (context) => RecordView(constants: constants),
+        ),
       ],
       builder: (context, child) => GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(node),
@@ -132,6 +135,7 @@ class _RecordRowState extends State<RecordRow> {
   @override
   Widget build(BuildContext context) {
     final record = context.watch<Record>();
+    final constants = context.watch<Constants>();
     return Material(
       color: widget.index % 2 == 0
           ? Colors.white
@@ -160,12 +164,12 @@ class _RecordRowState extends State<RecordRow> {
                 ),
                 RecordCell(text: record.name),
                 RecordCell(text: record.phoneMobile),
-                RecordCell(text: record.product),
-                RecordCell(text: record.manufacturer),
+                RecordCell(text: constants.products[record.product]!),
+                RecordCell(text: constants.manufacturers[record.manufacturer]!),
                 RecordCell(
                   text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
                 ),
-                RecordCell(text: record.status),
+                RecordCell(text: constants.statuses[record.status]!),
               ],
             ),
           ),

@@ -41,13 +41,13 @@ class Record extends ChangeNotifier {
   String address;
   String comments;
   String serial;
-  String product;
-  String manufacturer;
+  int product;
+  int manufacturer;
   String photo;
-  String mechanic;
+  int mechanic;
   bool hasWarranty;
   DateTime warrantyDate;
-  String status;
+  int status;
   List<History> history;
 
   Record({
@@ -110,15 +110,15 @@ class Record extends ChangeNotifier {
         address = map['odos'] as String,
         comments = map['paratiriseis'] as String,
         serial = map['serialnr'] as String,
-        product = map['eidos'] as String,
-        manufacturer = map['marka'] as String,
+        product = map['eidos_p'] as int,
+        manufacturer = map['marka_p'] as int,
         photo = map['photo1'] as String,
-        mechanic = map['mastoras'] as String,
+        mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
         warrantyDate = map['datekwarr'] != null
             ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
             : DateTime.now(),
-        status = map['katastasi'] as String,
+        status = map['katastasi_p'] as int,
         history =
             (map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
               ..sort(
@@ -131,7 +131,9 @@ class Record extends ChangeNotifier {
 enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
-  RecordView();
+  RecordView({required this.constants});
+
+  final Constants constants;
 
   COLUMN column = COLUMN.date;
   bool reverse = true;
@@ -156,16 +158,19 @@ class RecordView extends ChangeNotifier {
           sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
           break;
         case COLUMN.product:
-          sorterInner = (p0, p1) => p0.product.compareTo(p1.product);
+          sorterInner = (p0, p1) => constants.products[p0.product]!
+              .compareTo(constants.products[p1.product]!);
           break;
         case COLUMN.manufacturer:
-          sorterInner = (p0, p1) => p0.manufacturer.compareTo(p1.manufacturer);
+          sorterInner = (p0, p1) => constants.manufacturers[p0.manufacturer]!
+              .compareTo(constants.manufacturers[p1.manufacturer]!);
           break;
         case COLUMN.date:
           sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
           break;
         case COLUMN.status:
-          sorterInner = (p0, p1) => p0.status.compareTo(p1.status);
+          sorterInner = (p0, p1) => constants.statuses[p0.status]!
+              .compareTo(constants.statuses[p1.status]!);
           break;
       }
     }
@@ -192,18 +197,21 @@ class RecordView extends ChangeNotifier {
             (record, value) => record.phoneMobile.toLowerCase().contains(value);
         break;
       case COLUMN.product:
-        filter =
-            (record, value) => record.product.toLowerCase().contains(value);
+        filter = (record, value) =>
+            constants.products[record.product]!.toLowerCase().contains(value);
         break;
       case COLUMN.manufacturer:
-        filter = (record, value) =>
-            record.manufacturer.toLowerCase().contains(value);
+        filter = (record, value) => constants
+            .manufacturers[record.manufacturer]!
+            .toLowerCase()
+            .contains(value);
         break;
       case COLUMN.date:
         //filter = (record,value) => record.date.toLowerCase().contains(value);
         break;
       case COLUMN.status:
-        filter = (record, value) => record.status.toLowerCase().contains(value);
+        filter = (record, value) =>
+            constants.statuses[record.status]!.toLowerCase().contains(value);
         break;
     }
     if (filterValue.isNotEmpty) notifyListeners();
@@ -230,4 +238,16 @@ class History extends ChangeNotifier {
             : DateTime.now(),
         mechanic = map['mastoras'] as String,
         status = map['katastasi'] as String;
+}
+
+class Constants extends ChangeNotifier {
+  Constants({
+    required this.products,
+    required this.manufacturers,
+    required this.statuses,
+  });
+
+  Map<int, String> products;
+  Map<int, String> manufacturers;
+  Map<int, String> statuses;
 }
