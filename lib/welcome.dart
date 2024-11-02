@@ -51,13 +51,27 @@ class _LoginFormState extends State<LoginForm> {
   final passwordController = TextEditingController();
   final waiting = ValueNotifier(false);
 
-  Future<void> getRecords(int id) async {
-    final records = context.read<Records>();
+  Future<Records> getRecords(int id) async {
     final response = await http.get(Uri.parse('$apiUrl/records/by/$id'));
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
-    final list = json.map((element) => Record.fromJSON(element)).toList();
-    records.setRecords(list);
+    return Records(
+        records: json.map((element) => Record.fromJSON(element)).toList());
+  }
+
+  Future<Constants> getConstants() async {
+    final response = await http.get(Uri.parse('$apiUrl/constants'));
+    final json = (jsonDecode(response.body) as Map<String, dynamic>)
+        .cast<String, List<dynamic>>();
+    final constants = json.map(
+      (key, value) => MapEntry(key,
+          {for (var item in value) item['id'] as int: item['onoma'] as String}),
+    );
+    return Constants(
+      products: constants['products']!,
+      manufacturers: constants['manufacturers']!,
+      statuses: constants['states']!,
+    );
   }
 
   Future<void> onSubmit() async {
@@ -81,17 +95,24 @@ class _LoginFormState extends State<LoginForm> {
       }
       final {'token': token, 'user': user} =
           jsonDecode(response.body) as Map<String, dynamic>;
-      await getRecords(user['id']);
+      final constants = await getConstants();
+      final records = await getRecords(user['id']);
       await Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => Provider(
-            create: (_) => User(
-              id: user['id'],
-              username: user['username'],
-              name: user["name"],
-              token: token,
-            ),
+          builder: (context) => MultiProvider(
+            providers: [
+              Provider(
+                create: (_) => User(
+                  id: user['id'],
+                  username: user['username'],
+                  name: user["name"],
+                  token: token,
+                ),
+              ),
+              ChangeNotifierProvider(create: (context) => records),
+              ChangeNotifierProvider(create: (context) => constants),
+            ],
             builder: (context, child) => const RecordListScreen(),
           ),
         ),
