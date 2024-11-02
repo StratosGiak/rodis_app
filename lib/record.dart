@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class Records extends ChangeNotifier {
@@ -117,7 +119,11 @@ class Record extends ChangeNotifier {
             ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
             : DateTime.now(),
         status = map['katastasi'] as String,
-        history = map['istorika'] ?? [] as List<History>;
+        history =
+            (map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
+              ..sort(
+                (a, b) => b.date.compareTo(a.date),
+              );
 }
 
 //Important: date, product type, status
