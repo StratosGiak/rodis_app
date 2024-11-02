@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class Records extends ChangeNotifier {
@@ -46,6 +48,7 @@ class Record extends ChangeNotifier {
   bool hasWarranty;
   DateTime warrantyDate;
   String status;
+  List<History> history;
 
   Record({
     required this.id,
@@ -67,6 +70,7 @@ class Record extends ChangeNotifier {
     required this.hasWarranty,
     required this.warrantyDate,
     required this.status,
+    required this.history,
   });
 
   Map<String, dynamic> toJSON() => {
@@ -114,7 +118,12 @@ class Record extends ChangeNotifier {
         warrantyDate = map['datekwarr'] != null
             ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
             : DateTime.now(),
-        status = map['katastasi'] as String;
+        status = map['katastasi'] as String,
+        history =
+            (map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
+              ..sort(
+                (a, b) => b.date.compareTo(a.date),
+              );
 }
 
 //Important: date, product type, status
@@ -199,4 +208,26 @@ class RecordView extends ChangeNotifier {
     }
     if (filterValue.isNotEmpty) notifyListeners();
   }
+}
+
+class History extends ChangeNotifier {
+  int id;
+  DateTime date;
+  String mechanic;
+  String status;
+
+  History({
+    required this.id,
+    required this.date,
+    required this.mechanic,
+    required this.status,
+  });
+
+  History.fromJSON(Map<String, dynamic> map)
+      : id = map['id'] as int,
+        date = map['datek'] != null
+            ? DateTime.tryParse(map['datek']) ?? DateTime.now()
+            : DateTime.now(),
+        mechanic = map['mastoras'] as String,
+        status = map['katastasi'] as String;
 }

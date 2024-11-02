@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:indevche/add_record_screen.dart';
-import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
 import 'package:indevche/welcome.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class RecordListScreen extends StatefulWidget {
   const RecordListScreen({super.key});
@@ -28,16 +25,6 @@ class _RecordListScreenState extends State<RecordListScreen> {
       ),
     );
     FocusManager.instance.primaryFocus?.unfocus();
-  }
-
-  void getRecords() async {
-    final records = context.read<Records>();
-    final response = await http.get(Uri.parse('$apiUrl/records/all'));
-    final json =
-        (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
-    final list = json.map((element) => Record.fromJSON(element)).toList();
-    records.addRecords(list);
-    records.addRecords(list);
   }
 
   @override
@@ -59,12 +46,6 @@ class _RecordListScreenState extends State<RecordListScreen> {
               builder: (context, value, child) =>
                   Text("Επισκευές (${value.name})"),
             ),
-            actions: [
-              IconButton(
-                onPressed: getRecords,
-                icon: const Icon(Icons.add),
-              ),
-            ],
           ),
           body: const Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -194,7 +175,7 @@ class _RecordRowState extends State<RecordRow> {
               curve: Curves.easeInOut,
               alignment: Alignment.bottomCenter,
               heightFactor: _expanded ? 1 : 0,
-              child: const Text("Hello"),
+              child: const HistoryList(),
             ),
           ),
         ],
@@ -221,7 +202,7 @@ class RecordCell extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Text(
           text,
-          style: const TextStyle(),
+          style: const TextStyle(fontWeight: FontWeight.w500),
         ),
       ),
     );
@@ -389,7 +370,9 @@ class _SearchBarState extends State<SearchBar> {
                       controller: controller,
                       inputFormatters: [LengthLimitingTextInputFormatter(50)],
                       decoration: const InputDecoration(
-                          hintText: "Αναζήτηση", border: InputBorder.none),
+                        hintText: "Αναζήτηση",
+                        border: InputBorder.none,
+                      ),
                       onChanged: (value) {
                         final view = context.read<RecordView>();
                         if (view.filterValue == value.toLowerCase()) {
@@ -433,6 +416,64 @@ class _SearchBarState extends State<SearchBar> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class HistoryList extends StatelessWidget {
+  const HistoryList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final history = context.watch<Record>().history;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: history.isEmpty
+            ? const Text(
+                'Δε βρέθηκε ιστορικό',
+                style: TextStyle(fontSize: 16.0),
+              )
+            : ListView(
+                shrinkWrap: true,
+                children: history.map((e) => HistoryRow(history: e)).toList(),
+              ),
+      ),
+    );
+  }
+}
+
+class HistoryRow extends StatelessWidget {
+  const HistoryRow({
+    super.key,
+    required this.history,
+  });
+
+  final History history;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Spacer(flex: 2),
+          Expanded(
+            child: Text(
+              DateFormat('dd/MM/yyyy | hh:mm').format(history.date),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              history.status,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const Spacer(flex: 2),
+        ],
       ),
     );
   }

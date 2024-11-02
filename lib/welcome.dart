@@ -53,7 +53,7 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> getRecords(int id) async {
     final records = context.read<Records>();
-    final response = await http.get(Uri.parse('$apiUrl/recordsBy/$id'));
+    final response = await http.get(Uri.parse('$apiUrl/records/by/$id'));
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     final list = json.map((element) => Record.fromJSON(element)).toList();
