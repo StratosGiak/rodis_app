@@ -372,9 +372,9 @@ class _SearchBarState extends State<SearchBar> {
       child: Align(
         alignment: Alignment.centerRight,
         child: Padding(
-          padding: const EdgeInsets.only(right: 6.0, top: 4.0),
+          padding: const EdgeInsets.only(right: 6.0, top: 4.0, bottom: 4.0),
           child: Container(
-            padding: const EdgeInsets.only(left: 12.0),
+            padding: const EdgeInsets.only(left: 14.0),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10.0),
@@ -388,7 +388,8 @@ class _SearchBarState extends State<SearchBar> {
                     child: TextField(
                       controller: controller,
                       inputFormatters: [LengthLimitingTextInputFormatter(50)],
-                      decoration: const InputDecoration(labelText: "Αναζήτηση"),
+                      decoration: const InputDecoration(
+                          hintText: "Αναζήτηση", border: InputBorder.none),
                       onChanged: (value) {
                         final view = context.read<RecordView>();
                         if (view.filterValue == value.toLowerCase()) {
@@ -421,9 +422,7 @@ class _SearchBarState extends State<SearchBar> {
                     ],
                     onSelected: (value) {
                       final view = context.read<RecordView>();
-                      if (view.filterType == value) {
-                        return;
-                      }
+                      if (view.filterType == value) return;
                       context
                           .read<RecordView>()
                           .setFilterType(value ?? COLUMN.name);
