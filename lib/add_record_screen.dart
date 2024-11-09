@@ -78,11 +78,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final constants = context.watch<Constants>();
+    final suggestions = context.watch<Suggestions>();
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_node),
       child: ChangeNotifierProvider.value(
-        value: constants,
+        value: suggestions,
         child: Scaffold(
           appBar: AppBar(
             title: id != null
@@ -288,7 +288,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       spacing: 30,
                       runSpacing: 10,
                       children: [
-                        Consumer<Constants>(
+                        Consumer<Suggestions>(
                           builder: (context, value, child) => FormComboItem(
                             label: "Είδος",
                             initialSelection: product,
@@ -297,7 +297,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             required: true,
                           ),
                         ),
-                        Consumer<Constants>(
+                        Consumer<Suggestions>(
                           builder: (context, value, child) => FormComboItem(
                             label: "Μάρκα",
                             initialSelection: manufacturer,
@@ -311,7 +311,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           controller: serialController,
                           width: 250,
                         ),
-                        Consumer<Constants>(
+                        Consumer<Suggestions>(
                           builder: (context, value, child) => FormComboItem(
                             label: "Κατάσταση",
                             initialSelection: status,
