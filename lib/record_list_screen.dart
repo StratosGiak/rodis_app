@@ -145,7 +145,24 @@ class _RecordRowState extends State<RecordRow> {
         children: [
           InkWell(
             splashFactory: InkSparkle.splashFactory,
-            onTap: () {},
+            onTap: () async {
+              final records = context.read<Records>();
+              final user = context.read<User>();
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider.value(value: constants),
+                      ChangeNotifierProvider.value(value: records),
+                      Provider.value(value: user),
+                    ],
+                    builder: (context, child) =>
+                        AddRecordScreen(record: record),
+                  ),
+                ),
+              );
+            },
             child: Row(
               children: [
                 Expanded(
