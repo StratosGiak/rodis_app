@@ -38,12 +38,37 @@ class _RecordListScreenState extends State<RecordListScreen> {
                   Text("Επισκευές (${value.name})"),
             ),
           ),
-          body: const Column(
+          body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SearchBar(),
-              RecordListHeader(),
-              Expanded(child: RecordList()),
+              const SearchBar(),
+              const RecordListHeader(),
+              const Expanded(child: RecordList()),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 30.0,
+                  horizontal: 18.0,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Consumer<RecordView>(
+                    builder: (context, value, child) {
+                      final text = value.filtered.isEmpty
+                          ? "Δε βρέθηκαν αποτελέσματα"
+                          : value.filtered.length == 1
+                              ? "Βρέθηκε ${value.filtered.length} αποτέλεσμα"
+                              : "Βρέθηκαν ${value.filtered.length} αποτελέσματα";
+                      return Text(
+                        text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
