@@ -15,10 +15,12 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  final _node = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      onTap: () => FocusScope.of(context).requestFocus(_node),
       child: Scaffold(
         body: CustomScrollView(slivers: [
           SliverFillRemaining(
