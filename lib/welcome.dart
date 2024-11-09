@@ -20,18 +20,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/logo.png'),
-              const SizedBox(
-                height: 60.0,
+        body: CustomScrollView(slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/logo.png'),
+                  const SizedBox(
+                    height: 60.0,
+                  ),
+                  const LoginForm(),
+                ],
               ),
-              const LoginForm(),
-            ],
+            ),
           ),
-        ),
+        ]),
       ),
     );
   }
@@ -55,7 +60,8 @@ class _LoginFormState extends State<LoginForm> {
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     return Records(
-        records: json.map((element) => Record.fromJSON(element)).toList());
+      records: json.map((element) => Record.fromJSON(element)).toList(),
+    );
   }
 
   Future<Constants> getConstants() async {
