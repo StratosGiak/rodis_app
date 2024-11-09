@@ -15,15 +15,6 @@ class RecordListScreen extends StatefulWidget {
 
 class _RecordListScreenState extends State<RecordListScreen> {
   final node = FocusNode();
-  void onAddPressed(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AddRecordScreen(),
-      ),
-    );
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
 
   @override
   void initState() {
@@ -56,7 +47,25 @@ class _RecordListScreenState extends State<RecordListScreen> {
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => onAddPressed(context),
+            onPressed: () async {
+              final constants = context.read<Constants>();
+              final records = context.read<Records>();
+              final user = context.read<User>();
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider.value(value: constants),
+                      ChangeNotifierProvider.value(value: records),
+                      Provider.value(value: user),
+                    ],
+                    builder: (context, child) => const AddRecordScreen(),
+                  ),
+                ),
+              );
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
             label: const Text("Νέα επισκευή"),
             icon: const Icon(Icons.add),
           ),
