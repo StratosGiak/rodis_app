@@ -140,7 +140,7 @@ enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
   RecordView({required this.constants, required this.records})
-      : filtered = records;
+      : filtered = List.from(records);
 
   Constants constants;
   List<Record> records;
@@ -149,18 +149,20 @@ class RecordView extends ChangeNotifier {
   COLUMN column = COLUMN.date;
   bool reverse = true;
   Comparator<Record> sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
-  Comparator<Record> sorter = (p0, p1) => p1.date.compareTo(p0.date);
+  Comparator<Record> sorter = (p0, p1) => p0.date.compareTo(p1.date);
   String filterValue = '';
   COLUMN filterType = COLUMN.name;
-  bool Function(Record, String) filter =
-      (record, value) => record.name.toLowerCase().contains(value);
+  bool Function(Record, String) filter = (record, value) =>
+      record.name.toLowerCase().contains(value.toLowerCase());
 
   void update(Constants constants, Records records) {
     this.constants = constants;
     this.records = records.records;
-    filtered = filtered =
-        this.records.where((record) => filter(record, filterValue)).toList();
-    filtered.sort(sorter);
+    filtered = this
+        .records
+        .where((record) => filter(record, filterValue))
+        .toList()
+      ..sort(sorter);
     notifyListeners();
   }
 
@@ -172,40 +174,43 @@ class RecordView extends ChangeNotifier {
       reverse = false;
       switch (column) {
         case COLUMN.name:
-          sorterInner = (p0, p1) => p0.name.compareTo(p1.name);
+          sorterInner = (p0, p1) =>
+              p0.name.toLowerCase().compareTo(p1.name.toLowerCase());
           break;
         case COLUMN.phone:
           sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
           break;
         case COLUMN.product:
           sorterInner = (p0, p1) => constants.products[p0.product]!
-              .compareTo(constants.products[p1.product]!);
+              .toLowerCase()
+              .compareTo(constants.products[p1.product]!.toLowerCase());
           break;
         case COLUMN.manufacturer:
-          sorterInner = (p0, p1) => constants.manufacturers[p0.manufacturer]!
-              .compareTo(constants.manufacturers[p1.manufacturer]!);
+          sorterInner = (p0, p1) =>
+              constants.manufacturers[p0.manufacturer]!.toLowerCase().compareTo(
+                    constants.manufacturers[p1.manufacturer]!.toLowerCase(),
+                  );
           break;
         case COLUMN.date:
           sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
           break;
         case COLUMN.status:
           sorterInner = (p0, p1) => constants.statuses[p0.status]!
-              .compareTo(constants.statuses[p1.status]!);
+              .toLowerCase()
+              .compareTo(constants.statuses[p1.status]!.toLowerCase());
           break;
       }
     }
-    sorter = (a, b) {
-      if (sorterInner(a, b) == 0) return b.date.compareTo(a.date);
-      return reverse ? sorterInner(b, a) : sorterInner(a, b);
-    };
+    sorter = (a, b) =>
+        sorterInner(a, b) != 0 ? sorterInner(a, b) : b.date.compareTo(a.date);
     filtered.sort(sorter);
     notifyListeners();
   }
 
   void setFilterValue(String filterValue) {
     this.filterValue = filterValue;
-    filtered = records.where((record) => filter(record, filterValue)).toList();
-    filtered.sort(sorter);
+    filtered = records.where((record) => filter(record, filterValue)).toList()
+      ..sort(sorter);
     notifyListeners();
   }
 
@@ -213,34 +218,36 @@ class RecordView extends ChangeNotifier {
     this.filterType = filterType;
     switch (filterType) {
       case COLUMN.name:
-        filter = (record, value) => record.name.toLowerCase().contains(value);
+        filter = (record, value) =>
+            record.name.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.phone:
-        filter =
-            (record, value) => record.phoneMobile.toLowerCase().contains(value);
+        filter = (record, value) =>
+            record.phoneMobile.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.product:
-        filter = (record, value) =>
-            constants.products[record.product]!.toLowerCase().contains(value);
+        filter = (record, value) => constants.products[record.product]!
+            .toLowerCase()
+            .contains(value.toLowerCase());
         break;
       case COLUMN.manufacturer:
         filter = (record, value) => constants
             .manufacturers[record.manufacturer]!
             .toLowerCase()
-            .contains(value);
+            .contains(value.toLowerCase());
         break;
       case COLUMN.date:
         //filter = (record,value) => record.date.toLowerCase().contains(value);
         break;
       case COLUMN.status:
-        filter = (record, value) =>
-            constants.statuses[record.status]!.toLowerCase().contains(value);
+        filter = (record, value) => constants.statuses[record.status]!
+            .toLowerCase()
+            .contains(value.toLowerCase());
         break;
     }
     if (filterValue.isNotEmpty) {
-      filtered =
-          records.where((record) => filter(record, filterValue)).toList();
-      filtered.sort(sorter);
+      filtered = records.where((record) => filter(record, filterValue)).toList()
+        ..sort(sorter);
       notifyListeners();
     }
   }

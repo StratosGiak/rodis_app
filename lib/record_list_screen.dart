@@ -110,7 +110,10 @@ class RecordList extends StatefulWidget {
 class _RecordListState extends State<RecordList> {
   @override
   Widget build(BuildContext context) {
-    final filtered = context.watch<RecordView>().filtered;
+    final reverse = context.watch<RecordView>().reverse;
+    final filtered = reverse
+        ? context.watch<RecordView>().filtered.reversed.toList()
+        : context.watch<RecordView>().filtered;
     if (filtered.isEmpty) {
       return const Center(
         child: Text(
