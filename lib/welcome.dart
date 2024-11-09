@@ -152,6 +152,7 @@ class _LoginFormState extends State<LoginForm> {
                   labelText: "Username",
                   border: OutlineInputBorder(),
                 ),
+                textInputAction: TextInputAction.next,
               ),
             ),
             const SizedBox(
@@ -168,6 +169,7 @@ class _LoginFormState extends State<LoginForm> {
                   labelText: "Password",
                   border: OutlineInputBorder(),
                 ),
+                textInputAction: TextInputAction.done,
               ),
             ),
             const SizedBox(
