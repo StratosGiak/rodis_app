@@ -37,18 +37,18 @@ class Record extends ChangeNotifier {
   int id;
   DateTime date;
   String name;
-  String phoneHome;
+  String? phoneHome;
   String phoneMobile;
-  String email;
+  String? email;
   String postalCode;
   String city;
   String area;
   String address;
-  String comments;
-  String serial;
+  String? notes;
+  String? serial;
   int product;
   int manufacturer;
-  String photo;
+  String? photo;
   int mechanic;
   bool hasWarranty;
   DateTime warrantyDate;
@@ -66,7 +66,7 @@ class Record extends ChangeNotifier {
     required this.city,
     required this.area,
     required this.address,
-    required this.comments,
+    required this.notes,
     required this.serial,
     required this.product,
     required this.manufacturer,
@@ -89,7 +89,7 @@ class Record extends ChangeNotifier {
         "poli": city,
         "perioxi": area,
         "odos": address,
-        "paratiriseis": comments,
+        "paratiriseis": notes,
         "serialnr": serial,
         "eidos_p": product,
         "marka_p": manufacturer,
@@ -106,29 +106,32 @@ class Record extends ChangeNotifier {
             ? DateTime.tryParse(map['datek']) ?? DateTime.now()
             : DateTime.now(),
         name = map['onomatep'] as String,
-        phoneHome = map['tilefono'] as String,
+        phoneHome = map['tilefono'] as String?,
         phoneMobile = map['kinito'] as String,
-        email = map['email'] as String,
+        email = map['email'] as String?,
         postalCode = map['tk'] as String,
         city = map['poli'] as String,
         area = map['perioxi'] as String,
         address = map['odos'] as String,
-        comments = map['paratiriseis'] as String,
-        serial = map['serialnr'] as String,
+        notes = map['paratiriseis'] as String?,
+        serial = map['serialnr'] as String?,
         product = map['eidos_p'] as int,
         manufacturer = map['marka_p'] as int,
-        photo = map['photo1'] as String,
+        photo = map['photo1'] as String?,
         mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
         warrantyDate = map['datekwarr'] != null
             ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
             : DateTime.now(),
         status = map['katastasi_p'] as int,
-        history =
-            (map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
+        history = map['istorika'] != null
+            ? ((map['istorika'] as List)
+                .map((e) => History.fromJSON(e))
+                .toList()
               ..sort(
                 (a, b) => b.date.compareTo(a.date),
-              );
+              ))
+            : [];
 }
 
 //Important: date, product type, status
