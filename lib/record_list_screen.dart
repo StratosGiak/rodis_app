@@ -15,15 +15,6 @@ class RecordListScreen extends StatefulWidget {
 
 class _RecordListScreenState extends State<RecordListScreen> {
   final node = FocusNode();
-  void onAddPressed(BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const AddRecordScreen(),
-      ),
-    );
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
 
   @override
   void initState() {
@@ -32,13 +23,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final records = context.watch<Records>().records;
     final constants = context.watch<Constants>();
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => RecordView(constants: constants),
-        ),
-      ],
+    return ChangeNotifierProxyProvider2<Constants, Records, RecordView>(
+      create: (context) => RecordView(constants: constants, records: records),
+      update: (context, constants, records, recordView) =>
+          recordView!..update(constants, records),
       builder: (context, child) => GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(node),
         child: Scaffold(
@@ -57,7 +47,25 @@ class _RecordListScreenState extends State<RecordListScreen> {
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => onAddPressed(context),
+            onPressed: () async {
+              final constants = context.read<Constants>();
+              final records = context.read<Records>();
+              final user = context.read<User>();
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider.value(value: constants),
+                      ChangeNotifierProvider.value(value: records),
+                      Provider.value(value: user),
+                    ],
+                    builder: (context, child) => const AddRecordScreen(),
+                  ),
+                ),
+              );
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
             label: const Text("Νέα επισκευή"),
             icon: const Icon(Icons.add),
           ),
@@ -77,8 +85,8 @@ class RecordList extends StatefulWidget {
 class _RecordListState extends State<RecordList> {
   @override
   Widget build(BuildContext context) {
-    final records = context.watch<Records>().records;
-    if (records.isEmpty) {
+    final filtered = context.watch<RecordView>().filtered;
+    if (filtered.isEmpty) {
       return const Center(
         child: Text(
           "Δε βρέθηκαν επισκευές",
@@ -86,12 +94,6 @@ class _RecordListState extends State<RecordList> {
         ),
       );
     }
-
-    final recordView = context.watch<RecordView>();
-    final filtered = records
-        .where((record) => recordView.filter(record, recordView.filterValue))
-        .toList();
-    filtered.sort(recordView.sorter);
 
     return Scrollbar(
       child: ListView.builder(
