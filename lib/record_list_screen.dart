@@ -14,23 +14,21 @@ class RecordListScreen extends StatefulWidget {
 }
 
 class _RecordListScreenState extends State<RecordListScreen> {
-  final node = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final _node = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    final records = context.watch<Records>().records;
-    final constants = context.watch<Constants>();
-    return ChangeNotifierProxyProvider2<Constants, Records, RecordView>(
-      create: (context) => RecordView(constants: constants, records: records),
-      update: (context, constants, records, recordView) =>
-          recordView!..update(constants, records),
+    return ChangeNotifierProxyProvider2<Suggestions, Records, RecordView>(
+      create: (context) {
+        final records = context.read<Records>().records;
+        final suggestions = context.read<Suggestions>();
+        return RecordView(suggestions: suggestions, records: records);
+      },
+      // TODO: FIX (UPDATE IS CALLED DURING BUILD OF RECORDHEADER)
+      update: (context, suggestions, records, recordView) =>
+          recordView!..update(suggestions, records),
       builder: (context, child) => GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(node),
+        onTap: () => FocusScope.of(context).requestFocus(_node),
         child: Scaffold(
           appBar: AppBar(
             title: Consumer<User>(
@@ -73,7 +71,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
-              final constants = context.read<Constants>();
+              final suggestions = context.read<Suggestions>();
               final records = context.read<Records>();
               final user = context.read<User>();
               await Navigator.push(
@@ -81,7 +79,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
                 MaterialPageRoute(
                   builder: (context) => MultiProvider(
                     providers: [
-                      ChangeNotifierProvider.value(value: constants),
+                      ChangeNotifierProvider.value(value: suggestions),
                       ChangeNotifierProvider.value(value: records),
                       Provider.value(value: user),
                     ],
@@ -163,7 +161,7 @@ class _RecordRowState extends State<RecordRow> {
   @override
   Widget build(BuildContext context) {
     final record = context.watch<Record>();
-    final constants = context.watch<Constants>();
+    final suggestions = context.watch<Suggestions>();
     return Material(
       color: widget.index % 2 == 0
           ? Colors.white
@@ -181,7 +179,7 @@ class _RecordRowState extends State<RecordRow> {
                 MaterialPageRoute(
                   builder: (context) => MultiProvider(
                     providers: [
-                      ChangeNotifierProvider.value(value: constants),
+                      ChangeNotifierProvider.value(value: suggestions),
                       ChangeNotifierProvider.value(value: records),
                       Provider.value(value: user),
                     ],
@@ -209,12 +207,13 @@ class _RecordRowState extends State<RecordRow> {
                 ),
                 RecordCell(text: record.name),
                 RecordCell(text: record.phoneMobile),
-                RecordCell(text: constants.products[record.product]!),
-                RecordCell(text: constants.manufacturers[record.manufacturer]!),
+                RecordCell(text: suggestions.products[record.product]!),
+                RecordCell(
+                    text: suggestions.manufacturers[record.manufacturer]!),
                 RecordCell(
                   text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
                 ),
-                RecordCell(text: constants.statuses[record.status]!),
+                RecordCell(text: suggestions.statuses[record.status]!),
               ],
             ),
           ),
@@ -286,37 +285,38 @@ class RecordListHeader extends StatelessWidget {
             ),
             RecordListHeaderItem(
               title: "Πελάτης",
-              onTap: () => sorter.setSort(COLUMN.name),
+              onTap: () => context.read<RecordView>().setSort(COLUMN.name),
               visible: sorter.column == COLUMN.name,
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
               title: "Τηλέφωνο",
-              onTap: () => sorter.setSort(COLUMN.phone),
+              onTap: () => context.read<RecordView>().setSort(COLUMN.phone),
               visible: sorter.column == COLUMN.phone,
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
               title: "Είδος",
-              onTap: () => sorter.setSort(COLUMN.product),
+              onTap: () => context.read<RecordView>().setSort(COLUMN.product),
               visible: sorter.column == COLUMN.product,
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
               title: "Μάρκα",
-              onTap: () => sorter.setSort(COLUMN.manufacturer),
+              onTap: () =>
+                  context.read<RecordView>().setSort(COLUMN.manufacturer),
               visible: sorter.column == COLUMN.manufacturer,
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
               title: "Ημερομηνία",
-              onTap: () => sorter.setSort(COLUMN.date),
+              onTap: () => context.read<RecordView>().setSort(COLUMN.date),
               visible: sorter.column == COLUMN.date,
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
               title: "Κατάσταση",
-              onTap: () => sorter.setSort(COLUMN.status),
+              onTap: () => context.read<RecordView>().setSort(COLUMN.status),
               visible: sorter.column == COLUMN.status,
               reverse: sorter.reverse,
             ),

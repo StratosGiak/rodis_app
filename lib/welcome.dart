@@ -66,18 +66,18 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Future<Constants> getConstants() async {
-    final response = await http.get(Uri.parse('$apiUrl/constants'));
+  Future<Suggestions> getSuggestions() async {
+    final response = await http.get(Uri.parse('$apiUrl/suggestions'));
     final json = (jsonDecode(response.body) as Map<String, dynamic>)
         .cast<String, List<dynamic>>();
-    final constants = json.map(
+    final suggestions = json.map(
       (key, value) => MapEntry(key,
           {for (var item in value) item['id'] as int: item['onoma'] as String}),
     );
-    return Constants(
-      products: constants['products']!,
-      manufacturers: constants['manufacturers']!,
-      statuses: constants['states']!,
+    return Suggestions(
+      products: suggestions['products']!,
+      manufacturers: suggestions['manufacturers']!,
+      statuses: suggestions['states']!,
     );
   }
 
@@ -102,7 +102,7 @@ class _LoginFormState extends State<LoginForm> {
       }
       final {'token': token, 'user': user} =
           jsonDecode(response.body) as Map<String, dynamic>;
-      final constants = await getConstants();
+      final suggestions = await getSuggestions();
       final records = await getRecords(user['id']);
       await Navigator.pushReplacement(
         context,
@@ -118,7 +118,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
               ChangeNotifierProvider(create: (context) => records),
-              ChangeNotifierProvider(create: (context) => constants),
+              ChangeNotifierProvider(create: (context) => suggestions),
             ],
             builder: (context, child) => const RecordListScreen(),
           ),

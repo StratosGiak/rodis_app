@@ -139,10 +139,10 @@ class Record extends ChangeNotifier {
 enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
-  RecordView({required this.constants, required this.records})
+  RecordView({required this.suggestions, required this.records})
       : filtered = List.from(records);
 
-  Constants constants;
+  Suggestions suggestions;
   List<Record> records;
   List<Record> filtered;
 
@@ -155,8 +155,8 @@ class RecordView extends ChangeNotifier {
   bool Function(Record, String) filter = (record, value) =>
       record.name.toLowerCase().contains(value.toLowerCase());
 
-  void update(Constants constants, Records records) {
-    this.constants = constants;
+  void update(Suggestions suggestions, Records records) {
+    this.suggestions = suggestions;
     this.records = records.records;
     filtered = this
         .records
@@ -181,23 +181,24 @@ class RecordView extends ChangeNotifier {
           sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
           break;
         case COLUMN.product:
-          sorterInner = (p0, p1) => constants.products[p0.product]!
+          sorterInner = (p0, p1) => suggestions.products[p0.product]!
               .toLowerCase()
-              .compareTo(constants.products[p1.product]!.toLowerCase());
+              .compareTo(suggestions.products[p1.product]!.toLowerCase());
           break;
         case COLUMN.manufacturer:
-          sorterInner = (p0, p1) =>
-              constants.manufacturers[p0.manufacturer]!.toLowerCase().compareTo(
-                    constants.manufacturers[p1.manufacturer]!.toLowerCase(),
-                  );
+          sorterInner = (p0, p1) => suggestions.manufacturers[p0.manufacturer]!
+              .toLowerCase()
+              .compareTo(
+                suggestions.manufacturers[p1.manufacturer]!.toLowerCase(),
+              );
           break;
         case COLUMN.date:
           sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
           break;
         case COLUMN.status:
-          sorterInner = (p0, p1) => constants.statuses[p0.status]!
+          sorterInner = (p0, p1) => suggestions.statuses[p0.status]!
               .toLowerCase()
-              .compareTo(constants.statuses[p1.status]!.toLowerCase());
+              .compareTo(suggestions.statuses[p1.status]!.toLowerCase());
           break;
       }
     }
@@ -226,12 +227,12 @@ class RecordView extends ChangeNotifier {
             record.phoneMobile.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.product:
-        filter = (record, value) => constants.products[record.product]!
+        filter = (record, value) => suggestions.products[record.product]!
             .toLowerCase()
             .contains(value.toLowerCase());
         break;
       case COLUMN.manufacturer:
-        filter = (record, value) => constants
+        filter = (record, value) => suggestions
             .manufacturers[record.manufacturer]!
             .toLowerCase()
             .contains(value.toLowerCase());
@@ -240,7 +241,7 @@ class RecordView extends ChangeNotifier {
         //filter = (record,value) => record.date.toLowerCase().contains(value);
         break;
       case COLUMN.status:
-        filter = (record, value) => constants.statuses[record.status]!
+        filter = (record, value) => suggestions.statuses[record.status]!
             .toLowerCase()
             .contains(value.toLowerCase());
         break;
@@ -275,8 +276,8 @@ class History extends ChangeNotifier {
         status = map['katastasi'] as String;
 }
 
-class Constants extends ChangeNotifier {
-  Constants({
+class Suggestions extends ChangeNotifier {
+  Suggestions({
     required this.products,
     required this.manufacturers,
     required this.statuses,
