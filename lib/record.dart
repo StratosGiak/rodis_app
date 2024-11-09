@@ -11,12 +11,19 @@ class Records extends ChangeNotifier {
   }
 
   void removeRecord(int index) {
-    records.removeAt(index);
+    records.removeWhere((e) => e.id == index);
     notifyListeners();
   }
 
   void addRecords(List<Record> records) {
     this.records.addAll(records);
+    notifyListeners();
+  }
+
+  void setRecord(Record record) {
+    final index = records.indexWhere((e) => e.id == record.id);
+    if (index < 0) throw Error();
+    records[index] = record;
     notifyListeners();
   }
 
@@ -129,9 +136,12 @@ class Record extends ChangeNotifier {
 enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
-  RecordView({required this.constants});
+  RecordView({required this.constants, required this.records})
+      : filtered = records;
 
-  final Constants constants;
+  Constants constants;
+  List<Record> records;
+  List<Record> filtered;
 
   COLUMN column = COLUMN.date;
   bool reverse = true;
@@ -141,6 +151,15 @@ class RecordView extends ChangeNotifier {
   COLUMN filterType = COLUMN.name;
   bool Function(Record, String) filter =
       (record, value) => record.name.toLowerCase().contains(value);
+
+  void update(Constants constants, Records records) {
+    this.constants = constants;
+    this.records = records.records;
+    filtered = filtered =
+        this.records.where((record) => filter(record, filterValue)).toList();
+    filtered.sort(sorter);
+    notifyListeners();
+  }
 
   void setSort(COLUMN column) {
     if (this.column == column) {
@@ -176,11 +195,14 @@ class RecordView extends ChangeNotifier {
       if (sorterInner(a, b) == 0) return b.date.compareTo(a.date);
       return reverse ? sorterInner(b, a) : sorterInner(a, b);
     };
+    filtered.sort(sorter);
     notifyListeners();
   }
 
   void setFilterValue(String filterValue) {
     this.filterValue = filterValue;
+    filtered = records.where((record) => filter(record, filterValue)).toList();
+    filtered.sort(sorter);
     notifyListeners();
   }
 
@@ -212,7 +234,12 @@ class RecordView extends ChangeNotifier {
             constants.statuses[record.status]!.toLowerCase().contains(value);
         break;
     }
-    if (filterValue.isNotEmpty) notifyListeners();
+    if (filterValue.isNotEmpty) {
+      filtered =
+          records.where((record) => filter(record, filterValue)).toList();
+      filtered.sort(sorter);
+      notifyListeners();
+    }
   }
 }
 
