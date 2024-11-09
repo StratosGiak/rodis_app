@@ -67,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<Suggestions> getSuggestions() async {
-    final response = await http.get(Uri.parse('$apiUrl/constants'));
+    final response = await http.get(Uri.parse('$apiUrl/suggestions'));
     final json = (jsonDecode(response.body) as Map<String, dynamic>)
         .cast<String, List<dynamic>>();
     final suggestions = json.map(
