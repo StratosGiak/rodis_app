@@ -207,7 +207,7 @@ class _RecordRowState extends State<RecordRow> {
                 ),
                 RecordCell(text: record.name),
                 RecordCell(text: record.phoneMobile),
-                RecordCell(text: suggestions.products[record.product]!),
+                RecordCell(text: record.product),
                 RecordCell(
                     text: suggestions.manufacturers[record.manufacturer]!),
                 RecordCell(

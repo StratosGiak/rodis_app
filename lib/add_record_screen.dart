@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
@@ -20,6 +21,7 @@ class AddRecordScreen extends StatefulWidget {
 
 class _AddRecordScreenState extends State<AddRecordScreen> {
   final _node = FocusNode();
+  final _productNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   int? id;
   final nameController = TextEditingController();
@@ -32,6 +34,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final addressController = TextEditingController();
   final notesController = TextEditingController();
   final serialController = TextEditingController();
+  final productController = TextEditingController();
   final dateController = TextEditingController(
     text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
   );
@@ -42,7 +45,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
   );
   final photo = ValueNotifier<String?>(null);
-  int? product;
   int? manufacturer;
   int? status;
   final waiting = ValueNotifier(false);
@@ -71,7 +73,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     warrantyController.text =
         DateFormat('dd/MM/yyyy').format(record.warrantyDate).toString();
     photo.value = record.photo;
-    product = record.product;
+    productController.text = record.product;
     manufacturer = record.manufacturer;
     status = record.status;
   }
@@ -149,7 +151,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 "serial": serialController.text.isNotEmpty
                     ? serialController.text
                     : null,
-                "product": product,
+                "product": productController.text.isNotEmpty
+                    ? productController.text
+                    : null,
                 "manufacturer": manufacturer,
                 "photo": photo.value,
                 "mechanic": context.read<User>().id,
@@ -288,13 +292,37 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       spacing: 30,
                       runSpacing: 10,
                       children: [
-                        Consumer<Suggestions>(
-                          builder: (context, value, child) => FormComboItem(
+                        RawAutocomplete<String>(
+                          focusNode: _productNode,
+                          textEditingController: productController,
+                          optionsBuilder: (textEditingValue) =>
+                              suggestions.products.values
+                                  .where(
+                                    (product) => product.toLowerCase().contains(
+                                          textEditingValue.text.toLowerCase(),
+                                        ),
+                                  )
+                                  .toList(),
+                          optionsViewBuilder: (context, onSelected, options) =>
+                              AutocompleteOption(
+                            options: options,
+                            width: 250.0,
+                            onSelected: onSelected,
+                          ),
+                          onSelected: (option) =>
+                              productController.text = option,
+                          fieldViewBuilder: (
+                            context,
+                            textEditingController,
+                            focusNode,
+                            onFieldSubmitted,
+                          ) =>
+                              FormFieldItem(
                             label: "Είδος",
-                            initialSelection: product,
-                            options: value.products,
-                            onSelected: (value) => product = value,
+                            controller: textEditingController,
+                            width: 250.0,
                             required: true,
+                            focusNode: focusNode,
                           ),
                         ),
                         Consumer<Suggestions>(
@@ -413,6 +441,8 @@ class FormFieldItem extends StatelessWidget {
     this.onTap,
     this.validator,
     this.required = false,
+    this.focusNode,
+    this.onChanged,
   });
 
   final String label;
@@ -425,6 +455,8 @@ class FormFieldItem extends StatelessWidget {
   final void Function()? onTap;
   final String? Function(String?)? validator;
   final bool required;
+  final FocusNode? focusNode;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -456,6 +488,7 @@ class FormFieldItem extends StatelessWidget {
             maxLength: maxLength,
             readOnly: readOnly,
             onTap: onTap,
+            onChanged: onChanged,
             validator: validator ??
                 (required
                     ? (value) => value == null || value.isEmpty ? "" : null
@@ -469,6 +502,7 @@ class FormFieldItem extends StatelessWidget {
               errorStyle: TextStyle(height: 0),
             ),
             textInputAction: TextInputAction.next,
+            focusNode: focusNode,
           ),
         ],
       ),
@@ -635,5 +669,63 @@ class _DropdownMenuFormFieldState<T> extends FormFieldState<T> {
   void reset() {
     super.reset();
     _dropdownMenuFormField.onSelected!(value);
+  }
+}
+
+class AutocompleteOption extends StatelessWidget {
+  const AutocompleteOption({
+    super.key,
+    required this.options,
+    required this.onSelected,
+    required this.width,
+  });
+  final Iterable<String> options;
+  final AutocompleteOnSelected<String> onSelected;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.topStart,
+      child: Material(
+        elevation: 4.0,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 200.0, maxWidth: width),
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            itemCount: options.length,
+            itemBuilder: (BuildContext context, int index) {
+              final option = options.elementAt(index);
+              return InkWell(
+                onTap: () {
+                  onSelected(option);
+                },
+                child: Builder(
+                  builder: (BuildContext context) {
+                    final bool highlight =
+                        AutocompleteHighlightedOption.of(context) == index;
+                    if (highlight) {
+                      SchedulerBinding.instance.addPostFrameCallback(
+                        (Duration timeStamp) {
+                          Scrollable.ensureVisible(context, alignment: 0.5);
+                        },
+                        debugLabel: 'AutocompleteOptions.ensureVisible',
+                      );
+                    }
+                    return Container(
+                      color: highlight ? Theme.of(context).focusColor : null,
+                      padding: const EdgeInsets.all(16.0),
+                      child:
+                          Text(RawAutocomplete.defaultStringForOption(option)),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

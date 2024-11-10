@@ -46,7 +46,7 @@ class Record extends ChangeNotifier {
   String address;
   String? notes;
   String? serial;
-  int product;
+  String product;
   int manufacturer;
   String? photo;
   int mechanic;
@@ -91,7 +91,7 @@ class Record extends ChangeNotifier {
         "odos": address,
         "paratiriseis": notes,
         "serialnr": serial,
-        "eidos_p": product,
+        "eidos": product,
         "marka_p": manufacturer,
         "photo1": photo,
         "mastoras_p": mechanic,
@@ -115,7 +115,7 @@ class Record extends ChangeNotifier {
         address = map['odos'] as String,
         notes = map['paratiriseis'] as String?,
         serial = map['serialnr'] as String?,
-        product = map['eidos_p'] as int,
+        product = map['eidos'] as String,
         manufacturer = map['marka_p'] as int,
         photo = map['photo1'] as String?,
         mechanic = map['mastoras_p'] as int,
@@ -181,9 +181,8 @@ class RecordView extends ChangeNotifier {
           sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
           break;
         case COLUMN.product:
-          sorterInner = (p0, p1) => suggestions.products[p0.product]!
-              .toLowerCase()
-              .compareTo(suggestions.products[p1.product]!.toLowerCase());
+          sorterInner = (p0, p1) =>
+              p0.product.toLowerCase().compareTo(p1.product.toLowerCase());
           break;
         case COLUMN.manufacturer:
           sorterInner = (p0, p1) => suggestions.manufacturers[p0.manufacturer]!
@@ -227,9 +226,8 @@ class RecordView extends ChangeNotifier {
             record.phoneMobile.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.product:
-        filter = (record, value) => suggestions.products[record.product]!
-            .toLowerCase()
-            .contains(value.toLowerCase());
+        filter = (record, value) =>
+            record.product.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.manufacturer:
         filter = (record, value) => suggestions
