@@ -46,8 +46,8 @@ class Record extends ChangeNotifier {
   String address;
   String? notes;
   String? serial;
-  int product;
-  int manufacturer;
+  String product;
+  String manufacturer;
   String? photo;
   int mechanic;
   bool hasWarranty;
@@ -91,8 +91,8 @@ class Record extends ChangeNotifier {
         "odos": address,
         "paratiriseis": notes,
         "serialnr": serial,
-        "eidos_p": product,
-        "marka_p": manufacturer,
+        "eidos": product,
+        "marka": manufacturer,
         "photo1": photo,
         "mastoras_p": mechanic,
         "warranty": hasWarranty,
@@ -115,8 +115,8 @@ class Record extends ChangeNotifier {
         address = map['odos'] as String,
         notes = map['paratiriseis'] as String?,
         serial = map['serialnr'] as String?,
-        product = map['eidos_p'] as int,
-        manufacturer = map['marka_p'] as int,
+        product = map['eidos'] as String,
+        manufacturer = map['marka'] as String,
         photo = map['photo1'] as String?,
         mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
@@ -181,15 +181,12 @@ class RecordView extends ChangeNotifier {
           sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
           break;
         case COLUMN.product:
-          sorterInner = (p0, p1) => suggestions.products[p0.product]!
-              .toLowerCase()
-              .compareTo(suggestions.products[p1.product]!.toLowerCase());
+          sorterInner = (p0, p1) =>
+              p0.product.toLowerCase().compareTo(p1.product.toLowerCase());
           break;
         case COLUMN.manufacturer:
-          sorterInner = (p0, p1) => suggestions.manufacturers[p0.manufacturer]!
-              .toLowerCase()
-              .compareTo(
-                suggestions.manufacturers[p1.manufacturer]!.toLowerCase(),
+          sorterInner = (p0, p1) => p0.manufacturer.toLowerCase().compareTo(
+                p1.manufacturer.toLowerCase(),
               );
           break;
         case COLUMN.date:
@@ -227,15 +224,12 @@ class RecordView extends ChangeNotifier {
             record.phoneMobile.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.product:
-        filter = (record, value) => suggestions.products[record.product]!
-            .toLowerCase()
-            .contains(value.toLowerCase());
+        filter = (record, value) =>
+            record.product.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.manufacturer:
-        filter = (record, value) => suggestions
-            .manufacturers[record.manufacturer]!
-            .toLowerCase()
-            .contains(value.toLowerCase());
+        filter = (record, value) =>
+            record.manufacturer.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.date:
         //filter = (record,value) => record.date.toLowerCase().contains(value);

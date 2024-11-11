@@ -22,23 +22,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_node),
       child: Scaffold(
-        body: CustomScrollView(slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/logo.png'),
-                  const SizedBox(
-                    height: 60.0,
-                  ),
-                  const LoginForm(),
-                ],
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/logo.png'),
+                    const SizedBox(
+                      height: 60.0,
+                    ),
+                    const LoginForm(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -67,12 +69,14 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<Suggestions> getSuggestions() async {
-    final response = await http.get(Uri.parse('$apiUrl/constants'));
+    final response = await http.get(Uri.parse('$apiUrl/suggestions'));
     final json = (jsonDecode(response.body) as Map<String, dynamic>)
         .cast<String, List<dynamic>>();
     final suggestions = json.map(
-      (key, value) => MapEntry(key,
-          {for (var item in value) item['id'] as int: item['onoma'] as String}),
+      (key, value) => MapEntry(
+        key,
+        {for (var item in value) item['id'] as int: item['onoma'] as String},
+      ),
     );
     return Suggestions(
       products: suggestions['products']!,
@@ -118,6 +122,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
               ChangeNotifierProvider(create: (context) => records),
+              ChangeNotifierProvider(create: (context) => suggestions),
               ChangeNotifierProvider(create: (context) => suggestions),
             ],
             builder: (context, child) => const RecordListScreen(),

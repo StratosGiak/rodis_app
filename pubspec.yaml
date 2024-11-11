@@ -10,7 +10,6 @@ dependencies:
   provider:
   http:
   intl:
-  collection:
   flutter:
     sdk: flutter
 
