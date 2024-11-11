@@ -22,23 +22,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_node),
       child: Scaffold(
-        body: CustomScrollView(slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/logo.png'),
-                  const SizedBox(
-                    height: 60.0,
-                  ),
-                  const LoginForm(),
-                ],
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/logo.png'),
+                    const SizedBox(
+                      height: 60.0,
+                    ),
+                    const LoginForm(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
@@ -71,14 +73,11 @@ class _LoginFormState extends State<LoginForm> {
     final json = (jsonDecode(response.body) as Map<String, dynamic>)
         .cast<String, List<dynamic>>();
     final suggestions = json.map(
-    final suggestions = json.map(
-      (key, value) => MapEntry(key,
-          {for (var item in value) item['id'] as int: item['onoma'] as String}),
+      (key, value) => MapEntry(
+        key,
+        {for (var item in value) item['id'] as int: item['onoma'] as String},
+      ),
     );
-    return Suggestions(
-      products: suggestions['products']!,
-      manufacturers: suggestions['manufacturers']!,
-      statuses: suggestions['states']!,
     return Suggestions(
       products: suggestions['products']!,
       manufacturers: suggestions['manufacturers']!,
@@ -107,7 +106,6 @@ class _LoginFormState extends State<LoginForm> {
       }
       final {'token': token, 'user': user} =
           jsonDecode(response.body) as Map<String, dynamic>;
-      final suggestions = await getSuggestions();
       final suggestions = await getSuggestions();
       final records = await getRecords(user['id']);
       await Navigator.pushReplacement(
