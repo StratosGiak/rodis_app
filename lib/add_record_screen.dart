@@ -672,6 +672,59 @@ class _DropdownMenuFormFieldState<T> extends FormFieldState<T> {
   }
 }
 
+class CustomAutocomplete extends StatelessWidget {
+  const CustomAutocomplete({
+    super.key,
+    required this.label,
+    required this.textEditingController,
+    required this.suggestions,
+    required this.focusNode,
+    this.width = 200.0,
+    this.required = false,
+  });
+
+  final String label;
+  final FocusNode focusNode;
+  final TextEditingController textEditingController;
+  final Iterable<String> suggestions;
+  final double width;
+  final bool required;
+
+  @override
+  Widget build(BuildContext context) {
+    return RawAutocomplete<String>(
+      focusNode: focusNode,
+      textEditingController: textEditingController,
+      optionsBuilder: (textEditingValue) => suggestions
+          .where(
+            (product) => product.toLowerCase().contains(
+                  textEditingValue.text.toLowerCase(),
+                ),
+          )
+          .toList(),
+      optionsViewBuilder: (context, onSelected, options) => AutocompleteOption(
+        options: options,
+        width: width,
+        onSelected: onSelected,
+      ),
+      onSelected: (option) => textEditingController.text = option,
+      fieldViewBuilder: (
+        context,
+        textEditingController,
+        focusNode,
+        onFieldSubmitted,
+      ) =>
+          FormFieldItem(
+        label: label,
+        controller: textEditingController,
+        width: width,
+        required: required,
+        focusNode: focusNode,
+      ),
+    );
+  }
+}
+
 class AutocompleteOption extends StatelessWidget {
   const AutocompleteOption({
     super.key,
