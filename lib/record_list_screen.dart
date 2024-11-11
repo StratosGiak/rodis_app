@@ -208,8 +208,7 @@ class _RecordRowState extends State<RecordRow> {
                 RecordCell(text: record.name),
                 RecordCell(text: record.phoneMobile),
                 RecordCell(text: record.product),
-                RecordCell(
-                    text: suggestions.manufacturers[record.manufacturer]!),
+                RecordCell(text: record.manufacturer),
                 RecordCell(
                   text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
                 ),

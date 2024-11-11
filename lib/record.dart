@@ -47,7 +47,7 @@ class Record extends ChangeNotifier {
   String? notes;
   String? serial;
   String product;
-  int manufacturer;
+  String manufacturer;
   String? photo;
   int mechanic;
   bool hasWarranty;
@@ -92,7 +92,7 @@ class Record extends ChangeNotifier {
         "paratiriseis": notes,
         "serialnr": serial,
         "eidos": product,
-        "marka_p": manufacturer,
+        "marka": manufacturer,
         "photo1": photo,
         "mastoras_p": mechanic,
         "warranty": hasWarranty,
@@ -116,7 +116,7 @@ class Record extends ChangeNotifier {
         notes = map['paratiriseis'] as String?,
         serial = map['serialnr'] as String?,
         product = map['eidos'] as String,
-        manufacturer = map['marka_p'] as int,
+        manufacturer = map['marka'] as String,
         photo = map['photo1'] as String?,
         mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
@@ -185,10 +185,8 @@ class RecordView extends ChangeNotifier {
               p0.product.toLowerCase().compareTo(p1.product.toLowerCase());
           break;
         case COLUMN.manufacturer:
-          sorterInner = (p0, p1) => suggestions.manufacturers[p0.manufacturer]!
-              .toLowerCase()
-              .compareTo(
-                suggestions.manufacturers[p1.manufacturer]!.toLowerCase(),
+          sorterInner = (p0, p1) => p0.manufacturer.toLowerCase().compareTo(
+                p1.manufacturer.toLowerCase(),
               );
           break;
         case COLUMN.date:
@@ -230,10 +228,8 @@ class RecordView extends ChangeNotifier {
             record.product.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.manufacturer:
-        filter = (record, value) => suggestions
-            .manufacturers[record.manufacturer]!
-            .toLowerCase()
-            .contains(value.toLowerCase());
+        filter = (record, value) =>
+            record.manufacturer.toLowerCase().contains(value.toLowerCase());
         break;
       case COLUMN.date:
         //filter = (record,value) => record.date.toLowerCase().contains(value);

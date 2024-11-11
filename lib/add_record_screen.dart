@@ -22,6 +22,7 @@ class AddRecordScreen extends StatefulWidget {
 class _AddRecordScreenState extends State<AddRecordScreen> {
   final _node = FocusNode();
   final _productNode = FocusNode();
+  final _manufacturerNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   int? id;
   final nameController = TextEditingController();
@@ -35,6 +36,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final notesController = TextEditingController();
   final serialController = TextEditingController();
   final productController = TextEditingController();
+  final manufacturerController = TextEditingController();
   final dateController = TextEditingController(
     text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
   );
@@ -45,7 +47,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
   );
   final photo = ValueNotifier<String?>(null);
-  int? manufacturer;
   int? status;
   final waiting = ValueNotifier(false);
 
@@ -74,7 +75,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         DateFormat('dd/MM/yyyy').format(record.warrantyDate).toString();
     photo.value = record.photo;
     productController.text = record.product;
-    manufacturer = record.manufacturer;
+    manufacturerController.text = record.manufacturer;
     status = record.status;
   }
 
@@ -154,7 +155,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 "product": productController.text.isNotEmpty
                     ? productController.text
                     : null,
-                "manufacturer": manufacturer,
+                "manufacturer": manufacturerController.text.isNotEmpty
+                    ? manufacturerController.text
+                    : null,
                 "photo": photo.value,
                 "mechanic": context.read<User>().id,
                 "hasWarranty": hasWarranty.value,
@@ -292,47 +295,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       spacing: 30,
                       runSpacing: 10,
                       children: [
-                        RawAutocomplete<String>(
-                          focusNode: _productNode,
+                        CustomAutocomplete(
+                          label: 'Είδος',
                           textEditingController: productController,
-                          optionsBuilder: (textEditingValue) =>
-                              suggestions.products.values
-                                  .where(
-                                    (product) => product.toLowerCase().contains(
-                                          textEditingValue.text.toLowerCase(),
-                                        ),
-                                  )
-                                  .toList(),
-                          optionsViewBuilder: (context, onSelected, options) =>
-                              AutocompleteOption(
-                            options: options,
-                            width: 250.0,
-                            onSelected: onSelected,
-                          ),
-                          onSelected: (option) =>
-                              productController.text = option,
-                          fieldViewBuilder: (
-                            context,
-                            textEditingController,
-                            focusNode,
-                            onFieldSubmitted,
-                          ) =>
-                              FormFieldItem(
-                            label: "Είδος",
-                            controller: textEditingController,
-                            width: 250.0,
-                            required: true,
-                            focusNode: focusNode,
-                          ),
+                          suggestions: suggestions.products.values,
+                          required: true,
+                          width: 250.0,
+                          focusNode: _productNode,
                         ),
-                        Consumer<Suggestions>(
-                          builder: (context, value, child) => FormComboItem(
-                            label: "Μάρκα",
-                            initialSelection: manufacturer,
-                            options: value.manufacturers,
-                            onSelected: (value) => manufacturer = value,
-                            required: true,
-                          ),
+                        CustomAutocomplete(
+                          label: 'Μάρκα',
+                          textEditingController: manufacturerController,
+                          suggestions: suggestions.manufacturers.values,
+                          required: true,
+                          focusNode: _manufacturerNode,
                         ),
                         FormFieldItem(
                           label: "Σειριακός αριθμός",
