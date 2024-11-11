@@ -140,8 +140,10 @@ enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
   RecordView({required this.suggestions, required this.records})
+  RecordView({required this.suggestions, required this.records})
       : filtered = List.from(records);
 
+  Suggestions suggestions;
   Suggestions suggestions;
   List<Record> records;
   List<Record> filtered;
@@ -155,6 +157,8 @@ class RecordView extends ChangeNotifier {
   bool Function(Record, String) filter = (record, value) =>
       record.name.toLowerCase().contains(value.toLowerCase());
 
+  void update(Suggestions suggestions, Records records) {
+    this.suggestions = suggestions;
   void update(Suggestions suggestions, Records records) {
     this.suggestions = suggestions;
     this.records = records.records;
@@ -194,7 +198,9 @@ class RecordView extends ChangeNotifier {
           break;
         case COLUMN.status:
           sorterInner = (p0, p1) => suggestions.statuses[p0.status]!
+          sorterInner = (p0, p1) => suggestions.statuses[p0.status]!
               .toLowerCase()
+              .compareTo(suggestions.statuses[p1.status]!.toLowerCase());
               .compareTo(suggestions.statuses[p1.status]!.toLowerCase());
           break;
       }
@@ -236,6 +242,7 @@ class RecordView extends ChangeNotifier {
         break;
       case COLUMN.status:
         filter = (record, value) => suggestions.statuses[record.status]!
+        filter = (record, value) => suggestions.statuses[record.status]!
             .toLowerCase()
             .contains(value.toLowerCase());
         break;
@@ -270,6 +277,8 @@ class History extends ChangeNotifier {
         status = map['katastasi'] as String;
 }
 
+class Suggestions extends ChangeNotifier {
+  Suggestions({
 class Suggestions extends ChangeNotifier {
   Suggestions({
     required this.products,
