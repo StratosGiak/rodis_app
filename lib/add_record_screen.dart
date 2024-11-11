@@ -327,35 +327,39 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    Row(
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 32.0,
+                      runSpacing: 16.0,
                       children: [
                         ValueListenableBuilder(
                           valueListenable: hasWarranty,
-                          builder: (context, value, child) => SizedBox(
-                            width: 150,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text(
-                                      "Εγγύηση",
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                          builder: (context, value, child) => Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    "Εγγύηση",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    SizedBox(
-                                      child: Checkbox(
-                                        value: value,
-                                        onChanged: (newValue) => hasWarranty
-                                            .value = newValue ?? false,
-                                      ),
+                                  ),
+                                  SizedBox(
+                                    child: Checkbox(
+                                      value: value,
+                                      onChanged: (newValue) =>
+                                          hasWarranty.value = newValue ?? false,
                                     ),
-                                  ],
-                                ),
-                                TextFormField(
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 150,
+                                child: TextFormField(
                                   controller: warrantyController,
                                   enabled: value,
                                   readOnly: true,
@@ -376,22 +380,54 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                                     border: OutlineInputBorder(),
                                   ),
                                 ),
-                              ],
+                              ),
+                              const SizedBox(height: 32.0),
+                              FormFieldItem(
+                                label: "Παρατηρήσεις",
+                                controller: notesController,
+                                width: 500,
+                                lines: 5,
+                                maxLength: 500,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 300,
+                          width: 500,
+                          child: Center(
+                            child: Image.network(
+                              'https://images.pexels.com/photos/3774243/pexels-photo-3774243.jpeg',
+                              frameBuilder: (
+                                context,
+                                child,
+                                frame,
+                                wasSynchronouslyLoaded,
+                              ) =>
+                                  AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: frame == null
+                                    ? const CircularProgressIndicator()
+                                    : Stack(
+                                        children: [
+                                          child,
+                                          Positioned.fill(
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () {},
+                                                splashFactory:
+                                                    InkSplash.splashFactory,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 32.0),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: FormFieldItem(
-                        label: "Παρατηρήσεις",
-                        controller: notesController,
-                        width: 500,
-                        lines: 5,
-                        maxLength: 500,
-                      ),
                     ),
                   ],
                 ),
