@@ -953,58 +953,79 @@ class CustomPhotoState extends State<CustomPhoto> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget child;
     if (imagePath != null) {
-      return Image.file(
-        File(imagePath!),
-        frameBuilder: (
-          context,
-          child,
-          frame,
-          wasSynchronouslyLoaded,
-        ) =>
-            AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: frame == null
-              ? const CircularProgressIndicator()
-              : EditablePhoto(
-                  onTap: () => onTap(
-                    Image.file(File(imagePath!)),
+      child = ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: Image.file(
+          File(imagePath!),
+          frameBuilder: (
+            context,
+            child,
+            frame,
+            wasSynchronouslyLoaded,
+          ) =>
+              AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: frame == null
+                ? const CircularProgressIndicator()
+                : EditablePhoto(
+                    onTap: () => onTap(
+                      Image.file(File(imagePath!)),
+                    ),
+                    onLongPress: addPhoto,
+                    onRemovePressed: onRemovePressed,
+                    child: child,
                   ),
-                  onLongPress: addPhoto,
-                  onRemovePressed: onRemovePressed,
-                  child: child,
-                ),
+          ),
         ),
       );
-    }
-    if (widget.photoUrl != null && !removePhoto) {
-      return Image.network(
-        "$apiUrl/media/${widget.photoUrl!}",
-        frameBuilder: (
-          context,
-          child,
-          frame,
-          wasSynchronouslyLoaded,
-        ) =>
-            AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: frame == null
-              ? const CircularProgressIndicator()
-              : EditablePhoto(
-                  onTap: () => onTap(
-                    Image.network("$apiUrl/media/${widget.photoUrl!}"),
+    } else if (widget.photoUrl != null && !removePhoto) {
+      child = ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: Image.network(
+          "$apiUrl/media/${widget.photoUrl!}",
+          frameBuilder: (
+            context,
+            child,
+            frame,
+            wasSynchronouslyLoaded,
+          ) =>
+              AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: frame == null
+                ? const CircularProgressIndicator()
+                : EditablePhoto(
+                    onTap: () => onTap(
+                      Image.network("$apiUrl/media/${widget.photoUrl!}"),
+                    ),
+                    onLongPress: addPhoto,
+                    onRemovePressed: onRemovePressed,
+                    child: child,
                   ),
-                  onLongPress: addPhoto,
-                  onRemovePressed: onRemovePressed,
-                  child: child,
-                ),
+          ),
         ),
       );
+    } else {
+      child = TextButton.icon(
+        onPressed: addPhoto,
+        label: const Text("Προσθήκη εικόνας"),
+        icon: const Icon(Icons.camera_alt),
+      );
     }
-    return TextButton.icon(
-      onPressed: addPhoto,
-      label: const Text("Προσθήκη εικόνας"),
-      icon: const Icon(Icons.camera_alt),
+    final decoration =
+        imagePath == null && (widget.photoUrl == null || removePhoto)
+            ? BoxDecoration(
+                color: Colors.black.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(12.0),
+              )
+            : null;
+
+    return Container(
+      height: 350,
+      width: 500,
+      decoration: decoration,
+      child: Center(child: child),
     );
   }
 }
