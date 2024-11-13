@@ -260,17 +260,15 @@ class RecordView extends ChangeNotifier {
   }
 }
 
-class History extends ChangeNotifier {
+class History {
   int id;
   DateTime date;
-  String mechanic;
-  String status;
+  String notes;
 
   History({
     required this.id,
     required this.date,
-    required this.mechanic,
-    required this.status,
+    required this.notes,
   });
 
   History.fromJSON(Map<String, dynamic> map)
@@ -278,8 +276,7 @@ class History extends ChangeNotifier {
         date = map['datek'] != null
             ? DateTime.tryParse(map['datek']) ?? DateTime.now()
             : DateTime.now(),
-        mechanic = map['mastoras'] as String,
-        status = map['katastasi'] as String;
+        notes = map['paratiriseis'] as String;
 }
 
 class Suggestions extends ChangeNotifier {
