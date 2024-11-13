@@ -44,7 +44,10 @@ class Record extends ChangeNotifier {
   String city;
   String area;
   String address;
-  String? notes;
+  String? notesReceived;
+  String? notesRepaired;
+  String fee;
+  String? advance;
   String? serial;
   String product;
   String manufacturer;
@@ -66,7 +69,10 @@ class Record extends ChangeNotifier {
     required this.city,
     required this.area,
     required this.address,
-    required this.notes,
+    required this.notesReceived,
+    required this.notesRepaired,
+    required this.fee,
+    required this.advance,
     required this.serial,
     required this.product,
     required this.manufacturer,
@@ -89,7 +95,10 @@ class Record extends ChangeNotifier {
         "poli": city,
         "perioxi": area,
         "odos": address,
-        "paratiriseis": notes,
+        "paratiriseis_para": notesReceived,
+        "paratiriseis_epi": notesRepaired,
+        "pliromi": fee,
+        "prokatavoli": advance,
         "serialnr": serial,
         "eidos": product,
         "marka": manufacturer,
@@ -113,7 +122,10 @@ class Record extends ChangeNotifier {
         city = map['poli'] as String,
         area = map['perioxi'] as String,
         address = map['odos'] as String,
-        notes = map['paratiriseis'] as String?,
+        notesReceived = map['paratiriseis_para'] as String?,
+        notesRepaired = map['paratiriseis_epi'] as String?,
+        fee = map['pliromi'] as String,
+        advance = map['prokatavoli'] as String?,
         serial = map['serialnr'] as String?,
         product = map['eidos'] as String,
         manufacturer = map['marka'] as String,

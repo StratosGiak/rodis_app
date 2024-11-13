@@ -35,7 +35,10 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final cityController = TextEditingController();
   final areaController = TextEditingController();
   final addressController = TextEditingController();
-  final notesController = TextEditingController();
+  final notesReceivedController = TextEditingController();
+  final notesRepairedController = TextEditingController();
+  final feeController = TextEditingController();
+  final advanceController = TextEditingController();
   final serialController = TextEditingController();
   final productController = TextEditingController();
   final manufacturerController = TextEditingController();
@@ -68,7 +71,10 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     cityController.text = record.city;
     areaController.text = record.area;
     addressController.text = record.address;
-    notesController.text = record.notes ?? "";
+    notesReceivedController.text = record.notesReceived ?? "";
+    notesRepairedController.text = record.notesRepaired ?? "";
+    feeController.text = record.fee.replaceAll(r'.', ',');
+    advanceController.text = (record.advance ?? "").replaceAll(r'.', ',');
     serialController.text = record.serial ?? "";
     dateController.text =
         DateFormat('dd/MM/yyyy').format(record.date).toString();
@@ -163,8 +169,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 "address": addressController.text.isNotEmpty
                     ? addressController.text
                     : null,
-                "notes": notesController.text.isNotEmpty
-                    ? notesController.text
+                "notesReceived": notesReceivedController.text.isNotEmpty
+                    ? notesReceivedController.text
+                    : null,
+                "notesRepaired": notesRepairedController.text.isNotEmpty
+                    ? notesRepairedController.text
                     : null,
                 "serial": serialController.text.isNotEmpty
                     ? serialController.text
@@ -174,6 +183,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     : null,
                 "manufacturer": manufacturerController.text.isNotEmpty
                     ? manufacturerController.text
+                    : null,
+                "fee": feeController.text.isNotEmpty
+                    ? feeController.text.replaceAll(r',', '.')
+                    : null,
+                "advance": advanceController.text.isNotEmpty
+                    ? advanceController.text.replaceAll(r',', '.')
                     : null,
                 "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
                 "mechanic": context.read<User>().id,
@@ -208,6 +223,15 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       .setRecord(Record.fromJSON(jsonDecode(response.body)));
                   waiting.value = false;
                   Navigator.pop(context);
+                } else {
+                  waiting.value = false;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Προέκυψε σφάλμα κατά το ανέβασμα των στοιχείων στον σέρβερ",
+                      ),
+                    ),
+                  );
                 }
               }
             },
@@ -218,10 +242,10 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20.0,
-                  vertical: 10.0,
+                  vertical: 20.0,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
@@ -262,12 +286,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Σταθερό τηλέφωνο",
                           controller: phoneHomeController,
-                          numeric: true,
+                          format: FormFieldFormat.integer,
                         ),
                         FormFieldItem(
                           label: "Κινητό τηλέφωνο",
                           controller: phoneMobileController,
-                          numeric: true,
+                          format: FormFieldFormat.integer,
                           required: true,
                         ),
                         FormFieldItem(
@@ -302,7 +326,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           label: "ΤΚ",
                           controller: postalCodeController,
                           width: 100,
-                          numeric: true,
+                          format: FormFieldFormat.integer,
                           required: true,
                         ),
                       ],
@@ -345,82 +369,119 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ),
                     const SizedBox(height: 16.0),
                     Wrap(
+                      spacing: 30,
+                      runSpacing: 10,
+                      children: [
+                        FormFieldItem(
+                          label: "Πληρωμή",
+                          controller: feeController,
+                          required: true,
+                          format: FormFieldFormat.decimal,
+                          width: 150,
+                          prefixIcon: Icon(
+                            Icons.euro,
+                            size: 16.0,
+                            color:
+                                IconTheme.of(context).color!.withOpacity(0.6),
+                          ),
+                        ),
+                        FormFieldItem(
+                          label: "Προκαταβολή",
+                          controller: advanceController,
+                          format: FormFieldFormat.decimal,
+                          width: 150,
+                          prefixIcon: Icon(
+                            Icons.euro_rounded,
+                            size: 16.0,
+                            color:
+                                IconTheme.of(context).color!.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16.0),
+                    ValueListenableBuilder(
+                      valueListenable: hasWarranty,
+                      builder: (context, value, child) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Εγγύηση",
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(
+                                child: Checkbox(
+                                  value: value,
+                                  onChanged: (newValue) =>
+                                      hasWarranty.value = newValue ?? false,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 150,
+                            child: TextFormField(
+                              controller: warrantyController,
+                              enabled: value,
+                              readOnly: true,
+                              onTap: () async {
+                                final newDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2099),
+                                );
+                                if (newDate == null) return;
+                                warrantyDate = newDate;
+                                warrantyController.text =
+                                    DateFormat('dd/MM/yyyy')
+                                        .format(warrantyDate)
+                                        .toString();
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 32.0,
                       runSpacing: 16.0,
                       children: [
-                        ValueListenableBuilder(
-                          valueListenable: hasWarranty,
-                          builder: (context, value, child) => Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    "Εγγύηση",
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    child: Checkbox(
-                                      value: value,
-                                      onChanged: (newValue) =>
-                                          hasWarranty.value = newValue ?? false,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                width: 150,
-                                child: TextFormField(
-                                  controller: warrantyController,
-                                  enabled: value,
-                                  readOnly: true,
-                                  onTap: () async {
-                                    final newDate = await showDatePicker(
-                                      context: context,
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2099),
-                                    );
-                                    if (newDate == null) return;
-                                    warrantyDate = newDate;
-                                    warrantyController.text =
-                                        DateFormat('dd/MM/yyyy')
-                                            .format(warrantyDate)
-                                            .toString();
-                                  },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 32.0),
-                              FormFieldItem(
-                                label: "Παρατηρήσεις",
-                                controller: notesController,
-                                width: 500,
-                                lines: 5,
-                                maxLength: 500,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 300,
-                          width: 500,
-                          child: Center(
-                            child: CustomPhoto(
-                              photoUrl: photoUrl,
-                              onPhotoSet: (imagePath, removePhoto) {
-                                tempPhotoPath = imagePath;
-                                if (removePhoto) this.removePhoto = removePhoto;
-                              },
+                        Column(
+                          children: [
+                            FormFieldItem(
+                              label: "Παρατηρήσεις παραλαβής",
+                              controller: notesReceivedController,
+                              width: 500,
+                              lines: 5,
+                              maxLength: 500,
                             ),
-                          ),
+                            FormFieldItem(
+                              label: "Παρατηρήσεις επισκευής",
+                              controller: notesRepairedController,
+                              width: 500,
+                              lines: 5,
+                              maxLength: 500,
+                            ),
+                          ],
+                        ),
+                        CustomPhoto(
+                          photoUrl: photoUrl,
+                          onPhotoSet: (imagePath, removePhoto) {
+                            tempPhotoPath = imagePath;
+                            if (removePhoto) this.removePhoto = removePhoto;
+                          },
                         ),
                       ],
                     ),
@@ -435,6 +496,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   }
 }
 
+enum FormFieldFormat { integer, decimal, any }
+
 class FormFieldItem extends StatelessWidget {
   const FormFieldItem({
     super.key,
@@ -443,11 +506,12 @@ class FormFieldItem extends StatelessWidget {
     this.width = 200,
     this.lines = 1,
     this.maxLength,
-    this.numeric = false,
+    this.format = FormFieldFormat.any,
     this.readOnly = false,
     this.onTap,
     this.validator,
     this.required = false,
+    this.prefixIcon,
     this.focusNode,
     this.onChanged,
   });
@@ -457,11 +521,12 @@ class FormFieldItem extends StatelessWidget {
   final double width;
   final int lines;
   final int? maxLength;
-  final bool numeric;
+  final FormFieldFormat format;
   final bool readOnly;
   final void Function()? onTap;
   final String? Function(String?)? validator;
   final bool required;
+  final Widget? prefixIcon;
   final FocusNode? focusNode;
   final Function(String)? onChanged;
 
@@ -502,11 +567,16 @@ class FormFieldItem extends StatelessWidget {
                     : null),
             inputFormatters: [
               LengthLimitingTextInputFormatter(maxLength),
-              if (numeric) FilteringTextInputFormatter.digitsOnly,
+              if (format == FormFieldFormat.integer)
+                FilteringTextInputFormatter.digitsOnly,
+              if (format == FormFieldFormat.decimal)
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'^[0-9]+[.|,]?[0-9]{0,2}'),
+                ),
             ],
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
-              errorStyle: TextStyle(height: 0),
+              prefixIcon: prefixIcon,
             ),
             textInputAction: TextInputAction.next,
             focusNode: focusNode,
