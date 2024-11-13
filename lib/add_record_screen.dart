@@ -710,7 +710,7 @@ class DropdownMenuFormField<T> extends FormField<T> {
               controller: controller,
               initialSelection: state.value,
               onSelected: onSelectedHandler,
-              requestFocusOnTap: requestFocusOnTap,
+              requestFocusOnTap: false,
               expandedInsets: expandedInsets,
               dropdownMenuEntries: dropdownMenuEntries,
             );
