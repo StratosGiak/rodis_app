@@ -576,6 +576,7 @@ class FormFieldItem extends StatelessWidget {
             ],
             decoration: InputDecoration(
               border: OutlineInputBorder(),
+              errorStyle: TextStyle(height: 0.001),
               prefixIcon: prefixIcon,
             ),
             textInputAction: TextInputAction.next,
@@ -645,7 +646,7 @@ class _FormComboItemState extends State<FormComboItem> {
               (widget.required ? (value) => value == null ? "" : null : null),
           inputDecorationTheme: const InputDecorationTheme(
             border: OutlineInputBorder(),
-            errorStyle: TextStyle(height: 0),
+            errorStyle: TextStyle(height: 0.001),
           ),
         ),
       ],
