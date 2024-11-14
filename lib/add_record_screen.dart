@@ -1004,53 +1004,25 @@ class CustomPhotoState extends State<CustomPhoto> {
     if (imagePath != null) {
       child = ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
-        child: Image.file(
-          File(imagePath!),
-          frameBuilder: (
-            context,
-            child,
-            frame,
-            wasSynchronouslyLoaded,
-          ) =>
-              AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: frame == null
-                ? const CircularProgressIndicator()
-                : EditablePhoto(
-                    onTap: () => onTap(
-                      Image.file(File(imagePath!)),
-                    ),
-                    onLongPress: addPhoto,
-                    onRemovePressed: onRemovePressed,
-                    child: child,
-                  ),
+        child: EditablePhoto(
+          onTap: () => onTap(
+            Image.file(File(imagePath!)),
           ),
+          onLongPress: addPhoto,
+          onRemovePressed: onRemovePressed,
+          child: Image.file(File(imagePath!)),
         ),
       );
     } else if (widget.photoUrl != null && !removePhoto) {
       child = ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
-        child: Image.network(
-          "$apiUrl/media/${widget.photoUrl!}",
-          frameBuilder: (
-            context,
-            child,
-            frame,
-            wasSynchronouslyLoaded,
-          ) =>
-              AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: frame == null
-                ? const CircularProgressIndicator()
-                : EditablePhoto(
-                    onTap: () => onTap(
-                      Image.network("$apiUrl/media/${widget.photoUrl!}"),
-                    ),
-                    onLongPress: addPhoto,
-                    onRemovePressed: onRemovePressed,
-                    child: child,
-                  ),
+        child: EditablePhoto(
+          onTap: () => onTap(
+            Image.network("$apiUrl/media/${widget.photoUrl!}"),
           ),
+          onLongPress: addPhoto,
+          onRemovePressed: onRemovePressed,
+          child: Image.network("$apiUrl/media/${widget.photoUrl!}"),
         ),
       );
     } else {
@@ -1190,7 +1162,8 @@ class _HistoryDialogState extends State<HistoryDialog> {
       ),
       child: ListTile(
         title: Text(
-            DateFormat("dd/MM/yyyy | hh:mm").format(newHistory[index].date)),
+          DateFormat("dd/MM/yyyy | hh:mm").format(newHistory[index].date),
+        ),
         subtitle: Text(newHistory[index].notes),
         trailing: IconButton(
           onPressed: () {
@@ -1232,7 +1205,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_backNode),
       child: Dialog(
-        child: ClipRRect(
+        child: ClipRect(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
