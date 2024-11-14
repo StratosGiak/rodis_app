@@ -51,6 +51,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final warrantyController = TextEditingController(
     text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
   );
+  List<History> newHistory = [];
   String? photoUrl;
   String? tempPhotoPath;
   bool removePhoto = false;
@@ -101,6 +102,26 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             title: id != null
                 ? const Text("Ενημέρωση επισκευής")
                 : const Text("Νέα επισκευή"),
+            actions: [
+              if (widget.record != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => HistoryDialog(
+                          history: widget.record!.history,
+                          newHistory: newHistory,
+                          onHistoryChange: (newHistory) =>
+                              this.newHistory = newHistory,
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.history_edu_rounded),
+                  ),
+                ),
+            ],
           ),
           floatingActionButton: FloatingActionButton.extended(
             label: const Text('Υποβολή'),
@@ -197,42 +218,48 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? DateFormat("yyyy-MM-dd hh:mm:ss").format(warrantyDate)
                     : null,
                 "status": status,
+                "newHistory": newHistory.map((e) => e.toJSON()).toList(),
               };
-              if (id == null) {
-                final response = await http.post(
-                  Uri.parse("$apiUrl/records/new"),
-                  headers: {'Content-Type': 'application/json; charset=UTF-8'},
-                  body: jsonEncode(record),
-                );
-                if (response.statusCode == 200) {
-                  context
-                      .read<Records>()
-                      .addRecord(Record.fromJSON(jsonDecode(response.body)));
-                  waiting.value = false;
-                  Navigator.pop(context);
-                }
-              } else {
-                final response = await http.put(
-                  Uri.parse("$apiUrl/records/$id/edit"),
-                  headers: {'Content-Type': 'application/json; charset=UTF-8'},
-                  body: jsonEncode(record),
-                );
-                if (response.statusCode == 200) {
-                  context
-                      .read<Records>()
-                      .setRecord(Record.fromJSON(jsonDecode(response.body)));
-                  waiting.value = false;
-                  Navigator.pop(context);
-                } else {
-                  waiting.value = false;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Προέκυψε σφάλμα κατά το ανέβασμα των στοιχείων στον σέρβερ",
-                      ),
-                    ),
+              try {
+                if (id == null) {
+                  final response = await http.post(
+                    Uri.parse("$apiUrl/records/new"),
+                    headers: {
+                      'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: jsonEncode(record),
                   );
+                  if (response.statusCode == 200) {
+                    context
+                        .read<Records>()
+                        .addRecord(Record.fromJSON(jsonDecode(response.body)));
+                    Navigator.pop(context);
+                  }
+                } else {
+                  final response = await http.put(
+                    Uri.parse("$apiUrl/records/$id/edit"),
+                    headers: {
+                      'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: jsonEncode(record),
+                  );
+                  if (response.statusCode == 200) {
+                    context
+                        .read<Records>()
+                        .setRecord(Record.fromJSON(jsonDecode(response.body)));
+                    Navigator.pop(context);
+                  }
                 }
+              } catch (err) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Προέκυψε σφάλμα κατά το ανέβασμα των στοιχείων στον σέρβερ",
+                    ),
+                  ),
+                );
+              } finally {
+                waiting.value = false;
               }
             },
           ),
@@ -1108,6 +1135,270 @@ class PhotoDialog extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class HistoryDialog extends StatefulWidget {
+  const HistoryDialog({
+    super.key,
+    required this.history,
+    required this.newHistory,
+    required this.onHistoryChange,
+  });
+
+  final List<History> history;
+  final List<History> newHistory;
+  final void Function(List<History> newHistory) onHistoryChange;
+
+  @override
+  State<HistoryDialog> createState() => _HistoryDialogState();
+}
+
+class _HistoryDialogState extends State<HistoryDialog> {
+  bool expand = false;
+  late final newHistory = widget.newHistory;
+  final notesController = TextEditingController();
+  final date = ValueNotifier(DateTime.now());
+  final animatedListKey = GlobalKey<AnimatedListState>();
+  final _textFieldNode = FocusNode();
+  final _backNode = FocusNode();
+
+  Widget buildAddedItem(BuildContext context, int index, Animation animation) {
+    return SlideTransition(
+      position: animation.drive(
+        Tween(begin: Offset(1, 0), end: Offset(0, 0)),
+      ),
+      child: ListTile(
+        title: Text(
+            DateFormat("dd/MM/yyyy | hh:mm").format(newHistory[index].date)),
+        subtitle: Text(newHistory[index].notes),
+        trailing: IconButton(
+          onPressed: () {
+            final history = newHistory[index];
+            setState(() {
+              newHistory.removeAt(index);
+            });
+            widget.onHistoryChange(newHistory);
+            AnimatedList.of(context).removeItem(
+              index,
+              (context, animation) => buildRemovedItem(history, animation),
+              duration: Duration(milliseconds: 150),
+            );
+          },
+          icon: Icon(Icons.delete),
+        ),
+      ),
+    );
+  }
+
+  Widget buildRemovedItem(History history, Animation animation) {
+    return SlideTransition(
+      position: animation.drive(
+        Tween(begin: Offset(1, 0), end: Offset(0, 0)),
+      ),
+      child: ListTile(
+        title: Text(DateFormat("dd/MM/yyyy | hh:mm").format(history.date)),
+        subtitle: Text(history.notes),
+        trailing: IconButton(
+          onPressed: null,
+          icon: Icon(Icons.delete),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(_backNode),
+      child: Dialog(
+        child: ClipRRect(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 450,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton.icon(
+                        onPressed: expand
+                            ? null
+                            : () {
+                                setState(() => expand = true);
+                                date.value = DateTime.now();
+                                FocusScope.of(context)
+                                    .requestFocus(_textFieldNode);
+                              },
+                        label: Text('Προσθήκη νέου'),
+                        icon: Icon(Icons.add),
+                      ),
+                      ClipRect(
+                        child: AnimatedAlign(
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeInOut,
+                          alignment: Alignment.bottomCenter,
+                          heightFactor: expand ? 1 : 0,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                maxLines: 3,
+                                focusNode: _textFieldNode,
+                                maxLength: 200,
+                                controller: notesController,
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder()),
+                              ),
+                              Row(
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      FocusScope.of(context)
+                                          .requestFocus(_backNode);
+                                      final date = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2099),
+                                      );
+                                      if (date == null) return;
+                                      final time = await showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay.now(),
+                                      );
+                                      if (time == null) return;
+                                      this.date.value = DateTime(
+                                        date.year,
+                                        date.month,
+                                        date.day,
+                                        time.hour,
+                                        time.minute,
+                                      );
+                                    },
+                                    label: ValueListenableBuilder(
+                                      valueListenable: date,
+                                      builder: (context, value, child) => Text(
+                                        DateFormat("dd/MM/yyyy | hh:mm")
+                                            .format(date.value),
+                                      ),
+                                    ),
+                                    icon: Icon(Icons.watch_later),
+                                  ),
+                                  Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      FocusScope.of(context)
+                                          .requestFocus(_backNode);
+                                      setState(() {
+                                        expand = false;
+                                      });
+                                      notesController.clear();
+                                    },
+                                    icon: Icon(Icons.close),
+                                  ),
+                                  SizedBox(width: 12.0),
+                                  IconButton(
+                                    onPressed: () {
+                                      FocusScope.of(context)
+                                          .requestFocus(_backNode);
+                                      if (notesController.text.isEmpty) return;
+                                      setState(() {
+                                        newHistory.add(
+                                          History(
+                                            date: date.value,
+                                            notes: notesController.text,
+                                          ),
+                                        );
+                                        expand = false;
+                                      });
+                                      widget.onHistoryChange(newHistory);
+                                      animatedListKey.currentState!.insertItem(
+                                        newHistory.length - 1,
+                                        duration: Duration(milliseconds: 200),
+                                      );
+                                      notesController.clear();
+                                    },
+                                    icon: Icon(Icons.done),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (newHistory.isNotEmpty)
+                        Divider(
+                          thickness: 1.5,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      if (newHistory.isNotEmpty)
+                        Text(
+                          "Νέες προσθήκες",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      AnimatedList(
+                        key: animatedListKey,
+                        shrinkWrap: true,
+                        initialItemCount: newHistory.length,
+                        itemBuilder: (context, index, animation) =>
+                            buildAddedItem(context, index, animation),
+                      ),
+                      Divider(
+                        thickness: 1.5,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Text(
+                        "Ιστορικό",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      widget.history.isNotEmpty
+                          ? ConstrainedBox(
+                              constraints:
+                                  BoxConstraints.loose(Size.fromHeight(400)),
+                              child: ScrollConfiguration(
+                                behavior: ScrollConfiguration.of(context)
+                                    .copyWith(scrollbars: true),
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: widget.history.length,
+                                  separatorBuilder: (context, index) =>
+                                      Divider(),
+                                  itemBuilder: (context, index) => ListTile(
+                                    title: Text(
+                                      DateFormat('dd/MM/yyyy | hh:mm')
+                                          .format(widget.history[index].date),
+                                    ),
+                                    subtitle: Text(widget.history[index].notes),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Δεν βρέθηκε ιστορικό",
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
