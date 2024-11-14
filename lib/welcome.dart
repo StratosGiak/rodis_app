@@ -87,50 +87,68 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> onSubmit() async {
     if (waiting.value) return;
+    // usernameController.text = "nikos";
+    // passwordController.text = "nnn";
     if (_formKey.currentState!.validate()) {
       waiting.value = true;
-      final response = await http.post(
-        Uri.parse("$apiUrl/login"),
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: jsonEncode({
-          "username": usernameController.text,
-          "password": passwordController.text,
-        }),
-      );
-      if (!mounted) return;
-      if (response.statusCode != 200) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Λάθος στοιχεία')));
-        waiting.value = false;
-        return;
-      }
-      final {'token': token, 'user': user} =
-          jsonDecode(response.body) as Map<String, dynamic>;
-      final suggestions = await getSuggestions();
-      final records = await getRecords(user['id']);
-      await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MultiProvider(
-            providers: [
-              Provider(
-                create: (_) => User(
-                  id: user['id'],
-                  username: user['username'],
-                  name: user["name"],
-                  token: token,
+      try {
+        final response = await http
+            .post(
+              Uri.parse("$apiUrl/login"),
+              headers: {'Content-Type': 'application/json; charset=UTF-8'},
+              body: jsonEncode({
+                "username": usernameController.text,
+                "password": passwordController.text,
+              }),
+            )
+            .timeout(const Duration(seconds: 6));
+
+        if (!mounted) return;
+        if (response.statusCode != 200) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Λάθος στοιχεία')));
+          waiting.value = false;
+          return;
+        }
+        final {'token': token, 'user': user} =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        final suggestions = await getSuggestions();
+        final records = await getRecords(user['id']);
+        await Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MultiProvider(
+              providers: [
+                Provider(
+                  create: (_) => User(
+                    id: user['id'],
+                    username: user['username'],
+                    name: user["name"],
+                    token: token,
+                  ),
                 ),
-              ),
-              ChangeNotifierProvider(create: (context) => records),
-              ChangeNotifierProvider(create: (context) => suggestions),
-              ChangeNotifierProvider(create: (context) => suggestions),
-            ],
-            builder: (context, child) => const RecordListScreen(),
+                ChangeNotifierProvider(create: (context) => records),
+                ChangeNotifierProvider(create: (context) => suggestions),
+                ChangeNotifierProvider(create: (context) => suggestions),
+              ],
+              builder: (context, child) => const RecordListScreen(),
+            ),
           ),
-        ),
-      );
-      waiting.value = false;
+        );
+      } catch (err) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Η σύνδεση με τον σέρβερ απέτυχε')),
+        );
+      } finally {
+        waiting.value = false;
+      }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //onSubmit();
   }
 
   @override
@@ -177,6 +195,7 @@ class _LoginFormState extends State<LoginForm> {
                   border: OutlineInputBorder(),
                 ),
                 textInputAction: TextInputAction.done,
+                onFieldSubmitted: (value) => onSubmit(),
               ),
             ),
             const SizedBox(
