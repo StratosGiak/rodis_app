@@ -171,8 +171,9 @@ class _LoginFormState extends State<LoginForm> {
               height: 80,
               child: TextFormField(
                 controller: usernameController,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Εισάγετε username" : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? "Εισάγετε όνομα χρήστη"
+                    : null,
                 decoration: const InputDecoration(
                   labelText: "Username",
                   border: OutlineInputBorder(),
@@ -189,12 +190,13 @@ class _LoginFormState extends State<LoginForm> {
                 controller: passwordController,
                 obscureText: true,
                 validator: (value) =>
-                    value == null || value.isEmpty ? "Εισάγετε password" : null,
+                    value == null || value.isEmpty ? "Εισάγετε κωδικό" : null,
                 decoration: const InputDecoration(
                   labelText: "Password",
                   border: OutlineInputBorder(),
                 ),
                 textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.visiblePassword,
                 onFieldSubmitted: (value) => onSubmit(),
               ),
             ),

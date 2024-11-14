@@ -279,6 +279,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       child: FormFieldItem(
                         label: "Ημερομηνία",
                         controller: dateController,
+                        textInputType: TextInputType.datetime,
                         required: true,
                         width: 150,
                         readOnly: true,
@@ -301,6 +302,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       child: FormFieldItem(
                         label: "Όνομα πελάτη",
                         controller: nameController,
+                        textInputType: TextInputType.name,
                         width: 300,
                         required: true,
                       ),
@@ -313,17 +315,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Σταθερό τηλέφωνο",
                           controller: phoneHomeController,
+                          textInputType: TextInputType.phone,
                           format: FormFieldFormat.integer,
                         ),
                         FormFieldItem(
                           label: "Κινητό τηλέφωνο",
                           controller: phoneMobileController,
+                          textInputType: TextInputType.phone,
                           format: FormFieldFormat.integer,
                           required: true,
                         ),
                         FormFieldItem(
                           label: "Email",
                           controller: emailController,
+                          textInputType: TextInputType.emailAddress,
                           width: 300,
                         ),
                       ],
@@ -336,6 +341,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Διεύθυνση",
                           controller: addressController,
+                          textInputType: TextInputType.streetAddress,
                           width: 300,
                           required: true,
                         ),
@@ -352,6 +358,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "ΤΚ",
                           controller: postalCodeController,
+                          textInputType: TextInputType.number,
                           width: 100,
                           format: FormFieldFormat.integer,
                           required: true,
@@ -402,6 +409,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Πληρωμή",
                           controller: feeController,
+                          textInputType:
+                              TextInputType.numberWithOptions(decimal: true),
                           required: true,
                           format: FormFieldFormat.decimal,
                           width: 150,
@@ -415,6 +424,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Προκαταβολή",
                           controller: advanceController,
+                          textInputType:
+                              TextInputType.numberWithOptions(decimal: true),
                           format: FormFieldFormat.decimal,
                           width: 150,
                           prefixIcon: Icon(
@@ -456,6 +467,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             width: 150,
                             child: TextFormField(
                               controller: warrantyController,
+                              keyboardType: TextInputType.datetime,
                               enabled: value,
                               readOnly: true,
                               onTap: () async {
@@ -490,6 +502,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             FormFieldItem(
                               label: "Παρατηρήσεις παραλαβής",
                               controller: notesReceivedController,
+                              textInputType: TextInputType.multiline,
                               width: 500,
                               lines: 5,
                               maxLength: 500,
@@ -497,6 +510,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             FormFieldItem(
                               label: "Παρατηρήσεις επισκευής",
                               controller: notesRepairedController,
+                              textInputType: TextInputType.multiline,
                               width: 500,
                               lines: 5,
                               maxLength: 500,
@@ -533,6 +547,7 @@ class FormFieldItem extends StatelessWidget {
     this.width = 200,
     this.lines = 1,
     this.maxLength,
+    this.textInputType,
     this.format = FormFieldFormat.any,
     this.readOnly = false,
     this.onTap,
@@ -548,6 +563,7 @@ class FormFieldItem extends StatelessWidget {
   final double width;
   final int lines;
   final int? maxLength;
+  final TextInputType? textInputType;
   final FormFieldFormat format;
   final bool readOnly;
   final void Function()? onTap;
@@ -585,6 +601,7 @@ class FormFieldItem extends StatelessWidget {
             controller: controller,
             maxLines: lines,
             maxLength: maxLength,
+            keyboardType: textInputType,
             readOnly: readOnly,
             onTap: onTap,
             onChanged: onChanged,
@@ -606,7 +623,9 @@ class FormFieldItem extends StatelessWidget {
               errorStyle: TextStyle(height: 0.001),
               prefixIcon: prefixIcon,
             ),
-            textInputAction: TextInputAction.next,
+            textInputAction: textInputType == TextInputType.multiline
+                ? null
+                : TextInputAction.next,
             focusNode: focusNode,
           ),
         ],
