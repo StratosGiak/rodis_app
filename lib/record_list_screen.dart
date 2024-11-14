@@ -504,23 +504,27 @@ class HistoryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          const Spacer(flex: 2),
-          Expanded(
-            child: Text(
-              DateFormat('dd/MM/yyyy | hh:mm').format(history.date),
-              textAlign: TextAlign.center,
+          Align(
+            alignment: Alignment(-1 / 3, 0),
+            child: FractionalTranslation(
+              translation: Offset(-1 / 6, 0),
+              child: Text(
+                DateFormat('dd/MM/yyyy | hh:mm').format(history.date),
+              ),
             ),
           ),
-          Expanded(
-            child: Text(
-              history.status,
-              textAlign: TextAlign.center,
+          Align(
+            alignment: Alignment(1 / 3, 0),
+            child: FractionalTranslation(
+              translation: Offset(1 / 6, 0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints.tightFor(width: 200),
+                child: Text(history.notes),
+              ),
             ),
           ),
-          const Spacer(flex: 2),
         ],
       ),
     );
