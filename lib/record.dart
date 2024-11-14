@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Records extends ChangeNotifier {
   List<Record> records = [];
@@ -261,22 +262,24 @@ class RecordView extends ChangeNotifier {
 }
 
 class History {
-  int id;
   DateTime date;
   String notes;
 
   History({
-    required this.id,
     required this.date,
     required this.notes,
   });
 
   History.fromJSON(Map<String, dynamic> map)
-      : id = map['id'] as int,
-        date = map['datek'] != null
+      : date = map['datek'] != null
             ? DateTime.tryParse(map['datek']) ?? DateTime.now()
             : DateTime.now(),
         notes = map['paratiriseis'] as String;
+
+  Map<String, dynamic> toJSON() => {
+        "date": DateFormat("yyyy-MM-dd hh:mm:ss").format(date),
+        "notes": notes,
+      };
 }
 
 class Suggestions extends ChangeNotifier {
