@@ -164,7 +164,7 @@ class _RecordRowState extends State<RecordRow> {
     final suggestions = context.watch<Suggestions>();
     final width = switch (MediaQuery.sizeOf(context).width) {
       > 760.0 => 7,
-      > 640.0 => 6,
+      > 650.0 => 6,
       _ => 5,
     };
     return Material(
@@ -211,9 +211,9 @@ class _RecordRowState extends State<RecordRow> {
                   ),
                 ),
                 RecordCell(text: record.name),
-                RecordCell(text: record.phoneMobile),
+                if (width > 6) RecordCell(text: record.phoneMobile),
                 if (width > 5) RecordCell(text: record.product),
-                if (width > 6) RecordCell(text: record.manufacturer),
+                RecordCell(text: record.manufacturer),
                 RecordCell(
                   text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
                 ),
@@ -267,10 +267,9 @@ class RecordListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sorter = context.watch<RecordView>();
-    debugPrint("${MediaQuery.sizeOf(context).width}");
     final width = switch (MediaQuery.sizeOf(context).width) {
       > 760.0 => 7,
-      > 640.0 => 6,
+      > 650.0 => 6,
       _ => 5,
     };
     return Material(
@@ -299,19 +298,19 @@ class RecordListHeader extends StatelessWidget {
               visible: sorter.column == COLUMN.name,
               reverse: sorter.reverse,
             ),
-            RecordListHeaderItem(
-              title: "Τηλέφωνο",
-              onTap: () => context.read<RecordView>().setSort(COLUMN.phone),
-              visible: sorter.column == COLUMN.phone,
-              reverse: sorter.reverse,
-            ),
             if (width > 5)
               RecordListHeaderItem(
-                title: "Είδος",
-                onTap: () => context.read<RecordView>().setSort(COLUMN.product),
-                visible: sorter.column == COLUMN.product,
+                title: "Τηλέφωνο",
+                onTap: () => context.read<RecordView>().setSort(COLUMN.phone),
+                visible: sorter.column == COLUMN.phone,
                 reverse: sorter.reverse,
               ),
+            RecordListHeaderItem(
+              title: "Είδος",
+              onTap: () => context.read<RecordView>().setSort(COLUMN.product),
+              visible: sorter.column == COLUMN.product,
+              reverse: sorter.reverse,
+            ),
             if (width > 6)
               RecordListHeaderItem(
                 title: "Μάρκα",
@@ -414,7 +413,8 @@ class _SearchBarState extends State<SearchBar> {
       child: Align(
         alignment: Alignment.centerRight,
         child: Padding(
-          padding: const EdgeInsets.only(right: 6.0, top: 4.0, bottom: 4.0),
+          padding: const EdgeInsets.only(
+              right: 6.0, top: 4.0, bottom: 4.0, left: 6.0),
           child: Container(
             padding: const EdgeInsets.only(left: 14.0),
             decoration: BoxDecoration(
