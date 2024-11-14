@@ -103,7 +103,7 @@ class Record extends ChangeNotifier {
         "serialnr": serial,
         "eidos": product,
         "marka": manufacturer,
-        "photo1": photo,
+        "photo": photo,
         "mastoras_p": mechanic,
         "warranty": hasWarranty,
         "datekwarr": warrantyDate,
@@ -130,7 +130,7 @@ class Record extends ChangeNotifier {
         serial = map['serialnr'] as String?,
         product = map['eidos'] as String,
         manufacturer = map['marka'] as String,
-        photo = map['photo1'] as String?,
+        photo = map['photo'] as String?,
         mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
         warrantyDate = map['datekwarr'] != null
