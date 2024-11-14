@@ -162,6 +162,11 @@ class _RecordRowState extends State<RecordRow> {
   Widget build(BuildContext context) {
     final record = context.watch<Record>();
     final suggestions = context.watch<Suggestions>();
+    final width = switch (MediaQuery.sizeOf(context).width) {
+      > 760.0 => 7,
+      > 640.0 => 6,
+      _ => 5,
+    };
     return Material(
       color: widget.index % 2 == 0
           ? Colors.white
@@ -207,8 +212,8 @@ class _RecordRowState extends State<RecordRow> {
                 ),
                 RecordCell(text: record.name),
                 RecordCell(text: record.phoneMobile),
-                RecordCell(text: record.product),
-                RecordCell(text: record.manufacturer),
+                if (width > 5) RecordCell(text: record.product),
+                if (width > 6) RecordCell(text: record.manufacturer),
                 RecordCell(
                   text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
                 ),
@@ -262,6 +267,12 @@ class RecordListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sorter = context.watch<RecordView>();
+    debugPrint("${MediaQuery.sizeOf(context).width}");
+    final width = switch (MediaQuery.sizeOf(context).width) {
+      > 760.0 => 7,
+      > 640.0 => 6,
+      _ => 5,
+    };
     return Material(
       child: Container(
         height: 50,
@@ -294,19 +305,21 @@ class RecordListHeader extends StatelessWidget {
               visible: sorter.column == COLUMN.phone,
               reverse: sorter.reverse,
             ),
-            RecordListHeaderItem(
-              title: "Είδος",
-              onTap: () => context.read<RecordView>().setSort(COLUMN.product),
-              visible: sorter.column == COLUMN.product,
-              reverse: sorter.reverse,
-            ),
-            RecordListHeaderItem(
-              title: "Μάρκα",
-              onTap: () =>
-                  context.read<RecordView>().setSort(COLUMN.manufacturer),
-              visible: sorter.column == COLUMN.manufacturer,
-              reverse: sorter.reverse,
-            ),
+            if (width > 5)
+              RecordListHeaderItem(
+                title: "Είδος",
+                onTap: () => context.read<RecordView>().setSort(COLUMN.product),
+                visible: sorter.column == COLUMN.product,
+                reverse: sorter.reverse,
+              ),
+            if (width > 6)
+              RecordListHeaderItem(
+                title: "Μάρκα",
+                onTap: () =>
+                    context.read<RecordView>().setSort(COLUMN.manufacturer),
+                visible: sorter.column == COLUMN.manufacturer,
+                reverse: sorter.reverse,
+              ),
             RecordListHeaderItem(
               title: "Ημερομηνία",
               onTap: () => context.read<RecordView>().setSort(COLUMN.date),
