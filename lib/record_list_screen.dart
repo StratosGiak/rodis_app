@@ -512,7 +512,6 @@ class HistoryRow extends StatelessWidget {
               translation: Offset(-1 / 6, 0),
               child: Text(
                 DateFormat('dd/MM/yyyy | hh:mm').format(history.date),
-                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -520,9 +519,9 @@ class HistoryRow extends StatelessWidget {
             alignment: Alignment(1 / 3, 0),
             child: FractionalTranslation(
               translation: Offset(1 / 6, 0),
-              child: Text(
-                history.notes,
-                textAlign: TextAlign.center,
+              child: ConstrainedBox(
+                constraints: BoxConstraints.tightFor(width: 200),
+                child: Text(history.notes),
               ),
             ),
           ),
