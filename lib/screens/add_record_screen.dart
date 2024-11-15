@@ -294,40 +294,88 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 vertical: 20.0,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FormFieldItem(
-                      label: "Ημερομηνία",
-                      controller: dateController,
-                      textInputType: TextInputType.datetime,
-                      required: true,
-                      width: 150,
-                      readOnly: true,
-                      onTap: () async {
-                        final newDate = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2099),
-                        );
-                        if (newDate == null) return;
-                        date = newDate;
-                        dateController.text =
-                            dateFormat.format(date).toString();
-                      },
-                    ),
+                  Wrap(
+                    spacing: 30,
+                    runSpacing: 10,
+                    children: [
+                      FormFieldItem(
+                        label: "Ημερομηνία",
+                        controller: dateController,
+                        textInputType: TextInputType.datetime,
+                        required: true,
+                        width: 150,
+                        readOnly: true,
+                        onTap: () async {
+                          final newDate = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2099),
+                          );
+                          if (newDate == null) return;
+                          date = newDate;
+                          dateController.text =
+                              dateFormat.format(date).toString();
+                        },
+                      ),
+                      Selector<Suggestions, Map<int, String>>(
+                        selector: (context, suggestions) =>
+                            suggestions.statuses,
+                        builder: (context, statuses, child) => FormComboItem(
+                          label: "Κατάσταση",
+                          initialSelection: status,
+                          options: statuses,
+                          onSelected: (value) => status = value,
+                          required: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  Wrap(
+                    spacing: 30,
+                    runSpacing: 10,
+                    children: [
+                      FormFieldItem(
+                        label: "Προκαταβολή",
+                        controller: advanceController,
+                        textInputType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        format: FormFieldFormat.decimal,
+                        width: 150,
+                        prefixIcon: Icon(
+                          Icons.euro_rounded,
+                          size: 16.0,
+                          color: IconTheme.of(context).color!.withOpacity(0.6),
+                        ),
+                      ),
+                      FormFieldItem(
+                        label: "Πληρωμή",
+                        controller: feeController,
+                        textInputType:
+                            TextInputType.numberWithOptions(decimal: true),
+                        format: FormFieldFormat.decimal,
+                        width: 150,
+                        prefixIcon: Icon(
+                          Icons.euro,
+                          size: 16.0,
+                          color: IconTheme.of(context).color!.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 32.0),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FormFieldItem(
-                      label: "Όνομα πελάτη",
-                      controller: nameController,
-                      textInputType: TextInputType.name,
-                      width: 300,
-                      required: true,
-                    ),
+                  Wrap(
+                    children: [
+                      FormFieldItem(
+                        label: "Όνομα πελάτη",
+                        controller: nameController,
+                        textInputType: TextInputType.name,
+                        width: 300,
+                        required: true,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16.0),
                   Wrap(
@@ -421,50 +469,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         label: "Σειριακός αριθμός",
                         controller: serialController,
                         width: 250,
-                      ),
-                      Selector<Suggestions, Map<int, String>>(
-                        selector: (context, suggestions) =>
-                            suggestions.statuses,
-                        builder: (context, statuses, child) => FormComboItem(
-                          label: "Κατάσταση",
-                          initialSelection: status,
-                          options: statuses,
-                          onSelected: (value) => status = value,
-                          required: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  Wrap(
-                    spacing: 30,
-                    runSpacing: 10,
-                    children: [
-                      FormFieldItem(
-                        label: "Πληρωμή",
-                        controller: feeController,
-                        textInputType:
-                            TextInputType.numberWithOptions(decimal: true),
-                        format: FormFieldFormat.decimal,
-                        width: 150,
-                        prefixIcon: Icon(
-                          Icons.euro,
-                          size: 16.0,
-                          color: IconTheme.of(context).color!.withOpacity(0.6),
-                        ),
-                      ),
-                      FormFieldItem(
-                        label: "Προκαταβολή",
-                        controller: advanceController,
-                        textInputType:
-                            TextInputType.numberWithOptions(decimal: true),
-                        format: FormFieldFormat.decimal,
-                        width: 150,
-                        prefixIcon: Icon(
-                          Icons.euro_rounded,
-                          size: 16.0,
-                          color: IconTheme.of(context).color!.withOpacity(0.6),
-                        ),
                       ),
                     ],
                   ),
