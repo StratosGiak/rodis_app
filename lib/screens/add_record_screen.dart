@@ -88,6 +88,31 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   }
 
   @override
+  void dispose() {
+    _node.dispose();
+    _productNode.dispose();
+    _manufacturerNode.dispose();
+    nameController.dispose();
+    phoneHomeController.dispose();
+    phoneMobileController.dispose();
+    emailController.dispose();
+    postalCodeController.dispose();
+    cityController.dispose();
+    areaController.dispose();
+    addressController.dispose();
+    notesReceivedController.dispose();
+    notesRepairedController.dispose();
+    feeController.dispose();
+    advanceController.dispose();
+    serialController.dispose();
+    productController.dispose();
+    warrantyController.dispose();
+    hasWarranty.dispose();
+    waiting.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final suggestions = context.watch<Suggestions>();
     return GestureDetector(
