@@ -111,34 +111,34 @@ class Record extends ChangeNotifier {
       };
 
   Record.fromJSON(Map<String, dynamic> map)
-      : id = map['id'] as int,
+      : id = map['id'],
         date = map['datek'] != null
             ? DateTime.tryParse(map['datek']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : DateTime.fromMillisecondsSinceEpoch(0),
-        name = map['onomatep'] as String,
-        phoneHome = map['tilefono'] as String?,
-        phoneMobile = map['kinito'] as String,
-        email = map['email'] as String?,
-        postalCode = map['tk'] as String,
-        city = map['poli'] as String,
-        area = map['perioxi'] as String,
-        address = map['odos'] as String,
-        notesReceived = map['paratiriseis_para'] as String?,
-        notesRepaired = map['paratiriseis_epi'] as String?,
-        fee = map['pliromi'] as String?,
-        advance = map['prokatavoli'] as String?,
-        serial = map['serialnr'] as String?,
-        product = map['eidos'] as String,
-        manufacturer = map['marka'] as String,
-        photo = map['photo'] as String?,
-        mechanic = map['mastoras_p'] as int,
+        name = map['onomatep'],
+        phoneHome = map['tilefono'],
+        phoneMobile = map['kinito'],
+        email = map['email'],
+        postalCode = map['tk'],
+        city = map['poli'],
+        area = map['perioxi'],
+        address = map['odos'],
+        notesReceived = map['paratiriseis_para'],
+        notesRepaired = map['paratiriseis_epi'],
+        fee = map['pliromi'],
+        advance = map['prokatavoli'],
+        serial = map['serialnr'],
+        product = map['eidos'],
+        manufacturer = map['marka'],
+        photo = map['photo'],
+        mechanic = map['mastoras_p'],
         hasWarranty = map['warranty'] == 1,
         warrantyDate = map['datekwarr'] != null
             ? DateTime.tryParse(map['datekwarr']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : null,
-        status = map['katastasi_p'] as int,
+        status = map['katastasi_p'],
         history =
             ((map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
               ..sort(
@@ -160,7 +160,7 @@ class History {
             ? DateTime.tryParse(map['datek']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : DateTime.fromMillisecondsSinceEpoch(0),
-        notes = map['paratiriseis'] as String;
+        notes = map['paratiriseis'];
 
   Map<String, dynamic> toJSON() => {
         "date": dateTimeFormatDB.format(date),
