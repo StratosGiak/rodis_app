@@ -19,6 +19,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
   final _node = FocusNode();
 
   @override
+  void dispose() {
+    _node.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProxyProvider2<Suggestions, Records, RecordView>(
       create: (context) {
