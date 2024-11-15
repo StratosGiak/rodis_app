@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:indevche/components/utilities.dart';
 import 'package:indevche/constants.dart';
 import 'package:indevche/models/record.dart';
 import 'package:indevche/models/record_view.dart';
@@ -337,23 +338,17 @@ class HistoryRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Stack(
         children: [
-          Align(
+          AlignCenter(
             alignment: Alignment(-1 / 3, 0),
-            child: FractionalTranslation(
-              translation: Offset(-1 / 6, 0),
-              child: Text(
-                dateTimeFormat.format(history.date),
-              ),
+            child: Text(
+              dateTimeFormat.format(history.date),
             ),
           ),
-          Align(
+          AlignCenter(
             alignment: Alignment(1 / 3, 0),
-            child: FractionalTranslation(
-              translation: Offset(1 / 6, 0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints.tightFor(width: 200),
-                child: Text(history.notes),
-              ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: 200),
+              child: Text(history.notes),
             ),
           ),
         ],
