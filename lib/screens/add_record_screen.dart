@@ -9,7 +9,7 @@ import 'package:indevche/constants.dart';
 import 'package:indevche/models/record.dart';
 import 'package:http/http.dart' as http;
 import 'package:indevche/models/suggestions.dart';
-import 'package:indevche/screens/welcome_screen.dart';
+import 'package:indevche/models/user.dart';
 import 'package:provider/provider.dart';
 
 class AddRecordScreen extends StatefulWidget {

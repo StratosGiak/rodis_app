@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:indevche/constants.dart';
 import 'package:indevche/models/record.dart';
 import 'package:indevche/models/suggestions.dart';
+import 'package:indevche/models/user.dart';
 import 'package:indevche/screens/record_list_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -125,7 +126,6 @@ class _LoginFormState extends State<LoginForm> {
                     id: user['id'],
                     username: user['username'],
                     name: user["name"],
-                    token: token,
                   ),
                 ),
                 ChangeNotifierProvider(create: (context) => records),
@@ -242,18 +242,4 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
-}
-
-class User {
-  User({
-    required this.id,
-    required this.username,
-    required this.name,
-    required this.token,
-  });
-
-  final int id;
-  final String username;
-  final String name;
-  final String token;
 }
