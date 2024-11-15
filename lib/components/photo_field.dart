@@ -101,7 +101,7 @@ class PhotoFieldState extends State<PhotoField> {
     if (imagePath != null) {
       child = ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
-        child: EditablePhoto(
+        child: PhotoOverlay(
           onTap: () => onTap(
             Image.file(File(imagePath!)),
           ),
@@ -113,7 +113,7 @@ class PhotoFieldState extends State<PhotoField> {
     } else if (widget.photoUrl != null && !removePhoto) {
       child = ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
-        child: EditablePhoto(
+        child: PhotoOverlay(
           onTap: () => onTap(
             Image.network("$apiUrl/media/${widget.photoUrl!}"),
           ),
@@ -146,8 +146,8 @@ class PhotoFieldState extends State<PhotoField> {
   }
 }
 
-class EditablePhoto extends StatelessWidget {
-  const EditablePhoto({
+class PhotoOverlay extends StatelessWidget {
+  const PhotoOverlay({
     super.key,
     required this.onTap,
     required this.onLongPress,
