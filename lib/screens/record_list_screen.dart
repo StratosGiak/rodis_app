@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:indevche/components/record_list.dart';
+import 'package:indevche/components/searchbar.dart';
 import 'package:indevche/models/user.dart';
 import 'package:indevche/screens/add_record_screen.dart';
 import 'package:indevche/models/record.dart';
@@ -40,7 +41,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SearchBar(),
+              const CustomSearchBar(),
               const RecordListHeader(),
               const Expanded(child: RecordList()),
               Padding(

@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:indevche/models/record_view.dart';
 import 'package:provider/provider.dart';
 
-class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+class CustomSearchBar extends StatefulWidget {
+  const CustomSearchBar({super.key});
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _CustomSearchBarState extends State<CustomSearchBar> {
   final TextEditingController controller = TextEditingController();
 
   @override
