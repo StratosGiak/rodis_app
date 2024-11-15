@@ -55,7 +55,7 @@ class Record extends ChangeNotifier {
   String? photo;
   int mechanic;
   bool hasWarranty;
-  DateTime warrantyDate;
+  DateTime? warrantyDate;
   int status;
   List<History> history;
 
@@ -113,8 +113,9 @@ class Record extends ChangeNotifier {
   Record.fromJSON(Map<String, dynamic> map)
       : id = map['id'] as int,
         date = map['datek'] != null
-            ? DateTime.tryParse(map['datek']) ?? DateTime.now()
-            : DateTime.now(),
+            ? DateTime.tryParse(map['datek']) ??
+                DateTime.fromMillisecondsSinceEpoch(0)
+            : DateTime.fromMillisecondsSinceEpoch(0),
         name = map['onomatep'] as String,
         phoneHome = map['tilefono'] as String?,
         phoneMobile = map['kinito'] as String,
@@ -134,17 +135,15 @@ class Record extends ChangeNotifier {
         mechanic = map['mastoras_p'] as int,
         hasWarranty = map['warranty'] == 1,
         warrantyDate = map['datekwarr'] != null
-            ? DateTime.tryParse(map['datekwarr']) ?? DateTime.now()
-            : DateTime.now(),
+            ? DateTime.tryParse(map['datekwarr']) ??
+                DateTime.fromMillisecondsSinceEpoch(0)
+            : null,
         status = map['katastasi_p'] as int,
-        history = map['istorika'] != null
-            ? ((map['istorika'] as List)
-                .map((e) => History.fromJSON(e))
-                .toList()
+        history =
+            ((map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
               ..sort(
                 (a, b) => b.date.compareTo(a.date),
-              ))
-            : [];
+              ));
 }
 
 class History {
@@ -158,8 +157,9 @@ class History {
 
   History.fromJSON(Map<String, dynamic> map)
       : date = map['datek'] != null
-            ? DateTime.tryParse(map['datek']) ?? DateTime.now()
-            : DateTime.now(),
+            ? DateTime.tryParse(map['datek']) ??
+                DateTime.fromMillisecondsSinceEpoch(0)
+            : DateTime.fromMillisecondsSinceEpoch(0),
         notes = map['paratiriseis'] as String;
 
   Map<String, dynamic> toJSON() => {

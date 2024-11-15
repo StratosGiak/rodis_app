@@ -46,9 +46,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   );
   DateTime date = DateTime.now();
   final hasWarranty = ValueNotifier(false);
-  DateTime warrantyDate = DateTime.now();
-  final warrantyController = TextEditingController(
-    text: dateFormat.format(DateTime.now()).toString(),
+  DateTime? warrantyDate;
+  late final warrantyController = TextEditingController(
+    text: warrantyDate != null
+        ? dateFormat.format(warrantyDate!).toString()
+        : null,
   );
   List<History> newHistory = [];
   String? photoUrl;
@@ -80,7 +82,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     date = record.date;
     hasWarranty.value = record.hasWarranty;
     warrantyDate = record.warrantyDate;
-    warrantyController.text = dateFormat.format(record.warrantyDate).toString();
+    warrantyController.text = record.warrantyDate != null
+        ? dateFormat.format(record.warrantyDate!).toString()
+        : "";
     photoUrl = record.photo;
     productController.text = record.product;
     manufacturerController.text = record.manufacturer;
@@ -232,8 +236,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
               "mechanic": context.read<User>().id,
               "hasWarranty": hasWarranty.value,
-              "warrantyDate": hasWarranty.value
-                  ? dateTimeFormatDB.format(warrantyDate)
+              "warrantyDate": hasWarranty.value && warrantyDate != null
+                  ? dateTimeFormatDB.format(warrantyDate!)
                   : null,
               "status": status,
               "newHistory": newHistory.map((e) => e.toJSON()).toList(),
@@ -506,7 +510,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                               if (newDate == null) return;
                               warrantyDate = newDate;
                               warrantyController.text =
-                                  dateFormat.format(warrantyDate).toString();
+                                  dateFormat.format(newDate).toString();
                             },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
