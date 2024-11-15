@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:indevche/constants.dart';
 
 class Records extends ChangeNotifier {
   List<Record> records = [];
@@ -147,8 +147,6 @@ class Record extends ChangeNotifier {
             : [];
 }
 
-//Important: date, product type, status
-
 enum COLUMN { name, phone, product, manufacturer, date, status }
 
 class RecordView extends ChangeNotifier {
@@ -277,7 +275,7 @@ class History {
         notes = map['paratiriseis'] as String;
 
   Map<String, dynamic> toJSON() => {
-        "date": DateFormat("yyyy-MM-dd hh:mm:ss").format(date),
+        "date": dateTimeFormatDB.format(date),
         "notes": notes,
       };
 }

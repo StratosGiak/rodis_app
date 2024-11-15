@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:indevche/add_record_screen.dart';
+import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
 import 'package:indevche/welcome.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class RecordListScreen extends StatefulWidget {
@@ -215,7 +215,7 @@ class _RecordRowState extends State<RecordRow> {
                 if (width > 5) RecordCell(text: record.product),
                 RecordCell(text: record.manufacturer),
                 RecordCell(
-                  text: DateFormat('dd/MM/yyyy | hh:mm').format(record.date),
+                  text: dateTimeFormat.format(record.date),
                 ),
                 RecordCell(text: suggestions.statuses[record.status]!),
               ],
@@ -524,7 +524,7 @@ class HistoryRow extends StatelessWidget {
             child: FractionalTranslation(
               translation: Offset(-1 / 6, 0),
               child: Text(
-                DateFormat('dd/MM/yyyy | hh:mm').format(history.date),
+                dateTimeFormat.format(history.date),
               ),
             ),
           ),

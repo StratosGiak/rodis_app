@@ -9,7 +9,6 @@ import 'package:indevche/constants.dart';
 import 'package:indevche/record.dart';
 import 'package:http/http.dart' as http;
 import 'package:indevche/welcome.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddRecordScreen extends StatefulWidget {
@@ -43,13 +42,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   final productController = TextEditingController();
   final manufacturerController = TextEditingController();
   final dateController = TextEditingController(
-    text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
+    text: dateFormat.format(DateTime.now()).toString(),
   );
   DateTime date = DateTime.now();
   final hasWarranty = ValueNotifier(false);
   DateTime warrantyDate = DateTime.now();
   final warrantyController = TextEditingController(
-    text: DateFormat('dd/MM/yyyy').format(DateTime.now()).toString(),
+    text: dateFormat.format(DateTime.now()).toString(),
   );
   List<History> newHistory = [];
   String? photoUrl;
@@ -77,13 +76,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     feeController.text = record.fee.replaceAll(r'.', ',');
     advanceController.text = (record.advance ?? "").replaceAll(r'.', ',');
     serialController.text = record.serial ?? "";
-    dateController.text =
-        DateFormat('dd/MM/yyyy').format(record.date).toString();
+    dateController.text = dateFormat.format(record.date).toString();
     date = record.date;
     hasWarranty.value = record.hasWarranty;
     warrantyDate = record.warrantyDate;
-    warrantyController.text =
-        DateFormat('dd/MM/yyyy').format(record.warrantyDate).toString();
+    warrantyController.text = dateFormat.format(record.warrantyDate).toString();
     photoUrl = record.photo;
     productController.text = record.product;
     manufacturerController.text = record.manufacturer;
@@ -166,7 +163,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             }
             final record = {
               if (id != null) "id": id,
-              "date": DateFormat("yyyy-MM-dd hh:mm:ss").format(date),
+              "date": dateTimeFormatDB.format(date),
               "name":
                   nameController.text.isNotEmpty ? nameController.text : null,
               "phoneHome": phoneHomeController.text.isNotEmpty
@@ -212,7 +209,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               "mechanic": context.read<User>().id,
               "hasWarranty": hasWarranty.value,
               "warrantyDate": hasWarranty.value
-                  ? DateFormat("yyyy-MM-dd hh:mm:ss").format(warrantyDate)
+                  ? dateTimeFormatDB.format(warrantyDate)
                   : null,
               "status": status,
               "newHistory": newHistory.map((e) => e.toJSON()).toList(),
@@ -289,7 +286,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         if (newDate == null) return;
                         date = newDate;
                         dateController.text =
-                            DateFormat('dd/MM/yyyy').format(date).toString();
+                            dateFormat.format(date).toString();
                       },
                     ),
                   ),
@@ -473,9 +470,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                               );
                               if (newDate == null) return;
                               warrantyDate = newDate;
-                              warrantyController.text = DateFormat('dd/MM/yyyy')
-                                  .format(warrantyDate)
-                                  .toString();
+                              warrantyController.text =
+                                  dateFormat.format(warrantyDate).toString();
                             },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -1155,7 +1151,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
       ),
       child: ListTile(
         title: Text(
-          DateFormat("dd/MM/yyyy | hh:mm").format(newHistory[index].date),
+          dateTimeFormat.format(newHistory[index].date),
         ),
         subtitle: Text(newHistory[index].notes),
         trailing: IconButton(
@@ -1183,7 +1179,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
         Tween(begin: Offset(1, 0), end: Offset(0, 0)),
       ),
       child: ListTile(
-        title: Text(DateFormat("dd/MM/yyyy | hh:mm").format(history.date)),
+        title: Text(dateTimeFormat.format(history.date)),
         subtitle: Text(history.notes),
         trailing: IconButton(
           onPressed: null,
@@ -1268,8 +1264,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                     label: ValueListenableBuilder(
                                       valueListenable: date,
                                       builder: (context, value, child) => Text(
-                                        DateFormat("dd/MM/yyyy | hh:mm")
-                                            .format(date.value),
+                                        dateTimeFormat.format(date.value),
                                       ),
                                     ),
                                     icon: Icon(Icons.watch_later),
@@ -1361,7 +1356,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                       Divider(),
                                   itemBuilder: (context, index) => ListTile(
                                     title: Text(
-                                      DateFormat('dd/MM/yyyy | hh:mm')
+                                      dateTimeFormat
                                           .format(widget.history[index].date),
                                     ),
                                     subtitle: Text(widget.history[index].notes),
