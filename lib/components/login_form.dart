@@ -2,49 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:indevche/constants.dart';
-import 'package:indevche/record.dart';
-import 'package:indevche/record_list_screen.dart';
-import 'package:http/http.dart' as http;
+import 'package:indevche/models/record.dart';
+import 'package:indevche/models/suggestions.dart';
+import 'package:indevche/models/user.dart';
+import 'package:indevche/screens/record_list_screen.dart';
 import 'package:provider/provider.dart';
-
-class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
-
-  @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen> {
-  final _node = FocusNode();
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_node),
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/images/logo.png'),
-                    const SizedBox(
-                      height: 60.0,
-                    ),
-                    const LoginForm(),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+import 'package:http/http.dart' as http;
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -87,8 +50,6 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void> onSubmit() async {
     if (waiting.value) return;
-    // usernameController.text = "nikos";
-    // passwordController.text = "nnn";
     if (_formKey.currentState!.validate()) {
       waiting.value = true;
       try {
@@ -124,7 +85,6 @@ class _LoginFormState extends State<LoginForm> {
                     id: user['id'],
                     username: user['username'],
                     name: user["name"],
-                    token: token,
                   ),
                 ),
                 ChangeNotifierProvider(create: (context) => records),
@@ -143,12 +103,6 @@ class _LoginFormState extends State<LoginForm> {
         waiting.value = false;
       }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    //onSubmit();
   }
 
   @override
@@ -241,18 +195,4 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
-}
-
-class User {
-  User({
-    required this.id,
-    required this.username,
-    required this.name,
-    required this.token,
-  });
-
-  final int id;
-  final String username;
-  final String name;
-  final String token;
 }
