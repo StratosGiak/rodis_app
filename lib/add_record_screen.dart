@@ -6,8 +6,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:indevche/constants.dart';
-import 'package:indevche/record.dart';
+import 'package:indevche/models/record.dart';
 import 'package:http/http.dart' as http;
+import 'package:indevche/models/suggestions.dart';
 import 'package:indevche/welcome.dart';
 import 'package:provider/provider.dart';
 

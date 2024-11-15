@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:indevche/constants.dart';
-import 'package:indevche/record.dart';
+import 'package:indevche/models/record.dart';
+import 'package:indevche/models/suggestions.dart';
 import 'package:indevche/record_list_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
