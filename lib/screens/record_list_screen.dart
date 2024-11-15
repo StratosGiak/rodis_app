@@ -39,10 +39,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
         onTap: () => FocusScope.of(context).requestFocus(_node),
         child: Scaffold(
           appBar: AppBar(
-            title: Consumer<User>(
-              builder: (context, value, child) =>
-                  Text("Επισκευές (${value.name})"),
-            ),
+            title: Text("Επισκευές (${context.read<User>().name})"),
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -57,13 +54,14 @@ class _RecordListScreenState extends State<RecordListScreen> {
                 ),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Consumer<RecordView>(
-                    builder: (context, value, child) {
-                      final text = value.filtered.isEmpty
+                  child: Selector<RecordView, List<Record>>(
+                    selector: (_, recordView) => recordView.filtered,
+                    builder: (context, filtered, child) {
+                      final text = filtered.isEmpty
                           ? "Δε βρέθηκαν αποτελέσματα"
-                          : value.filtered.length == 1
-                              ? "Βρέθηκε ${value.filtered.length} αποτέλεσμα"
-                              : "Βρέθηκαν ${value.filtered.length} αποτελέσματα";
+                          : filtered.length == 1
+                              ? "Βρέθηκε ${filtered.length} αποτέλεσμα"
+                              : "Βρέθηκαν ${filtered.length} αποτελέσματα";
                       return Text(
                         text,
                         style: const TextStyle(
