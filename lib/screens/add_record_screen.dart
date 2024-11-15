@@ -114,7 +114,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final suggestions = context.watch<Suggestions>();
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_node),
       child: Scaffold(
@@ -389,31 +388,43 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     spacing: 30,
                     runSpacing: 10,
                     children: [
-                      CustomAutocomplete(
-                        label: 'Είδος',
-                        textEditingController: productController,
-                        suggestions: suggestions.products.values,
-                        required: true,
-                        width: 250.0,
-                        focusNode: _productNode,
+                      Selector<Suggestions, Map<int, String>>(
+                        selector: (context, suggestions) =>
+                            suggestions.products,
+                        builder: (context, products, child) =>
+                            CustomAutocomplete(
+                          label: 'Είδος',
+                          textEditingController: productController,
+                          suggestions: products.values,
+                          required: true,
+                          width: 250.0,
+                          focusNode: _productNode,
+                        ),
                       ),
-                      CustomAutocomplete(
-                        label: 'Μάρκα',
-                        textEditingController: manufacturerController,
-                        suggestions: suggestions.manufacturers.values,
-                        required: true,
-                        focusNode: _manufacturerNode,
+                      Selector<Suggestions, Map<int, String>>(
+                        selector: (context, suggestions) =>
+                            suggestions.manufacturers,
+                        builder: (context, manufacturers, child) =>
+                            CustomAutocomplete(
+                          label: 'Μάρκα',
+                          textEditingController: manufacturerController,
+                          suggestions: manufacturers.values,
+                          required: true,
+                          focusNode: _manufacturerNode,
+                        ),
                       ),
                       FormFieldItem(
                         label: "Σειριακός αριθμός",
                         controller: serialController,
                         width: 250,
                       ),
-                      Consumer<Suggestions>(
-                        builder: (context, value, child) => FormComboItem(
+                      Selector<Suggestions, Map<int, String>>(
+                        selector: (context, suggestions) =>
+                            suggestions.statuses,
+                        builder: (context, statuses, child) => FormComboItem(
                           label: "Κατάσταση",
                           initialSelection: status,
-                          options: value.statuses,
+                          options: statuses,
                           onSelected: (value) => status = value,
                           required: true,
                         ),
