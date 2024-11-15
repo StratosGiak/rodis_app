@@ -27,12 +27,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProxyProvider2<Suggestions, Records, RecordView>(
+      lazy: false,
       create: (context) {
         final records = context.read<Records>().records;
         final suggestions = context.read<Suggestions>();
         return RecordView(suggestions: suggestions, records: records);
       },
-      // TODO: FIX (UPDATE IS CALLED DURING BUILD OF RECORDHEADER)
       update: (context, suggestions, records, recordView) =>
           recordView!..update(suggestions, records),
       builder: (context, child) => GestureDetector(
