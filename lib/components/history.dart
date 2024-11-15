@@ -19,13 +19,22 @@ class HistoryDialog extends StatefulWidget {
 }
 
 class _HistoryDialogState extends State<HistoryDialog> {
+  final _textFieldNode = FocusNode();
+  final _backNode = FocusNode();
   bool expand = false;
   late final newHistory = widget.newHistory;
   final notesController = TextEditingController();
   final date = ValueNotifier(DateTime.now());
   final animatedListKey = GlobalKey<AnimatedListState>();
-  final _textFieldNode = FocusNode();
-  final _backNode = FocusNode();
+
+  @override
+  void dispose() {
+    _textFieldNode.dispose();
+    _backNode.dispose();
+    notesController.dispose();
+    date.dispose();
+    super.dispose();
+  }
 
   Widget buildAddedItem(BuildContext context, int index, Animation animation) {
     return SlideTransition(

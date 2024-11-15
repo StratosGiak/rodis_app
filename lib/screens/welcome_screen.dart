@@ -12,6 +12,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final _node = FocusNode();
 
   @override
+  void dispose() {
+    _node.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_node),
