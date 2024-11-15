@@ -73,7 +73,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     addressController.text = record.address;
     notesReceivedController.text = record.notesReceived ?? "";
     notesRepairedController.text = record.notesRepaired ?? "";
-    feeController.text = record.fee.replaceAll(r'.', ',');
+    feeController.text = record.fee?.replaceAll(r'.', ',') ?? "";
     advanceController.text = (record.advance ?? "").replaceAll(r'.', ',');
     serialController.text = record.serial ?? "";
     dateController.text = dateFormat.format(record.date).toString();
@@ -441,7 +441,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         controller: feeController,
                         textInputType:
                             TextInputType.numberWithOptions(decimal: true),
-                        required: true,
                         format: FormFieldFormat.decimal,
                         width: 150,
                         prefixIcon: Icon(

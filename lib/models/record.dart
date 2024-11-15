@@ -47,7 +47,7 @@ class Record extends ChangeNotifier {
   String address;
   String? notesReceived;
   String? notesRepaired;
-  String fee;
+  String? fee;
   String? advance;
   String? serial;
   String product;
@@ -125,7 +125,7 @@ class Record extends ChangeNotifier {
         address = map['odos'] as String,
         notesReceived = map['paratiriseis_para'] as String?,
         notesRepaired = map['paratiriseis_epi'] as String?,
-        fee = map['pliromi'] as String,
+        fee = map['pliromi'] as String?,
         advance = map['prokatavoli'] as String?,
         serial = map['serialnr'] as String?,
         product = map['eidos'] as String,
