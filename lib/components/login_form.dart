@@ -22,6 +22,14 @@ class _LoginFormState extends State<LoginForm> {
   final passwordController = TextEditingController();
   final waiting = ValueNotifier(false);
 
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    waiting.dispose();
+    super.dispose();
+  }
+
   Future<Records> getRecords(int id) async {
     final response = await http.get(Uri.parse('$apiUrl/records/by/$id'));
     final json =
@@ -103,13 +111,6 @@ class _LoginFormState extends State<LoginForm> {
         waiting.value = false;
       }
     }
-  }
-
-  @override
-  void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
-    super.dispose();
   }
 
   @override
