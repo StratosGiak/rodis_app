@@ -57,7 +57,7 @@ class RecordRow extends StatefulWidget {
 }
 
 class _RecordRowState extends State<RecordRow> {
-  late var _expanded = widget.initialExpanded;
+  late bool _expanded = widget.initialExpanded;
 
   @override
   void didUpdateWidget(covariant RecordRow oldWidget) {
