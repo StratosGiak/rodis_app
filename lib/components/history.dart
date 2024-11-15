@@ -39,7 +39,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
   Widget buildAddedItem(BuildContext context, int index, Animation animation) {
     return SlideTransition(
       position: animation.drive(
-        Tween(begin: Offset(1, 0), end: Offset(0, 0)),
+        Tween(begin: const Offset(1, 0), end: const Offset(0, 0)),
       ),
       child: ListTile(
         title: Text(
@@ -56,10 +56,10 @@ class _HistoryDialogState extends State<HistoryDialog> {
             AnimatedList.of(context).removeItem(
               index,
               (context, animation) => buildRemovedItem(history, animation),
-              duration: Duration(milliseconds: 150),
+              duration: const Duration(milliseconds: 150),
             );
           },
-          icon: Icon(Icons.delete),
+          icon: const Icon(Icons.delete),
         ),
       ),
     );
@@ -68,12 +68,12 @@ class _HistoryDialogState extends State<HistoryDialog> {
   Widget buildRemovedItem(History history, Animation animation) {
     return SlideTransition(
       position: animation.drive(
-        Tween(begin: Offset(1, 0), end: Offset(0, 0)),
+        Tween(begin: const Offset(1, 0), end: const Offset(0, 0)),
       ),
       child: ListTile(
         title: Text(dateTimeFormat.format(history.date)),
         subtitle: Text(history.notes),
-        trailing: IconButton(
+        trailing: const IconButton(
           onPressed: null,
           icon: Icon(Icons.delete),
         ),
@@ -107,8 +107,8 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                 FocusScope.of(context)
                                     .requestFocus(_textFieldNode);
                               },
-                        label: Text('Προσθήκη νέου'),
-                        icon: Icon(Icons.add),
+                        label: const Text('Προσθήκη νέου'),
+                        icon: const Icon(Icons.add),
                       ),
                       ClipRect(
                         child: AnimatedAlign(
@@ -124,7 +124,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                 focusNode: _textFieldNode,
                                 maxLength: 200,
                                 controller: notesController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -160,9 +160,9 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                         dateTimeFormat.format(date.value),
                                       ),
                                     ),
-                                    icon: Icon(Icons.watch_later),
+                                    icon: const Icon(Icons.watch_later),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   IconButton(
                                     onPressed: () {
                                       FocusScope.of(context)
@@ -172,9 +172,9 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                       });
                                       notesController.clear();
                                     },
-                                    icon: Icon(Icons.close),
+                                    icon: const Icon(Icons.close),
                                   ),
-                                  SizedBox(width: 12.0),
+                                  const SizedBox(width: 12.0),
                                   IconButton(
                                     onPressed: () {
                                       FocusScope.of(context)
@@ -192,11 +192,12 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                       widget.onHistoryChange(newHistory);
                                       animatedListKey.currentState!.insertItem(
                                         newHistory.length - 1,
-                                        duration: Duration(milliseconds: 200),
+                                        duration:
+                                            const Duration(milliseconds: 200),
                                       );
                                       notesController.clear();
                                     },
-                                    icon: Icon(Icons.done),
+                                    icon: const Icon(Icons.done),
                                   ),
                                 ],
                               ),
@@ -210,7 +211,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                           color: Theme.of(context).primaryColor,
                         ),
                       if (newHistory.isNotEmpty)
-                        Text(
+                        const Text(
                           "Νέες προσθήκες",
                           style: TextStyle(
                             fontSize: 18.0,
@@ -228,7 +229,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                         thickness: 1.5,
                         color: Theme.of(context).primaryColor,
                       ),
-                      Text(
+                      const Text(
                         "Ιστορικό",
                         style: TextStyle(
                           fontSize: 18.0,
@@ -237,8 +238,9 @@ class _HistoryDialogState extends State<HistoryDialog> {
                       ),
                       widget.history.isNotEmpty
                           ? ConstrainedBox(
-                              constraints:
-                                  BoxConstraints.loose(Size.fromHeight(400)),
+                              constraints: BoxConstraints.loose(
+                                const Size.fromHeight(400),
+                              ),
                               child: ScrollConfiguration(
                                 behavior: ScrollConfiguration.of(context)
                                     .copyWith(scrollbars: true),
@@ -246,7 +248,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                   shrinkWrap: true,
                                   itemCount: widget.history.length,
                                   separatorBuilder: (context, index) =>
-                                      Divider(),
+                                      const Divider(),
                                   itemBuilder: (context, index) => ListTile(
                                     title: Text(
                                       dateTimeFormat
@@ -257,7 +259,7 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                 ),
                               ),
                             )
-                          : Padding(
+                          : const Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Text(
                                 "Δεν βρέθηκε ιστορικό",

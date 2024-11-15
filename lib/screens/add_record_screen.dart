@@ -340,8 +340,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       FormFieldItem(
                         label: "Προκαταβολή",
                         controller: advanceController,
-                        textInputType:
-                            TextInputType.numberWithOptions(decimal: true),
+                        textInputType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         format: FormFieldFormat.decimal,
                         width: 150,
                         prefixIcon: Icon(
@@ -353,8 +354,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       FormFieldItem(
                         label: "Πληρωμή",
                         controller: feeController,
-                        textInputType:
-                            TextInputType.numberWithOptions(decimal: true),
+                        textInputType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         format: FormFieldFormat.decimal,
                         width: 150,
                         prefixIcon: Icon(

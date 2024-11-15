@@ -84,8 +84,8 @@ class FormFieldItem extends StatelessWidget {
                 ),
             ],
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              errorStyle: TextStyle(height: 0.001),
+              border: const OutlineInputBorder(),
+              errorStyle: const TextStyle(height: 0.001),
               prefixIcon: prefixIcon,
             ),
             textInputAction: textInputType == TextInputType.multiline

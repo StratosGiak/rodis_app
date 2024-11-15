@@ -339,15 +339,15 @@ class HistoryRow extends StatelessWidget {
       child: Stack(
         children: [
           AlignCenter(
-            alignment: Alignment(-1 / 3, 0),
+            alignment: const Alignment(-1 / 3, 0),
             child: Text(
               dateTimeFormat.format(history.date),
             ),
           ),
           AlignCenter(
-            alignment: Alignment(1 / 3, 0),
+            alignment: const Alignment(1 / 3, 0),
             child: ConstrainedBox(
-              constraints: BoxConstraints.tightFor(width: 200),
+              constraints: const BoxConstraints.tightFor(width: 200),
               child: Text(history.notes),
             ),
           ),
