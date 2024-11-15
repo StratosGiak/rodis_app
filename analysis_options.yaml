@@ -2,3 +2,6 @@ include: package:flutter_lints/flutter.yaml
 linter:
   rules:
     - require_trailing_commas
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - prefer_const_declarations
