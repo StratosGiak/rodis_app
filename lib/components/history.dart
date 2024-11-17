@@ -7,12 +7,10 @@ class HistoryDialog extends StatefulWidget {
     super.key,
     required this.history,
     required this.newHistory,
-    required this.onHistoryChange,
   });
 
   final List<History> history;
   final List<History> newHistory;
-  final void Function(List<History> newHistory) onHistoryChange;
 
   @override
   State<HistoryDialog> createState() => _HistoryDialogState();
@@ -52,7 +50,6 @@ class _HistoryDialogState extends State<HistoryDialog> {
             setState(() {
               newHistory.removeAt(index);
             });
-            widget.onHistoryChange(newHistory);
             AnimatedList.of(context).removeItem(
               index,
               (context, animation) => buildRemovedItem(history, animation),
@@ -189,7 +186,6 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                         );
                                         expand = false;
                                       });
-                                      widget.onHistoryChange(newHistory);
                                       animatedListKey.currentState!.insertItem(
                                         newHistory.length - 1,
                                         duration:

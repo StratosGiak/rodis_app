@@ -136,8 +136,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       builder: (context) => HistoryDialog(
                         history: widget.record!.history,
                         newHistory: newHistory,
-                        onHistoryChange: (newHistory) =>
-                            this.newHistory = newHistory,
                       ),
                     );
                   },
