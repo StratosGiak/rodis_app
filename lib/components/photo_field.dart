@@ -115,11 +115,11 @@ class PhotoFieldState extends State<PhotoField> {
         borderRadius: BorderRadius.circular(12.0),
         child: PhotoOverlay(
           onTap: () => onTap(
-            Image.network("$apiUrl/media/${widget.photoUrl!}"),
+            Image.network("$photoUrl/${widget.photoUrl!}"),
           ),
           onLongPress: addPhoto,
           onRemovePressed: onRemovePressed,
-          child: Image.network("$apiUrl/media/${widget.photoUrl!}"),
+          child: Image.network("$photoUrl/${widget.photoUrl!}"),
         ),
       );
     } else {
