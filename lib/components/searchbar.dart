@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:indevche/models/record_view.dart';
+import 'package:rodis_service/models/record_view.dart';
 import 'package:provider/provider.dart';
 
 class CustomSearchBar extends StatefulWidget {

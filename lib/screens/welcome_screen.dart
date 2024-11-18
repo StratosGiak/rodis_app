@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:indevche/components/login_form.dart';
+import 'package:rodis_service/components/login_form.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

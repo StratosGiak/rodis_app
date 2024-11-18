@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:indevche/constants.dart';
+import 'package:rodis_service/constants.dart';
 
 class PhotoField extends StatefulWidget {
   PhotoField({super.key, this.photoUrl, required this.onPhotoSet});

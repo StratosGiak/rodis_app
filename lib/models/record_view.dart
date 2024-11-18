@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:indevche/models/record.dart';
-import 'package:indevche/models/suggestions.dart';
+import 'package:rodis_service/models/record.dart';
+import 'package:rodis_service/models/suggestions.dart';
 
 enum COLUMN { name, phone, product, manufacturer, date, status }
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:indevche/components/utilities.dart';
-import 'package:indevche/constants.dart';
-import 'package:indevche/models/record.dart';
-import 'package:indevche/models/record_view.dart';
-import 'package:indevche/models/suggestions.dart';
-import 'package:indevche/models/user.dart';
-import 'package:indevche/screens/add_record_screen.dart';
+import 'package:rodis_service/components/utilities.dart';
+import 'package:rodis_service/constants.dart';
+import 'package:rodis_service/models/record.dart';
+import 'package:rodis_service/models/record_view.dart';
+import 'package:rodis_service/models/suggestions.dart';
+import 'package:rodis_service/models/user.dart';
+import 'package:rodis_service/screens/add_record_screen.dart';
 import 'package:provider/provider.dart';
 
 class RecordList extends StatefulWidget {

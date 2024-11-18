@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:indevche/constants.dart';
+import 'package:rodis_service/constants.dart';
 
 class Records extends ChangeNotifier {
   List<Record> records = [];

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:indevche/screens/welcome_screen.dart';
+import 'package:rodis_service/screens/welcome_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;

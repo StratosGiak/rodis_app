@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:indevche/components/form_field.dart';
-import 'package:indevche/components/history.dart';
-import 'package:indevche/components/photo_field.dart';
-import 'package:indevche/constants.dart';
-import 'package:indevche/models/record.dart';
+import 'package:rodis_service/components/form_field.dart';
+import 'package:rodis_service/components/history.dart';
+import 'package:rodis_service/components/photo_field.dart';
+import 'package:rodis_service/constants.dart';
+import 'package:rodis_service/models/record.dart';
 import 'package:http/http.dart' as http;
-import 'package:indevche/models/suggestions.dart';
-import 'package:indevche/models/user.dart';
+import 'package:rodis_service/models/suggestions.dart';
+import 'package:rodis_service/models/user.dart';
 import 'package:provider/provider.dart';
 
 class AddRecordScreen extends StatefulWidget {

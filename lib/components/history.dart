@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:indevche/constants.dart';
-import 'package:indevche/models/record.dart';
+import 'package:rodis_service/constants.dart';
+import 'package:rodis_service/models/record.dart';
 
 class HistoryDialog extends StatefulWidget {
   const HistoryDialog({
