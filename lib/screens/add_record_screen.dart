@@ -279,7 +279,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 if (response.statusCode == 200) {
                   context
                       .read<Records>()
-                      .addRecord(Record.fromJSON(jsonDecode(response.body)));
+                      .add(Record.fromJSON(jsonDecode(response.body)));
                   Navigator.pop(context);
                 }
               } else {

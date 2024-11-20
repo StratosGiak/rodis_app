@@ -6,7 +6,7 @@ class Records extends ChangeNotifier {
 
   Records({List<Record>? records}) : records = records ?? [];
 
-  void addRecord(Record record) {
+  void add(Record record) {
     records.add(record);
     notifyListeners();
   }
@@ -16,7 +16,7 @@ class Records extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addRecords(List<Record> records) {
+  void addAll(List<Record> records) {
     this.records.addAll(records);
     notifyListeners();
   }
@@ -28,7 +28,7 @@ class Records extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setRecords(List<Record> records) {
+  void setAll(List<Record> records) {
     this.records = records;
     notifyListeners();
   }

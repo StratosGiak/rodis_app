@@ -25,7 +25,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
     final id = context.read<User>().id;
     final records = context.read<Records>();
     final suggestions = context.read<Suggestions>();
-    records.setRecords(await getRecords(id));
+    records.setAll(await getRecords(id));
     suggestions.setAll(await getSuggestions());
   }
 
