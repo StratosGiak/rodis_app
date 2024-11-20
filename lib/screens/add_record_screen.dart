@@ -136,7 +136,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             if (widget.record != null)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: IconButton(
+                child: TextButton.icon(
+                  label: const Text(
+                    "Ιστορικό",
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  icon: const Icon(Icons.history_edu_rounded, size: 26),
+                  style: TextButton.styleFrom(fixedSize: const Size(150, 100)),
                   onPressed: () async {
                     await showDialog(
                       context: context,
@@ -146,7 +152,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.history_edu_rounded),
                 ),
               ),
           ],

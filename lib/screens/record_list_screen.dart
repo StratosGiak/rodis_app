@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rodis_service/components/record_list.dart';
 import 'package:rodis_service/components/searchbar.dart';
@@ -7,6 +9,7 @@ import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/record_view.dart';
 import 'package:rodis_service/models/suggestions.dart';
 import 'package:provider/provider.dart';
+import 'package:rodis_service/utils.dart';
 
 class RecordListScreen extends StatefulWidget {
   const RecordListScreen({super.key});
@@ -17,6 +20,14 @@ class RecordListScreen extends StatefulWidget {
 
 class _RecordListScreenState extends State<RecordListScreen> {
   final _node = FocusNode();
+
+  void onRefresh(BuildContext context) async {
+    final id = context.read<User>().id;
+    final records = context.read<Records>();
+    final suggestions = context.read<Suggestions>();
+    records.setRecords(await getRecords(id));
+    suggestions.setAll(await getSuggestions());
+  }
 
   @override
   void dispose() {
@@ -40,13 +51,28 @@ class _RecordListScreenState extends State<RecordListScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text("Επισκευές (${context.read<User>().name})"),
+            actions: [
+              if (!Platform.isAndroid && !Platform.isIOS)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    onPressed: () async => onRefresh(context),
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ),
+            ],
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const CustomSearchBar(),
               const RecordListHeader(),
-              const Expanded(child: RecordList()),
+              Expanded(
+                child: RefreshIndicator.adaptive(
+                  onRefresh: () async => onRefresh(context),
+                  child: const RecordList(),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 30.0,

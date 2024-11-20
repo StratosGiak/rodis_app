@@ -8,6 +8,7 @@ import 'package:rodis_service/models/user.dart';
 import 'package:rodis_service/screens/record_list_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:rodis_service/utils.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -28,32 +29,6 @@ class _LoginFormState extends State<LoginForm> {
     passwordController.dispose();
     waiting.dispose();
     super.dispose();
-  }
-
-  Future<Records> getRecords(int id) async {
-    final response = await http.get(Uri.parse('$apiUrl/records/by/$id'));
-    final json =
-        (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
-    return Records(
-      records: json.map((element) => Record.fromJSON(element)).toList(),
-    );
-  }
-
-  Future<Suggestions> getSuggestions() async {
-    final response = await http.get(Uri.parse('$apiUrl/suggestions'));
-    final json = (jsonDecode(response.body) as Map<String, dynamic>)
-        .cast<String, List<dynamic>>();
-    final suggestions = json.map(
-      (key, value) => MapEntry(
-        key,
-        {for (var item in value) item['id'] as int: item['onoma'] as String},
-      ),
-    );
-    return Suggestions(
-      products: suggestions['products']!,
-      manufacturers: suggestions['manufacturers']!,
-      statuses: suggestions['states']!,
-    );
   }
 
   Future<void> onSubmit() async {
@@ -81,8 +56,8 @@ class _LoginFormState extends State<LoginForm> {
         }
         final {'token': token, 'user': user} =
             jsonDecode(response.body) as Map<String, dynamic>;
-        final suggestions = await getSuggestions();
-        final records = await getRecords(user['id']);
+        final suggestions = Suggestions.fromJSON(await getSuggestions());
+        final records = Records(records: await getRecords(user['id']));
         await Navigator.pushReplacement(
           context,
           MaterialPageRoute(
