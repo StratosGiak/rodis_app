@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:rodis_service/components/form_field.dart';
 import 'package:rodis_service/components/history.dart';
 import 'package:rodis_service/components/photo_field.dart';
@@ -58,6 +59,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   bool removePhoto = false;
   int? status;
   final waiting = ValueNotifier(false);
+
+  final photoErrorSnackbar = const SnackBar(
+    content: Text(
+      "Σφάλμα κατά το ανέβασμα της φωτογραφίας. Δοκιμάστε ξανά ή αφαιρέστε τη φωτογραφία.",
+    ),
+  );
 
   @override
   void initState() {
@@ -176,16 +183,31 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             waiting.value = true;
             String? newPhotoUrl;
             if (tempPhotoPath != null) {
+              String? compressedPath;
+              try {
+                final compressed =
+                    await FlutterImageCompress.compressAndGetFile(
+                  tempPhotoPath!,
+                  "${tempPhotoPath!}_compressed.jpg",
+                );
+                compressedPath = compressed?.path;
+              } catch (error) {
+                debugPrint("$error");
+              }
+              compressedPath ??= tempPhotoPath!;
               final request =
                   http.MultipartRequest('POST', Uri.parse("$apiUrl/media"));
               request.files.add(
-                await http.MultipartFile.fromPath('file', tempPhotoPath!),
+                await http.MultipartFile.fromPath('file', compressedPath),
               );
               final response =
                   await http.Response.fromStream(await request.send());
-              if (response.statusCode == 200) {
-                newPhotoUrl = response.body;
+              if (response.statusCode != 200) {
+                ScaffoldMessenger.of(context).showSnackBar(photoErrorSnackbar);
+                waiting.value = false;
+                return;
               }
+              newPhotoUrl = response.body;
             }
             final record = {
               if (id != null) "id": id,

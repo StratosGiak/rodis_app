@@ -12,6 +12,7 @@ dependencies:
   intl:
   image_picker:
   image_cropper:
+  flutter_image_compress:
   flutter:
     sdk: flutter
 
