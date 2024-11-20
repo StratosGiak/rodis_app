@@ -119,7 +119,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
                   ),
                 ),
               );
-              FocusManager.instance.primaryFocus?.unfocus();
+              FocusScope.of(context).requestFocus(_node);
             },
             label: const Text("Νέα επισκευή"),
             icon: const Icon(Icons.add),
