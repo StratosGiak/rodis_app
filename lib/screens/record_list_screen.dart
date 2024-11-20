@@ -17,6 +17,8 @@ class RecordListScreen extends StatefulWidget {
 
 class _RecordListScreenState extends State<RecordListScreen> {
   final _node = FocusNode();
+  void onRefresh(BuildContext context) async {
+  }
 
   @override
   void dispose() {
@@ -40,13 +42,28 @@ class _RecordListScreenState extends State<RecordListScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text("Επισκευές (${context.read<User>().name})"),
+            actions: [
+              if (!Platform.isAndroid && !Platform.isIOS)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    onPressed: () async => onRefresh(context),
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ),
+            ],
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const CustomSearchBar(),
               const RecordListHeader(),
-              const Expanded(child: RecordList()),
+              Expanded(
+                child: RefreshIndicator.adaptive(
+                  onRefresh: () async => onRefresh(context),
+                  child: const RecordList(),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 30.0,
