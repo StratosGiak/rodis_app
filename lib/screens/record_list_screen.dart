@@ -20,13 +20,14 @@ class RecordListScreen extends StatefulWidget {
 
 class _RecordListScreenState extends State<RecordListScreen> {
   final _node = FocusNode();
+  final _refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  void onRefresh(BuildContext context) async {
+  Future<void> onRefresh(BuildContext context) async {
     final id = context.read<User>().id;
     final records = context.read<Records>();
     final suggestions = context.read<Suggestions>();
-    records.setAll(await getRecords(id));
     suggestions.setAll(await getSuggestions());
+    records.setAll(await getRecords(id));
   }
 
   @override
@@ -56,8 +57,12 @@ class _RecordListScreenState extends State<RecordListScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
-                    onPressed: () async => onRefresh(context),
+                    onPressed: () async {
+                      _refreshKey.currentState?.show();
+                      await onRefresh(context);
+                    },
                     icon: const Icon(Icons.refresh),
+                    tooltip: "Ανανέωση",
                   ),
                 ),
             ],
@@ -69,6 +74,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
               const RecordListHeader(),
               Expanded(
                 child: RefreshIndicator.adaptive(
+                  key: _refreshKey,
                   onRefresh: () async => onRefresh(context),
                   child: const RecordList(),
                 ),
