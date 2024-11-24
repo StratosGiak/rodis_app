@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/components/form_field.dart';
 import 'package:rodis_service/components/history.dart';
 import 'package:rodis_service/components/photo_field.dart';
 import 'package:rodis_service/constants.dart';
 import 'package:rodis_service/models/record.dart';
-import 'package:http/http.dart' as http;
 import 'package:rodis_service/models/suggestions.dart';
 import 'package:rodis_service/models/user.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +20,7 @@ class AddRecordScreen extends StatefulWidget {
 }
 
 class _AddRecordScreenState extends State<AddRecordScreen> {
+  late final apiHandler = context.read<ApiHandler>();
   final _node = FocusNode();
   final _productNode = FocusNode();
   final _manufacturerNode = FocusNode();
@@ -296,20 +295,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   debugPrint("$error");
                 }
                 compressedPath ??= tempPhotoPath!;
-                final request =
-                    http.MultipartRequest('POST', Uri.parse("$apiUrl/media"));
-                request.files.add(
-                  await http.MultipartFile.fromPath('file', compressedPath),
-                );
-                final response =
-                    await http.Response.fromStream(await request.send());
-                if (response.statusCode != 200) {
+                newPhotoUrl = await apiHandler.postPhoto(compressedPath);
+                if (newPhotoUrl == null) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
                   waiting.value = false;
                   return;
                 }
-                newPhotoUrl = response.body;
               }
               final record = {
                 if (id != null) "id": id,
@@ -367,31 +359,17 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               };
               try {
                 if (id == null) {
-                  final response = await http.post(
-                    Uri.parse("$apiUrl/records/new"),
-                    headers: {
-                      'Content-Type': 'application/json; charset=UTF-8',
-                    },
-                    body: jsonEncode(record),
-                  );
-                  if (response.statusCode == 200) {
-                    context
-                        .read<Records>()
-                        .add(Record.fromJSON(jsonDecode(response.body)));
+                  final response = await apiHandler.postRecord(record);
+                  if (response != null) {
+                    context.read<Records>().add(Record.fromJSON(response));
                     Navigator.pop(context);
                   }
                 } else {
-                  final response = await http.put(
-                    Uri.parse("$apiUrl/records/$id/edit"),
-                    headers: {
-                      'Content-Type': 'application/json; charset=UTF-8',
-                    },
-                    body: jsonEncode(record),
-                  );
-                  if (response.statusCode == 200) {
+                  final response = await apiHandler.putRecord(record);
+                  if (response != null) {
                     context
                         .read<Records>()
-                        .setRecord(Record.fromJSON(jsonDecode(response.body)));
+                        .setRecord(Record.fromJSON(response));
                     Navigator.pop(context);
                   }
                 }
