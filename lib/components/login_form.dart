@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:rodis_service/constants.dart';
+import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/suggestions.dart';
 import 'package:rodis_service/models/user.dart';
 import 'package:rodis_service/screens/record_list_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'package:rodis_service/utils.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -22,6 +18,7 @@ class _LoginFormState extends State<LoginForm> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final waiting = ValueNotifier(false);
+  late final apiHandler = context.read<ApiHandler>();
 
   @override
   void dispose() {
@@ -36,28 +33,21 @@ class _LoginFormState extends State<LoginForm> {
     if (_formKey.currentState!.validate()) {
       waiting.value = true;
       try {
-        final response = await http
-            .post(
-              Uri.parse("$apiUrl/login"),
-              headers: {'Content-Type': 'application/json; charset=UTF-8'},
-              body: jsonEncode({
-                "username": usernameController.text,
-                "password": passwordController.text,
-              }),
-            )
+        final user = await apiHandler
+            .postLogin(usernameController.text, passwordController.text)
             .timeout(const Duration(seconds: 6));
-
         if (!mounted) return;
-        if (response.statusCode != 200) {
+        if (user == null) {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('Λάθος στοιχεία')));
           waiting.value = false;
           return;
         }
-        final {'token': token, 'user': user} =
-            jsonDecode(response.body) as Map<String, dynamic>;
-        final suggestions = Suggestions.fromJSON(await getSuggestions());
-        final records = Records(records: await getRecords(user['id']));
+        final suggestions = Suggestions.fromJSON(
+          await apiHandler.getSuggestions(),
+        );
+        final records =
+            Records(records: await apiHandler.getRecordsBy(user['id']));
         await Navigator.pushReplacement(
           context,
           MaterialPageRoute(
