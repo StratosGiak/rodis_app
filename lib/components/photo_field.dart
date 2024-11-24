@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rodis_service/constants.dart';
+import 'package:rodis_service/api_handler.dart';
 
 class PhotoField extends StatefulWidget {
   PhotoField({super.key, this.photoUrl, required this.onPhotoSet});
@@ -115,11 +115,11 @@ class PhotoFieldState extends State<PhotoField> {
         borderRadius: BorderRadius.circular(12.0),
         child: PhotoOverlay(
           onTap: () => onTap(
-            Image.network("$photoUrl/${widget.photoUrl!}"),
+            Image.network("${ApiHandler.photoUrl}/${widget.photoUrl}"),
           ),
           onLongPress: addPhoto,
           onRemovePressed: onRemovePressed,
-          child: Image.network("$photoUrl/${widget.photoUrl!}"),
+          child: Image.network("${ApiHandler.photoUrl}/${widget.photoUrl}"),
         ),
       );
     } else {
