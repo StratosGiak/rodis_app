@@ -80,6 +80,10 @@ class _HistoryDialogState extends State<HistoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final collapsed = switch (MediaQuery.of(context).size.width) {
+      > 370.0 => false,
+      _ => true,
+    };
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(_backNode),
       child: Dialog(
@@ -154,7 +158,9 @@ class _HistoryDialogState extends State<HistoryDialog> {
                                     label: ValueListenableBuilder(
                                       valueListenable: date,
                                       builder: (context, value, child) => Text(
-                                        dateTimeFormat.format(date.value),
+                                        collapsed
+                                            ? dateFormat.format(date.value)
+                                            : dateTimeFormat.format(date.value),
                                       ),
                                     ),
                                     icon: const Icon(Icons.watch_later),
