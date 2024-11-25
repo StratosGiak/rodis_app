@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/screens/welcome_screen.dart';
 
 void main() {
@@ -12,11 +14,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const WelcomeScreen(),
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+    return Provider(
+      create: (context) => ApiHandler(),
+      child: MaterialApp(
+        home: const WelcomeScreen(),
+        theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          useMaterial3: true,
+        ),
       ),
     );
   }

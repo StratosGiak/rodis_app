@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/components/record_list.dart';
 import 'package:rodis_service/components/searchbar.dart';
 import 'package:rodis_service/models/user.dart';
@@ -9,7 +10,6 @@ import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/record_view.dart';
 import 'package:rodis_service/models/suggestions.dart';
 import 'package:provider/provider.dart';
-import 'package:rodis_service/utils.dart';
 
 class RecordListScreen extends StatefulWidget {
   const RecordListScreen({super.key});
@@ -21,13 +21,14 @@ class RecordListScreen extends StatefulWidget {
 class _RecordListScreenState extends State<RecordListScreen> {
   final _node = FocusNode();
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
+  late final apiHandler = context.read<ApiHandler>();
 
   Future<void> onRefresh(BuildContext context) async {
     final id = context.read<User>().id;
     final records = context.read<Records>();
     final suggestions = context.read<Suggestions>();
-    suggestions.setAll(await getSuggestions());
-    records.setAll(await getRecords(id));
+    suggestions.setAll(await apiHandler.getSuggestions());
+    records.setAll(await apiHandler.getRecordsBy(id));
   }
 
   @override
