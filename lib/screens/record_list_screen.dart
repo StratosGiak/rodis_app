@@ -58,10 +58,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
-                    onPressed: () async {
-                      _refreshKey.currentState?.show();
-                      await onRefresh(context);
-                    },
+                    onPressed: () => _refreshKey.currentState?.show(),
                     icon: const Icon(Icons.refresh),
                     tooltip: "Ανανέωση",
                   ),
