@@ -56,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
                 Provider(
                   create: (_) => User(
                     id: user['id'],
-                    username: user['username'],
+                    username: usernameController.text,
                     name: user["name"],
                   ),
                 ),
