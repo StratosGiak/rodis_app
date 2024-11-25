@@ -334,25 +334,47 @@ class HistoryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
-      child: Stack(
-        children: [
-          AlignCenter(
-            alignment: const Alignment(-1 / 3, 0),
-            child: Text(
+    final child = switch (MediaQuery.sizeOf(context).width) {
+      > 650.0 => Stack(
+          children: [
+            AlignCenter(
+              alignment: const Alignment(-1 / 3, 0),
+              child: Text(
+                dateTimeFormat.format(history.date),
+              ),
+            ),
+            AlignCenter(
+              alignment: const Alignment(1 / 3, 0),
+              child: SizedBox(
+                width: 300,
+                child: Text(
+                  history.notes,
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+            ),
+          ],
+        ),
+      _ => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               dateTimeFormat.format(history.date),
             ),
-          ),
-          AlignCenter(
-            alignment: const Alignment(1 / 3, 0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints.tightFor(width: 200),
-              child: Text(history.notes),
+            SizedBox(
+              width: MediaQuery.sizeOf(context).width / 2,
+              child: Text(
+                history.notes,
+                textAlign: TextAlign.justify,
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        )
+    };
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6.0),
+      child: child,
     );
   }
 }
