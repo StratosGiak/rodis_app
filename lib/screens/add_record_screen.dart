@@ -178,7 +178,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     warrantyController.text = record.warrantyDate != null
         ? dateFormat.format(record.warrantyDate!).toString()
         : "";
-    photoUrl = record.photo;
+    photoUrl = record.photo != null
+        ? (record.photo!.isEmpty ? null : record.photo)
+        : null;
     productController.text = record.product;
     manufacturerController.text = record.manufacturer;
     status = record.status;
