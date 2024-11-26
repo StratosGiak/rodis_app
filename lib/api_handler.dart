@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rodis_service/models/record.dart';
+import 'package:cross_file/cross_file.dart';
 
 class ApiHandler {
   static const baseUrl = "http://188.245.190.233";
@@ -83,12 +85,21 @@ class ApiHandler {
     return jsonDecode(response.body);
   }
 
-  Future<String?> postPhoto(String path) async {
+  Future<String?> postPhoto(XFile file) async {
     final request = http.MultipartRequest('POST', Uri.parse("$apiUrl/media"))
       ..headers.addAll(headers);
-    request.files.add(
-      await http.MultipartFile.fromPath('file', path),
-    );
+
+    if (kIsWeb) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          await file.readAsBytes(),
+          filename: file.name,
+        ),
+      );
+    } else {
+      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    }
     final response = await http.Response.fromStream(await request.send());
     if (response.statusCode != 200) return null;
     return response.body;
