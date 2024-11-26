@@ -31,7 +31,7 @@ class PhotoFieldState extends State<PhotoField> {
   }
 
   void pickCamera() async {
-    if (!Platform.isAndroid && !Platform.isIOS) {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) {
       Navigator.pop(context);
       return;
     }
