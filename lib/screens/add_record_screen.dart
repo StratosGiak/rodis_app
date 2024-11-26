@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:rodis_service/api_handler.dart';
@@ -54,7 +55,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   );
   List<History> newHistory = [];
   String? photoUrl;
-  String? tempPhotoPath;
+  XFile? tempPhoto;
   bool removePhoto = false;
   int? status;
   final waiting = ValueNotifier(false);
@@ -90,7 +91,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
           status != null ||
-          tempPhotoPath != null;
+          tempPhoto != null;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
         notEqualOrEmpty(record.phoneHome, phoneHomeController.text) ||
@@ -117,7 +118,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.hasWarranty != hasWarranty.value ||
         record.warrantyDate != warrantyDate ||
         record.status != status ||
-        tempPhotoPath != null ||
+        tempPhoto != null ||
         newHistory.isNotEmpty;
   }
 
@@ -284,20 +285,18 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               }
               waiting.value = true;
               String? newPhotoUrl;
-              if (tempPhotoPath != null) {
-                String? compressedPath;
+              if (tempPhoto != null) {
+                XFile? compressed;
                 try {
-                  final compressed =
-                      await FlutterImageCompress.compressAndGetFile(
-                    tempPhotoPath!,
-                    "${tempPhotoPath!}_compressed.jpg",
+                  compressed = await FlutterImageCompress.compressAndGetFile(
+                    tempPhoto!.path,
+                    "${tempPhoto!.path}_compressed.jpg",
                   );
-                  compressedPath = compressed?.path;
                 } catch (error) {
-                  debugPrint("$error");
+                  if (kDebugMode) debugPrint("$error");
                 }
-                compressedPath ??= tempPhotoPath!;
-                newPhotoUrl = await apiHandler.postPhoto(compressedPath);
+                compressed ??= tempPhoto;
+                newPhotoUrl = await apiHandler.postPhoto(compressed!);
                 if (newPhotoUrl == null) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
@@ -659,8 +658,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         ),
                         PhotoField(
                           photoUrl: photoUrl,
-                          onPhotoSet: (imagePath, removePhoto) {
-                            tempPhotoPath = imagePath;
+                          onPhotoSet: (newImage, removePhoto) {
+                            tempPhoto = newImage;
                             if (removePhoto) this.removePhoto = removePhoto;
                           },
                         ),

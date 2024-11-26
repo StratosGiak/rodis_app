@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/components/record_list.dart';
@@ -54,7 +55,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
           appBar: AppBar(
             title: Text("Επισκευές (${context.read<User>().name})"),
             actions: [
-              if (!Platform.isAndroid && !Platform.isIOS)
+              if (kIsWeb || !Platform.isAndroid && !Platform.isIOS)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rodis_service/api_handler.dart';
@@ -8,7 +9,7 @@ class PhotoField extends StatefulWidget {
   PhotoField({super.key, this.photoUrl, required this.onPhotoSet});
 
   final String? photoUrl;
-  final void Function(String? imagePath, bool removePhoto) onPhotoSet;
+  final void Function(XFile? newImage, bool removePhoto) onPhotoSet;
   final picker = ImagePicker();
 
   @override
@@ -16,7 +17,7 @@ class PhotoField extends StatefulWidget {
 }
 
 class PhotoFieldState extends State<PhotoField> {
-  String? imagePath;
+  XFile? pickedImage;
   bool removePhoto = false;
 
   void pickGallery() async {
@@ -26,12 +27,12 @@ class PhotoFieldState extends State<PhotoField> {
     );
     Navigator.pop(context);
     if (image == null) return;
-    setState(() => imagePath = image.path);
-    widget.onPhotoSet(imagePath, removePhoto);
+    setState(() => pickedImage = image);
+    widget.onPhotoSet(image, removePhoto);
   }
 
   void pickCamera() async {
-    if (!Platform.isAndroid && !Platform.isIOS) {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) {
       Navigator.pop(context);
       return;
     }
@@ -41,16 +42,16 @@ class PhotoFieldState extends State<PhotoField> {
     );
     Navigator.pop(context);
     if (image == null) return;
-    setState(() => imagePath = image.path);
-    widget.onPhotoSet(imagePath, removePhoto);
+    setState(() => pickedImage = image);
+    widget.onPhotoSet(image, removePhoto);
   }
 
   void onRemovePressed() {
     setState(() {
-      imagePath = null;
+      pickedImage = null;
       removePhoto = true;
     });
-    widget.onPhotoSet(imagePath, removePhoto);
+    widget.onPhotoSet(null, true);
   }
 
   void onTap(Widget child) async {
@@ -98,16 +99,25 @@ class PhotoFieldState extends State<PhotoField> {
   @override
   Widget build(BuildContext context) {
     final Widget child;
-    if (imagePath != null) {
+    if (pickedImage != null) {
       child = ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
         child: PhotoOverlay(
-          onTap: () => onTap(
-            Image.file(File(imagePath!)),
+          onTap: () async => onTap(
+            kIsWeb
+                ? Image.memory(await pickedImage!.readAsBytes())
+                : Image.file(File(pickedImage!.path)),
           ),
           onLongPress: addPhoto,
           onRemovePressed: onRemovePressed,
-          child: Image.file(File(imagePath!)),
+          child: kIsWeb
+              ? FutureBuilder(
+                  future: Future(() async => await pickedImage!.readAsBytes()),
+                  builder: (context, snapshot) => snapshot.hasData
+                      ? Image.memory(snapshot.data!)
+                      : const SizedBox.shrink(),
+                )
+              : Image.file(File(pickedImage!.path)),
         ),
       );
     } else if (widget.photoUrl != null && !removePhoto) {
@@ -130,7 +140,7 @@ class PhotoFieldState extends State<PhotoField> {
       );
     }
     final decoration =
-        imagePath == null && (widget.photoUrl == null || removePhoto)
+        pickedImage == null && (widget.photoUrl == null || removePhoto)
             ? BoxDecoration(
                 color: Colors.black.withOpacity(0.03),
                 borderRadius: BorderRadius.circular(12.0),
