@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:rodis_service/models/record.dart';
 
 class ApiHandler {
-  static const apiUrl = "http://188.245.190.233/api";
-  static const photoUrl = "http://188.245.190.233/media/images";
+  static const baseUrl = "http://188.245.190.233";
+  static const apiUrl = "$baseUrl/api";
+  static const photoUrl = "$baseUrl/media/images";
   Map<String, String> headers = {
     'Content-Type': 'application/json; charset=UTF-8',
   };
