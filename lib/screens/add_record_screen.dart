@@ -57,7 +57,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   String? photoUrl;
   XFile? tempPhoto;
   bool removePhoto = false;
-  int? status;
+  int status = 1;
   int store = 1;
   final waiting = ValueNotifier(false);
 
@@ -91,7 +91,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           serialController.text.isNotEmpty ||
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
-          status != null ||
           tempPhoto != null;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
@@ -423,7 +422,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             label: "Κατάσταση",
                             initialSelection: status,
                             options: statuses,
-                            onSelected: (value) => status = value,
+                            onSelected: (value) => status = value ?? 1,
                             required: true,
                           ),
                         ),
