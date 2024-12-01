@@ -81,10 +81,10 @@ class _RecordRowState extends State<RecordRow> {
   Widget build(BuildContext context) {
     final record = context.watch<Record>();
     final suggestions = context.watch<Suggestions>();
-    final width = switch (MediaQuery.sizeOf(context).width) {
-      > 760.0 => 7,
-      > 650.0 => 6,
-      _ => 5,
+    final collapse = switch (MediaQuery.sizeOf(context).width) {
+      > 760.0 => 0,
+      > 650.0 => 1,
+      _ => 2,
     };
     return Material(
       color: statusToColor(record.status),
@@ -127,18 +127,21 @@ class _RecordRowState extends State<RecordRow> {
                     ),
                   ),
                 ),
-                RecordCell(
-                  text: record.id.toString(),
-                  flex: 3,
-                  align: TextAlign.end,
-                ),
-                RecordCell(text: record.name),
-                if (width > 6) RecordCell(text: record.phoneMobile),
-                if (width > 5) RecordCell(text: record.product),
+                if (collapse < 2)
+                  RecordCell(
+                    text: record.id.toString(),
+                    flex: 3,
+                    align: TextAlign.end,
+                  ),
                 RecordCell(
                   text: dateTimeFormat.format(record.date),
                 ),
-                RecordCell(text: suggestions.statuses[record.status]!),
+                RecordCell(text: "${record.name}\n${record.phoneMobile}"),
+                RecordCell(text: record.product),
+                RecordCell(
+                  text: suggestions.statuses[record.status]!,
+                  flex: 6,
+                ),
               ],
             ),
           ),
@@ -162,21 +165,24 @@ class RecordCell extends StatelessWidget {
   const RecordCell({
     super.key,
     required this.text,
-    this.flex = 7,
+    this.flex = 10,
+    this.align = TextAlign.start,
   });
 
   final int flex;
   final String text;
+  final TextAlign align;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: flex,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Text(
           text,
           style: const TextStyle(fontWeight: FontWeight.w500),
+          textAlign: align,
         ),
       ),
     );
@@ -189,10 +195,10 @@ class RecordListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sorter = context.watch<RecordView>();
-    final width = switch (MediaQuery.sizeOf(context).width) {
-      > 760.0 => 7,
-      > 650.0 => 6,
-      _ => 5,
+    final collapse = switch (MediaQuery.sizeOf(context).width) {
+      > 760.0 => 0,
+      > 650.0 => 1,
+      _ => 2,
     };
     return Material(
       child: Container(
@@ -214,32 +220,14 @@ class RecordListHeader extends StatelessWidget {
                 width: 48,
               ),
             ),
-            RecordListHeaderItem(
-              title: "ID",
-              onTap: () => context.read<RecordView>().setSort(COLUMN.id),
-              visible: sorter.column == COLUMN.id,
-              reverse: sorter.reverse,
-              flex: 3,
-            ),
-            RecordListHeaderItem(
-              title: "Πελάτης",
-              onTap: () => context.read<RecordView>().setSort(COLUMN.name),
-              visible: sorter.column == COLUMN.name,
-              reverse: sorter.reverse,
-            ),
-            if (width > 5)
+            if (collapse < 2)
               RecordListHeaderItem(
-                title: "Τηλέφωνο",
-                onTap: () => context.read<RecordView>().setSort(COLUMN.phone),
-                visible: sorter.column == COLUMN.phone,
+                title: "ID",
+                onTap: () => context.read<RecordView>().setSort(COLUMN.id),
+                visible: sorter.column == COLUMN.id,
                 reverse: sorter.reverse,
+                flex: 3,
               ),
-            RecordListHeaderItem(
-              title: "Είδος",
-              onTap: () => context.read<RecordView>().setSort(COLUMN.product),
-              visible: sorter.column == COLUMN.product,
-              reverse: sorter.reverse,
-            ),
             RecordListHeaderItem(
               title: "Ημερομηνία",
               onTap: () => context.read<RecordView>().setSort(COLUMN.date),
@@ -247,10 +235,23 @@ class RecordListHeader extends StatelessWidget {
               reverse: sorter.reverse,
             ),
             RecordListHeaderItem(
+              title: "Πελάτης",
+              onTap: () => context.read<RecordView>().setSort(COLUMN.name),
+              visible: sorter.column == COLUMN.name,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
+              title: "Είδος",
+              onTap: () => context.read<RecordView>().setSort(COLUMN.product),
+              visible: sorter.column == COLUMN.product,
+              reverse: sorter.reverse,
+            ),
+            RecordListHeaderItem(
               title: "Κατάσταση",
               onTap: () => context.read<RecordView>().setSort(COLUMN.status),
               visible: sorter.column == COLUMN.status,
               reverse: sorter.reverse,
+              flex: 6,
             ),
           ],
         ),
@@ -264,7 +265,7 @@ class RecordListHeaderItem extends StatelessWidget {
     super.key,
     required this.title,
     this.onTap,
-    this.flex = 7,
+    this.flex = 10,
     required this.visible,
     required this.reverse,
   });
