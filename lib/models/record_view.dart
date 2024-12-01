@@ -14,8 +14,8 @@ class RecordView extends ChangeNotifier {
 
   COLUMN column = COLUMN.date;
   bool reverse = true;
-  Comparator<Record> sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
-  Comparator<Record> sorter = (p0, p1) => p0.date.compareTo(p1.date);
+  Comparator<Record> sorterInner = (a, b) => a.date.compareTo(b.date);
+  Comparator<Record> sorter = (a, b) => a.date.compareTo(b.date);
   String filterValue = '';
   COLUMN filterType = COLUMN.name;
   bool Function(Record, String) filter = (record, value) =>
@@ -38,30 +38,16 @@ class RecordView extends ChangeNotifier {
     } else {
       this.column = column;
       reverse = false;
-      switch (column) {
-        case COLUMN.id:
-          sorterInner = (p0, p1) => p0.id.compareTo(p1.id);
-          break;
-        case COLUMN.name:
-          sorterInner = (p0, p1) =>
-              p0.name.toLowerCase().compareTo(p1.name.toLowerCase());
-          break;
-        case COLUMN.phone:
-          sorterInner = (p0, p1) => p0.phoneMobile.compareTo(p1.phoneMobile);
-          break;
-        case COLUMN.product:
-          sorterInner = (p0, p1) =>
-              p0.product.toLowerCase().compareTo(p1.product.toLowerCase());
-          break;
-        case COLUMN.date:
-          sorterInner = (p0, p1) => p0.date.compareTo(p1.date);
-          break;
-        case COLUMN.status:
-          sorterInner = (p0, p1) => suggestions.statuses[p0.status]!
-              .toLowerCase()
-              .compareTo(suggestions.statuses[p1.status]!.toLowerCase());
-          break;
-      }
+      sorterInner = switch (column) {
+        COLUMN.id => (a, b) => a.id.compareTo(b.id),
+        COLUMN.name => (a, b) =>
+            a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        COLUMN.product => (a, b) =>
+            a.product.toLowerCase().compareTo(b.product.toLowerCase()),
+        COLUMN.date => (a, b) => a.date.compareTo(b.date),
+        COLUMN.status => (a, b) => a.status.compareTo(b.status),
+        _ => (a, b) => -1,
+      };
     }
     sorter = (a, b) =>
         sorterInner(a, b) != 0 ? sorterInner(a, b) : b.date.compareTo(a.date);
@@ -80,31 +66,19 @@ class RecordView extends ChangeNotifier {
 
   void setFilterType(COLUMN filterType) {
     this.filterType = filterType;
-    switch (filterType) {
-      case COLUMN.id:
-        filter = (record, value) => record.id == int.tryParse(value);
-        break;
-      case COLUMN.name:
-        filter = (record, value) =>
-            record.name.toLowerCase().contains(value.toLowerCase());
-        break;
-      case COLUMN.phone:
-        filter = (record, value) =>
-            record.phoneMobile.toLowerCase().contains(value.toLowerCase());
-        break;
-      case COLUMN.product:
-        filter = (record, value) =>
-            record.product.toLowerCase().contains(value.toLowerCase());
-        break;
-      case COLUMN.date:
-        //filter = (record,value) => record.date.toLowerCase().contains(value);
-        break;
-      case COLUMN.status:
-        filter = (record, value) => suggestions.statuses[record.status]!
-            .toLowerCase()
-            .contains(value.toLowerCase());
-        break;
-    }
+    filter = switch (filterType) {
+      COLUMN.id => (record, value) => record.id == int.tryParse(value),
+      COLUMN.name => (record, value) =>
+          record.name.toLowerCase().contains(value.toLowerCase()),
+      COLUMN.phone => (record, value) =>
+          record.phoneMobile.toLowerCase().contains(value.toLowerCase()),
+      COLUMN.product => (record, value) =>
+          record.product.toLowerCase().contains(value.toLowerCase()),
+      COLUMN.status => (record, value) => suggestions.statuses[record.status]!
+          .toLowerCase()
+          .contains(value.toLowerCase()),
+      _ => (record, value) => true,
+    };
     if (filterValue.isNotEmpty) {
       filtered = records.where((record) => filter(record, filterValue)).toList()
         ..sort(sorter);
