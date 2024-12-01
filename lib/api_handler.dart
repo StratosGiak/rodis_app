@@ -33,6 +33,10 @@ class ApiHandler {
     return http.put(uri, headers: headers, body: body);
   }
 
+  Future<http.Response> _delete(Uri uri, {Object? body}) async {
+    return http.delete(uri, headers: headers, body: body);
+  }
+
   Future<Map<String, dynamic>> getSuggestions() async {
     final response = await _get(Uri.parse("$apiUrl/suggestions"));
     final json = (jsonDecode(response.body) as Map<String, dynamic>)
@@ -83,6 +87,12 @@ class ApiHandler {
     );
     if (response.statusCode != 200) return null;
     return jsonDecode(response.body);
+  }
+
+  Future<bool> deleteRecord(int id) async {
+    final response = await _delete(Uri.parse("$apiUrl/records/$id"));
+    if (response.statusCode != 200) return false;
+    return true;
   }
 
   Future<String?> postPhoto(XFile file) async {
