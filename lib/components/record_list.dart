@@ -130,7 +130,6 @@ class _RecordRowState extends State<RecordRow> {
                 RecordCell(text: record.name),
                 if (width > 6) RecordCell(text: record.phoneMobile),
                 if (width > 5) RecordCell(text: record.product),
-                RecordCell(text: record.manufacturer),
                 RecordCell(
                   text: dateTimeFormat.format(record.date),
                 ),
@@ -229,14 +228,6 @@ class RecordListHeader extends StatelessWidget {
               visible: sorter.column == COLUMN.product,
               reverse: sorter.reverse,
             ),
-            if (width > 6)
-              RecordListHeaderItem(
-                title: "Μάρκα",
-                onTap: () =>
-                    context.read<RecordView>().setSort(COLUMN.manufacturer),
-                visible: sorter.column == COLUMN.manufacturer,
-                reverse: sorter.reverse,
-              ),
             RecordListHeaderItem(
               title: "Ημερομηνία",
               onTap: () => context.read<RecordView>().setSort(COLUMN.date),
