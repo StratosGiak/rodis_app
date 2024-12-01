@@ -156,6 +156,34 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     return result ?? false;
   }
 
+  Future<String?> showDamagesDialog() async {
+    final damages = context.read<Suggestions>().damages.values.toList();
+    final result = showDialog<String>(
+      context: context,
+      builder: (context) => Dialog(
+        child: SizedBox(
+          width: 400,
+          child: ListView.builder(
+            itemCount: damages.length,
+            itemBuilder: (_, index) => Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+              ),
+              child: ListTile(
+                title: Text(damages[index]),
+                onTap: () => Navigator.pop(
+                  context,
+                  damages[index],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    return result;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -654,6 +682,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       runSpacing: 16.0,
                       children: [
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             FormFieldItem(
                               label: "Παρατηρήσεις βλάβης",
@@ -664,6 +693,19 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                               lines: 5,
                               maxLength: 500,
                             ),
+                            TextButton.icon(
+                              onPressed: () async {
+                                final damage = await showDamagesDialog();
+                                if (damage == null) return;
+                                // ignore: prefer_interpolation_to_compose_strings
+                                notesReceivedController.text = damage +
+                                    '\n' +
+                                    notesReceivedController.text;
+                              },
+                              label: const Text("Προσθήκη συμπτώματος"),
+                              icon: const Icon(Icons.add),
+                            ),
+                            const SizedBox(height: 16.0),
                             FormFieldItem(
                               label: "Παρατηρήσεις επισκευής",
                               controller: notesRepairedController,
