@@ -30,9 +30,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/logo.png'),
+                    SizedBox(
+                      height: 250,
+                      child: Image.asset('assets/images/logo.png'),
+                    ),
                     const SizedBox(
-                      height: 60.0,
+                      height: 20.0,
                     ),
                     const LoginForm(),
                   ],
