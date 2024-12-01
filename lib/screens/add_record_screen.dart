@@ -58,6 +58,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   XFile? tempPhoto;
   bool removePhoto = false;
   int? status;
+  int store = 1;
   final waiting = ValueNotifier(false);
 
   final photoErrorSnackbar = const SnackBar(
@@ -118,6 +119,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.hasWarranty != hasWarranty.value ||
         record.warrantyDate != warrantyDate ||
         record.status != status ||
+        record.store != store ||
         tempPhoto != null ||
         newHistory.isNotEmpty;
   }
@@ -185,6 +187,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     productController.text = record.product;
     manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
+    store = record.store;
   }
 
   @override
@@ -347,6 +350,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? dateTimeFormatDB.format(warrantyDate!)
                     : null,
                 "status": status,
+                "store": store,
                 "newHistory": newHistory.map((e) => e.toJSON()).toList(),
               };
               try {
@@ -420,6 +424,17 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             initialSelection: status,
                             options: statuses,
                             onSelected: (value) => status = value,
+                            required: true,
+                          ),
+                        ),
+                        Selector<Suggestions, Map<int, String>>(
+                          selector: (context, suggestions) =>
+                              suggestions.stores,
+                          builder: (context, stores, child) => FormComboItem(
+                            label: "Κατάστημα",
+                            initialSelection: store,
+                            options: stores,
+                            onSelected: (value) => store = value ?? 1,
                             required: true,
                           ),
                         ),
