@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rodis_service/components/utilities.dart';
+import 'package:rodis_service/components/align_center.dart';
 import 'package:rodis_service/constants.dart';
 import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/record_view.dart';
