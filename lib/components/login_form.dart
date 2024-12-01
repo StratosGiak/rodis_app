@@ -20,6 +20,9 @@ class _LoginFormState extends State<LoginForm> {
   final waiting = ValueNotifier(false);
   late final apiHandler = context.read<ApiHandler>();
 
+  final loginErrorSnackbar = const SnackBar(content: Text('Λάθος στοιχεία'));
+  final connectionErrorSnackbar =
+      const SnackBar(content: Text('Η σύνδεση με τον σέρβερ απέτυχε'));
   @override
   void dispose() {
     usernameController.dispose();
@@ -38,8 +41,7 @@ class _LoginFormState extends State<LoginForm> {
             .timeout(const Duration(seconds: 6));
         if (!mounted) return;
         if (user == null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Λάθος στοιχεία')));
+          ScaffoldMessenger.of(context).showSnackBar(loginErrorSnackbar);
           waiting.value = false;
           return;
         }
@@ -69,9 +71,7 @@ class _LoginFormState extends State<LoginForm> {
           ),
         );
       } catch (err) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Η σύνδεση με τον σέρβερ απέτυχε')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(connectionErrorSnackbar);
       } finally {
         waiting.value = false;
       }

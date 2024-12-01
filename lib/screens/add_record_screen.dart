@@ -69,6 +69,20 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     ),
   );
 
+  final deleteErrorSnackbar = const SnackBar(
+    content: Text("Προέκυψε σφάλμα κατά τη διαγραφή της εντολής"),
+  );
+
+  final requiredFieldsSnackbar = const SnackBar(
+    content: Text("Συμπληρώστε όλα τα υποχρεωτικά πεδία"),
+  );
+
+  final uploadErrorSnackbar = const SnackBar(
+    content: Text(
+      "Προέκυψε σφάλμα κατά το ανέβασμα των στοιχείων στον σέρβερ",
+    ),
+  );
+
   bool notEqualOrEmpty(String? a, String? b) {
     if (a == null && b == null) return false;
     if (a == null) return b!.isNotEmpty;
@@ -337,13 +351,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       if (!delete) return;
                       final success = await apiHandler.deleteRecord(id!);
                       if (!success) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Προέκυψε σφάλμα κατά τη διαγραφή της εντολής",
-                            ),
-                          ),
-                        );
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(deleteErrorSnackbar);
                         return;
                       }
                       context.read<Records>().removeRecord(id!);
@@ -374,12 +383,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             ),
             onPressed: () async {
               if (!_formKey.currentState!.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text("Παρακαλώ συμπληρώστε όλα τα απαραίτητα στοιχεία"),
-                  ),
-                );
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(requiredFieldsSnackbar);
                 return;
               }
               waiting.value = true;
@@ -466,13 +471,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                   }
                 }
               } catch (err) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Προέκυψε σφάλμα κατά το ανέβασμα των στοιχείων στον σέρβερ",
-                    ),
-                  ),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(uploadErrorSnackbar);
               } finally {
                 waiting.value = false;
               }
