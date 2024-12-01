@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/suggestions.dart';
 
-enum COLUMN { name, phone, product, date, status }
+enum COLUMN { id, name, phone, product, date, status }
 
 class RecordView extends ChangeNotifier {
   RecordView({required this.suggestions, required this.records})
@@ -39,6 +39,9 @@ class RecordView extends ChangeNotifier {
       this.column = column;
       reverse = false;
       switch (column) {
+        case COLUMN.id:
+          sorterInner = (p0, p1) => p0.id.compareTo(p1.id);
+          break;
         case COLUMN.name:
           sorterInner = (p0, p1) =>
               p0.name.toLowerCase().compareTo(p1.name.toLowerCase());
@@ -76,6 +79,9 @@ class RecordView extends ChangeNotifier {
   void setFilterType(COLUMN filterType) {
     this.filterType = filterType;
     switch (filterType) {
+      case COLUMN.id:
+        filter = (record, value) => record.id == int.tryParse(value);
+        break;
       case COLUMN.name:
         filter = (record, value) =>
             record.name.toLowerCase().contains(value.toLowerCase());

@@ -78,6 +78,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
+                      DropdownMenuEntry(value: COLUMN.id, label: "ID"),
                       DropdownMenuEntry(value: COLUMN.product, label: "Είδος"),
                     ],
                     onSelected: (value) {

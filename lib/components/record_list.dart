@@ -127,6 +127,11 @@ class _RecordRowState extends State<RecordRow> {
                     ),
                   ),
                 ),
+                RecordCell(
+                  text: record.id.toString(),
+                  flex: 3,
+                  align: TextAlign.end,
+                ),
                 RecordCell(text: record.name),
                 if (width > 6) RecordCell(text: record.phoneMobile),
                 if (width > 5) RecordCell(text: record.product),
@@ -208,6 +213,13 @@ class RecordListHeader extends StatelessWidget {
               child: SizedBox(
                 width: 48,
               ),
+            ),
+            RecordListHeaderItem(
+              title: "ID",
+              onTap: () => context.read<RecordView>().setSort(COLUMN.id),
+              visible: sorter.column == COLUMN.id,
+              reverse: sorter.reverse,
+              flex: 3,
             ),
             RecordListHeaderItem(
               title: "Πελάτης",
