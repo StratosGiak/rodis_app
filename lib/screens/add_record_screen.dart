@@ -163,14 +163,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     phoneHomeController.text = record.phoneHome ?? "";
     phoneMobileController.text = record.phoneMobile;
     emailController.text = record.email ?? "";
-    postalCodeController.text = record.postalCode;
-    cityController.text = record.city;
-    areaController.text = record.area;
-    addressController.text = record.address;
-    notesReceivedController.text = record.notesReceived ?? "";
+    postalCodeController.text = record.postalCode ?? "";
+    cityController.text = record.city ?? "";
+    areaController.text = record.area ?? "";
+    addressController.text = record.address ?? "";
+    notesReceivedController.text = record.notesReceived;
     notesRepairedController.text = record.notesRepaired ?? "";
     feeController.text = record.fee?.replaceAll(r'.', ',') ?? "";
-    advanceController.text = record.advance?.replaceAll(r'.', ',') ?? "";
+    advanceController.text = record.advance.replaceAll(r'.', ',');
     serialController.text = record.serial ?? "";
     dateController.text = dateFormat.format(record.date).toString();
     date = record.date;
@@ -183,7 +183,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         ? (record.photo!.isEmpty ? null : record.photo)
         : null;
     productController.text = record.product;
-    manufacturerController.text = record.manufacturer;
+    manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
   }
 
@@ -307,14 +307,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               final record = {
                 if (id != null) "id": id,
                 "date": dateTimeFormatDB.format(date),
-                "name":
-                    nameController.text.isNotEmpty ? nameController.text : null,
+                "name": nameController.text,
                 "phoneHome": phoneHomeController.text.isNotEmpty
                     ? phoneHomeController.text
                     : null,
-                "phoneMobile": phoneMobileController.text.isNotEmpty
-                    ? phoneMobileController.text
-                    : null,
+                "phoneMobile": phoneMobileController.text,
                 "email": emailController.text.isNotEmpty
                     ? emailController.text
                     : null,
@@ -328,27 +325,21 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 "address": addressController.text.isNotEmpty
                     ? addressController.text
                     : null,
-                "notesReceived": notesReceivedController.text.isNotEmpty
-                    ? notesReceivedController.text
-                    : null,
+                "notesReceived": notesReceivedController.text,
                 "notesRepaired": notesRepairedController.text.isNotEmpty
                     ? notesRepairedController.text
                     : null,
                 "serial": serialController.text.isNotEmpty
                     ? serialController.text
                     : null,
-                "product": productController.text.isNotEmpty
-                    ? productController.text
-                    : null,
+                "product": productController.text,
                 "manufacturer": manufacturerController.text.isNotEmpty
                     ? manufacturerController.text
                     : null,
                 "fee": feeController.text.isNotEmpty
                     ? feeController.text.replaceAll(r',', '.')
                     : null,
-                "advance": advanceController.text.isNotEmpty
-                    ? advanceController.text.replaceAll(r',', '.')
-                    : null,
+                "advance": advanceController.text.replaceAll(r',', '.'),
                 "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
                 "mechanic": context.read<User>().id,
                 "hasWarranty": hasWarranty.value,
@@ -442,6 +433,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         FormFieldItem(
                           label: "Προκαταβολή",
                           controller: advanceController,
+                          required: true,
                           textInputType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
@@ -519,17 +511,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           controller: addressController,
                           textInputType: TextInputType.streetAddress,
                           width: 300,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "Πόλη",
                           controller: cityController,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "Περιοχή",
                           controller: areaController,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "ΤΚ",
@@ -537,7 +526,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           textInputType: TextInputType.number,
                           width: 100,
                           format: FormFieldFormat.integer,
-                          required: true,
                         ),
                       ],
                     ),
@@ -567,7 +555,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             label: 'Μάρκα',
                             textEditingController: manufacturerController,
                             suggestions: manufacturers.values,
-                            required: true,
                             focusNode: _manufacturerNode,
                           ),
                         ),
@@ -642,6 +629,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                               label: "Παρατηρήσεις παραλαβής",
                               controller: notesReceivedController,
                               textInputType: TextInputType.multiline,
+                              required: true,
                               width: 500,
                               lines: 5,
                               maxLength: 500,
