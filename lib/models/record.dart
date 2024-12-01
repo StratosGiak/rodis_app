@@ -41,22 +41,23 @@ class Record extends ChangeNotifier {
   String? phoneHome;
   String phoneMobile;
   String? email;
-  String postalCode;
-  String city;
-  String area;
-  String address;
-  String? notesReceived;
+  String? postalCode;
+  String? city;
+  String? area;
+  String? address;
+  String notesReceived;
   String? notesRepaired;
   String? fee;
-  String? advance;
+  String advance;
   String? serial;
   String product;
-  String manufacturer;
+  String? manufacturer;
   String? photo;
   int mechanic;
   bool hasWarranty;
   DateTime? warrantyDate;
   int status;
+  int store;
   List<History> history;
 
   Record({
@@ -82,6 +83,7 @@ class Record extends ChangeNotifier {
     required this.hasWarranty,
     required this.warrantyDate,
     required this.status,
+    required this.store,
     required this.history,
   });
 
@@ -108,6 +110,7 @@ class Record extends ChangeNotifier {
         "warranty": hasWarranty,
         "datekwarr": warrantyDate,
         "katastasi_p": status,
+        "katastima": store,
       };
 
   Record.fromJSON(Map<String, dynamic> map)
@@ -139,6 +142,7 @@ class Record extends ChangeNotifier {
                 DateTime.fromMillisecondsSinceEpoch(0)
             : null,
         status = map['katastasi_p'],
+        store = map['katastima'],
         history =
             ((map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
               ..sort(

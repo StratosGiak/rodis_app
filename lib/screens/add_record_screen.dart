@@ -22,6 +22,7 @@ class AddRecordScreen extends StatefulWidget {
 
 class _AddRecordScreenState extends State<AddRecordScreen> {
   late final apiHandler = context.read<ApiHandler>();
+  late final userId = context.read<User>().id;
   final _node = FocusNode();
   final _productNode = FocusNode();
   final _manufacturerNode = FocusNode();
@@ -57,7 +58,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   String? photoUrl;
   XFile? tempPhoto;
   bool removePhoto = false;
-  int? status;
+  int status = 1;
+  int? mechanic;
+  int store = 1;
   final waiting = ValueNotifier(false);
 
   final photoErrorSnackbar = const SnackBar(
@@ -90,7 +93,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           serialController.text.isNotEmpty ||
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
-          status != null ||
           tempPhoto != null;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
@@ -118,6 +120,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.hasWarranty != hasWarranty.value ||
         record.warrantyDate != warrantyDate ||
         record.status != status ||
+        record.store != store ||
         tempPhoto != null ||
         newHistory.isNotEmpty;
   }
@@ -163,14 +166,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     phoneHomeController.text = record.phoneHome ?? "";
     phoneMobileController.text = record.phoneMobile;
     emailController.text = record.email ?? "";
-    postalCodeController.text = record.postalCode;
-    cityController.text = record.city;
-    areaController.text = record.area;
-    addressController.text = record.address;
-    notesReceivedController.text = record.notesReceived ?? "";
+    postalCodeController.text = record.postalCode ?? "";
+    cityController.text = record.city ?? "";
+    areaController.text = record.area ?? "";
+    addressController.text = record.address ?? "";
+    notesReceivedController.text = record.notesReceived;
     notesRepairedController.text = record.notesRepaired ?? "";
     feeController.text = record.fee?.replaceAll(r'.', ',') ?? "";
-    advanceController.text = record.advance?.replaceAll(r'.', ',') ?? "";
+    advanceController.text = record.advance.replaceAll(r'.', ',');
     serialController.text = record.serial ?? "";
     dateController.text = dateFormat.format(record.date).toString();
     date = record.date;
@@ -183,8 +186,10 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         ? (record.photo!.isEmpty ? null : record.photo)
         : null;
     productController.text = record.product;
-    manufacturerController.text = record.manufacturer;
+    manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
+    mechanic = record.mechanic;
+    store = record.store;
   }
 
   @override
@@ -307,14 +312,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               final record = {
                 if (id != null) "id": id,
                 "date": dateTimeFormatDB.format(date),
-                "name":
-                    nameController.text.isNotEmpty ? nameController.text : null,
+                "name": nameController.text,
                 "phoneHome": phoneHomeController.text.isNotEmpty
                     ? phoneHomeController.text
                     : null,
-                "phoneMobile": phoneMobileController.text.isNotEmpty
-                    ? phoneMobileController.text
-                    : null,
+                "phoneMobile": phoneMobileController.text,
                 "email": emailController.text.isNotEmpty
                     ? emailController.text
                     : null,
@@ -328,34 +330,29 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 "address": addressController.text.isNotEmpty
                     ? addressController.text
                     : null,
-                "notesReceived": notesReceivedController.text.isNotEmpty
-                    ? notesReceivedController.text
-                    : null,
+                "notesReceived": notesReceivedController.text,
                 "notesRepaired": notesRepairedController.text.isNotEmpty
                     ? notesRepairedController.text
                     : null,
                 "serial": serialController.text.isNotEmpty
                     ? serialController.text
                     : null,
-                "product": productController.text.isNotEmpty
-                    ? productController.text
-                    : null,
+                "product": productController.text,
                 "manufacturer": manufacturerController.text.isNotEmpty
                     ? manufacturerController.text
                     : null,
                 "fee": feeController.text.isNotEmpty
                     ? feeController.text.replaceAll(r',', '.')
                     : null,
-                "advance": advanceController.text.isNotEmpty
-                    ? advanceController.text.replaceAll(r',', '.')
-                    : null,
+                "advance": advanceController.text.replaceAll(r',', '.'),
                 "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
-                "mechanic": context.read<User>().id,
+                "mechanic": userId == 0 ? mechanic : userId,
                 "hasWarranty": hasWarranty.value,
                 "warrantyDate": hasWarranty.value && warrantyDate != null
                     ? dateTimeFormatDB.format(warrantyDate!)
                     : null,
                 "status": status,
+                "store": store,
                 "newHistory": newHistory.map((e) => e.toJSON()).toList(),
               };
               try {
@@ -428,10 +425,34 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             label: "Κατάσταση",
                             initialSelection: status,
                             options: statuses,
-                            onSelected: (value) => status = value,
+                            onSelected: (value) => status = value ?? 1,
                             required: true,
                           ),
                         ),
+                        Selector<Suggestions, Map<int, String>>(
+                          selector: (context, suggestions) =>
+                              suggestions.stores,
+                          builder: (context, stores, child) => FormComboItem(
+                            label: "Κατάστημα",
+                            initialSelection: store,
+                            options: stores,
+                            onSelected: (value) => store = value ?? 1,
+                            required: true,
+                          ),
+                        ),
+                        if (userId == 0)
+                          Selector<Suggestions, Map<int, String>>(
+                            selector: (context, suggestions) =>
+                                suggestions.mechanics,
+                            builder: (context, mechanics, child) =>
+                                FormComboItem(
+                              label: "Αποστολή σε",
+                              initialSelection: mechanic,
+                              options: mechanics,
+                              onSelected: (value) => mechanic = value ?? 1,
+                              required: true,
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
@@ -440,8 +461,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       runSpacing: 10,
                       children: [
                         FormFieldItem(
-                          label: "Προκαταβολή",
+                          label: "Κόστος ελέγχου",
                           controller: advanceController,
+                          required: true,
                           textInputType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
@@ -519,17 +541,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           controller: addressController,
                           textInputType: TextInputType.streetAddress,
                           width: 300,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "Πόλη",
                           controller: cityController,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "Περιοχή",
                           controller: areaController,
-                          required: true,
                         ),
                         FormFieldItem(
                           label: "ΤΚ",
@@ -537,7 +556,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           textInputType: TextInputType.number,
                           width: 100,
                           format: FormFieldFormat.integer,
-                          required: true,
                         ),
                       ],
                     ),
@@ -567,7 +585,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             label: 'Μάρκα',
                             textEditingController: manufacturerController,
                             suggestions: manufacturers.values,
-                            required: true,
                             focusNode: _manufacturerNode,
                           ),
                         ),
@@ -639,9 +656,10 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         Column(
                           children: [
                             FormFieldItem(
-                              label: "Παρατηρήσεις παραλαβής",
+                              label: "Παρατηρήσεις βλάβης",
                               controller: notesReceivedController,
                               textInputType: TextInputType.multiline,
+                              required: true,
                               width: 500,
                               lines: 5,
                               maxLength: 500,
