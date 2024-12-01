@@ -156,6 +156,37 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     return result ?? false;
   }
 
+  Future<bool> showDeleteDialog() async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Διαγραφή εντολής;"),
+        content: const SizedBox(
+          width: 350,
+          child: Text(
+            "Είστε σίγουροι ότι θέλετε να διαγράψετε την παρούσα εντολή;\nΑυτή η πράξη δεν μπορεί να αναιρεθεί.",
+            textAlign: TextAlign.justify,
+          ),
+        ),
+        icon: Icon(Icons.delete, color: Colors.red.shade700),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              "Διαγραφή",
+              style: TextStyle(color: Colors.red.shade700),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Ακύρωση"),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   Future<String?> showDamagesDialog() async {
     final damages = context.read<Suggestions>().damages.values.toList();
     final result = showDialog<String>(
@@ -282,6 +313,41 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           newHistory: newHistory,
                         ),
                       );
+                    },
+                  ),
+                ),
+              if (widget.record != null && userId == 0)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton.icon(
+                    label: Text(
+                      "Διαγραφή",
+                      style:
+                          TextStyle(fontSize: 16.0, color: Colors.red.shade700),
+                    ),
+                    icon: Icon(
+                      Icons.delete,
+                      size: 26,
+                      color: Colors.red.shade700,
+                    ),
+                    style:
+                        TextButton.styleFrom(fixedSize: const Size(150, 100)),
+                    onPressed: () async {
+                      final delete = await showDeleteDialog();
+                      if (!delete) return;
+                      final success = await apiHandler.deleteRecord(id!);
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Προέκυψε σφάλμα κατά τη διαγραφή της εντολής",
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      context.read<Records>().removeRecord(id!);
+                      Navigator.pop(context);
                     },
                   ),
                 ),
