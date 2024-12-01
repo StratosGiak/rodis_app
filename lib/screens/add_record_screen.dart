@@ -22,6 +22,7 @@ class AddRecordScreen extends StatefulWidget {
 
 class _AddRecordScreenState extends State<AddRecordScreen> {
   late final apiHandler = context.read<ApiHandler>();
+  late final userId = context.read<User>().id;
   final _node = FocusNode();
   final _productNode = FocusNode();
   final _manufacturerNode = FocusNode();
@@ -58,6 +59,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
   XFile? tempPhoto;
   bool removePhoto = false;
   int status = 1;
+  int? mechanic;
   int store = 1;
   final waiting = ValueNotifier(false);
 
@@ -186,6 +188,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     productController.text = record.product;
     manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
+    mechanic = record.mechanic;
     store = record.store;
   }
 
@@ -343,7 +346,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     : null,
                 "advance": advanceController.text.replaceAll(r',', '.'),
                 "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
-                "mechanic": context.read<User>().id,
+                "mechanic": userId == 0 ? mechanic : userId,
                 "hasWarranty": hasWarranty.value,
                 "warrantyDate": hasWarranty.value && warrantyDate != null
                     ? dateTimeFormatDB.format(warrantyDate!)
@@ -437,6 +440,19 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             required: true,
                           ),
                         ),
+                        if (userId == 0)
+                          Selector<Suggestions, Map<int, String>>(
+                            selector: (context, suggestions) =>
+                                suggestions.mechanics,
+                            builder: (context, mechanics, child) =>
+                                FormComboItem(
+                              label: "Αποστολή σε",
+                              initialSelection: mechanic,
+                              options: mechanics,
+                              onSelected: (value) => mechanic = value ?? 1,
+                              required: true,
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
