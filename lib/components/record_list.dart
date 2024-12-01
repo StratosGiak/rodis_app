@@ -60,6 +60,15 @@ class RecordRow extends StatefulWidget {
 class _RecordRowState extends State<RecordRow> {
   late bool _expanded = widget.initialExpanded;
 
+  Color statusToColor(int status) {
+    return switch (status) {
+      1 => Colors.lightBlue.shade100,
+      2 => Colors.yellow.shade100,
+      3 => Colors.green.shade100,
+      _ => Colors.red.shade100,
+    };
+  }
+
   @override
   void didUpdateWidget(covariant RecordRow oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -78,9 +87,7 @@ class _RecordRowState extends State<RecordRow> {
       _ => 5,
     };
     return Material(
-      color: widget.index % 2 == 0
-          ? Colors.white
-          : Theme.of(context).scaffoldBackgroundColor,
+      color: statusToColor(record.status),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -137,7 +144,8 @@ class _RecordRowState extends State<RecordRow> {
               curve: Curves.easeInOut,
               alignment: Alignment.bottomCenter,
               heightFactor: _expanded ? 1 : 0,
-              child: const HistoryList(),
+              child:
+                  Container(color: Colors.white24, child: const HistoryList()),
             ),
           ),
         ],
