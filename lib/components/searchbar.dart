@@ -78,7 +78,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
-                      DropdownMenuEntry(value: COLUMN.product, label: "Είδος"),
+                      DropdownMenuEntry(value: COLUMN.id, label: "ID"),
+                      DropdownMenuEntry(
+                        value: COLUMN.status,
+                        label: "Κατάσταση",
+                      ),
                     ],
                     onSelected: (value) {
                       final view = context.read<RecordView>();
