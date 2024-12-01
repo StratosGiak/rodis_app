@@ -53,7 +53,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
         onTap: () => FocusScope.of(context).requestFocus(_node),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Επισκευές (${context.read<User>().name})"),
+            title: Text("Εντολές (${context.read<User>().name})"),
             actions: [
               if (kIsWeb || !Platform.isAndroid && !Platform.isIOS)
                 Padding(
@@ -126,7 +126,7 @@ class _RecordListScreenState extends State<RecordListScreen> {
               );
               FocusScope.of(context).requestFocus(_node);
             },
-            label: const Text("Νέα επισκευή"),
+            label: const Text("Νέα εντολή"),
             icon: const Icon(Icons.add),
           ),
         ),

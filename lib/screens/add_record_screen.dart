@@ -227,8 +227,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: id != null
-                ? const Text("Ενημέρωση επισκευής")
-                : const Text("Νέα επισκευή"),
+                ? Text("Ενημέρωση εντολής (ID: $id)")
+                : const Text("Νέα εντολή"),
             actions: [
               if (widget.record != null)
                 Padding(

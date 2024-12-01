@@ -25,7 +25,7 @@ class _RecordListState extends State<RecordList> {
     if (filtered.isEmpty) {
       return const Center(
         child: Text(
-          "Δε βρέθηκαν επισκευές",
+          "Δε βρέθηκαν εντολές",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
       );
