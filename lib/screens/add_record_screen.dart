@@ -461,7 +461,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                       runSpacing: 10,
                       children: [
                         FormFieldItem(
-                          label: "Προκαταβολή",
+                          label: "Κόστος ελέγχου",
                           controller: advanceController,
                           required: true,
                           textInputType: const TextInputType.numberWithOptions(
@@ -656,7 +656,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                         Column(
                           children: [
                             FormFieldItem(
-                              label: "Παρατηρήσεις παραλαβής",
+                              label: "Παρατηρήσεις βλάβης",
                               controller: notesReceivedController,
                               textInputType: TextInputType.multiline,
                               required: true,
