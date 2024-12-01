@@ -71,7 +71,9 @@ class RecordView extends ChangeNotifier {
 
   void setFilterValue(String filterValue) {
     this.filterValue = filterValue;
-    filtered = records.where((record) => filter(record, filterValue)).toList()
+    filtered = records
+        .where((record) => filterValue.isEmpty || filter(record, filterValue))
+        .toList()
       ..sort(sorter);
     notifyListeners();
   }
