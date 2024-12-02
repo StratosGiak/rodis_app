@@ -80,9 +80,12 @@ class ApiHandler {
     return jsonDecode(response.body);
   }
 
-  Future<Map<String, dynamic>?> putRecord(Map<String, Object?> record) async {
+  Future<Map<String, dynamic>?> putRecord(
+    int id,
+    Map<String, Object?> record,
+  ) async {
     final response = await _put(
-      Uri.parse("$apiUrl/records/${record['id']}"),
+      Uri.parse("$apiUrl/records/$id"),
       body: jsonEncode(record),
     );
     if (response.statusCode != 200) return null;
