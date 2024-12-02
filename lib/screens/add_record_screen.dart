@@ -409,7 +409,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 }
               }
               final record = {
-                if (id != null) "id": id,
                 "date": dateTimeFormatDB.format(date),
                 "name": nameController.text,
                 "phoneHome": phoneHomeController.text.isNotEmpty
@@ -462,7 +461,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     Navigator.pop(context);
                   }
                 } else {
-                  final response = await apiHandler.putRecord(record);
+                  final response = await apiHandler.putRecord(id!, record);
                   if (response != null) {
                     context
                         .read<Records>()

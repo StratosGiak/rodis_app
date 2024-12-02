@@ -50,7 +50,8 @@ class ApiHandler {
   }
 
   Future<List<Record>> getRecordsBy(int id) async {
-    final response = await _get(Uri.parse("$apiUrl/records/by/$id"));
+    final url = id == 0 ? "$apiUrl/records/all" : "$apiUrl/records/by/$id";
+    final response = await _get(Uri.parse(url));
     final json =
         (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     return json.map((element) => Record.fromJSON(element)).toList();
@@ -67,9 +68,7 @@ class ApiHandler {
         "password": password,
       }),
     );
-
     if (response.statusCode != 200) return null;
-
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
@@ -80,9 +79,12 @@ class ApiHandler {
     return jsonDecode(response.body);
   }
 
-  Future<Map<String, dynamic>?> putRecord(Map<String, Object?> record) async {
+  Future<Map<String, dynamic>?> putRecord(
+    int id,
+    Map<String, Object?> record,
+  ) async {
     final response = await _put(
-      Uri.parse("$apiUrl/records/${record['id']}/edit"),
+      Uri.parse("$apiUrl/records/$id"),
       body: jsonEncode(record),
     );
     if (response.statusCode != 200) return null;
