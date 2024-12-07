@@ -108,6 +108,7 @@ class FormComboItem extends StatefulWidget {
     this.validator,
     this.required = false,
     this.initialSelection,
+    this.sortBy,
   });
 
   final String label;
@@ -116,17 +117,22 @@ class FormComboItem extends StatefulWidget {
   final String? Function(int?)? validator;
   final bool required;
   final int? initialSelection;
+  final int Function(MapEntry<int, String>, MapEntry<int, String>)? sortBy;
 
   @override
   State<FormComboItem> createState() => _FormComboItemState();
 }
 
 class _FormComboItemState extends State<FormComboItem> {
-  late final options = widget.options.entries
+  late final sorted = widget.sortBy == null
+      ? widget.options.entries.toList()
+      : (widget.options.entries.toList()..sort(widget.sortBy));
+  late final options = sorted
       .map(
         (entry) => DropdownMenuEntry<int>(value: entry.key, label: entry.value),
       )
       .toList();
+
   @override
   Widget build(BuildContext context) {
     return Column(
