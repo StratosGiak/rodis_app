@@ -69,6 +69,19 @@ class _RecordRowState extends State<RecordRow> {
     };
   }
 
+  String makeCustomerString(Record record) {
+    String address = "";
+    if (record.address != null && record.address!.isNotEmpty) {
+      address += record.address!;
+    }
+    if (record.area != null && record.area!.isNotEmpty) {
+      address += ", ${record.area}";
+    } else if (record.city != null && record.city!.isNotEmpty) {
+      address += ", ${record.city}";
+    }
+    return "${record.name}\n${record.phoneMobile}${address.isNotEmpty ? "\n$address" : ""}";
+  }
+
   @override
   void didUpdateWidget(covariant RecordRow oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -138,7 +151,7 @@ class _RecordRowState extends State<RecordRow> {
                   flex: 6,
                 ),
                 RecordCell(
-                  text: "${record.name}\n${record.phoneMobile}",
+                  text: makeCustomerString(record),
                   flex: 8,
                 ),
                 RecordCell(
