@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rodis_service/models/record.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ApiHandler {
   static const baseUrl = "http://188.245.190.233";
@@ -116,4 +116,10 @@ class ApiHandler {
     if (response.statusCode != 200) return null;
     return response.body;
   }
+
+  Future<bool> getForm(int id) async {
+    final filename = await _get(Uri.parse("$apiUrl/records/$id/form"));
+    return launchUrl(Uri.parse("$baseUrl/form/${filename.body}"));
+  }
+
 }
