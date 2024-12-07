@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:popover/popover.dart';
@@ -56,8 +55,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         : null,
   );
   List<History> newHistory = [];
-  String? photoUrl;
-  XFile? tempPhoto;
+  List<String> photoUrls = [];
+  List<XFile> tempPhotos = [];
   bool removePhoto = false;
   int status = 1;
   int? mechanic;
@@ -116,7 +115,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           serialController.text.isNotEmpty ||
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
-          tempPhoto != null;
+          tempPhotos.isNotEmpty;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
         notEqualOrEmpty(record.phoneHome, phoneHomeController.text) ||
@@ -144,7 +143,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.warrantyDate != warrantyDate ||
         record.status != status ||
         record.store != store ||
-        tempPhoto != null ||
+        tempPhotos.isNotEmpty ||
         newHistory.isNotEmpty;
   }
 
@@ -379,9 +378,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     warrantyController.text = record.warrantyDate != null
         ? dateFormat.format(record.warrantyDate!).toString()
         : "";
-    photoUrl = record.photo != null
-        ? (record.photo!.isEmpty ? null : record.photo)
-        : null;
+    photoUrls = record.photos;
     productController.text = record.product;
     manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
@@ -528,20 +525,21 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 return;
               }
               waiting.value = true;
-              String? newPhotoUrl;
-              if (tempPhoto != null) {
-                XFile? compressed;
-                try {
-                  compressed = await FlutterImageCompress.compressAndGetFile(
-                    tempPhoto!.path,
-                    "${tempPhoto!.path}_compressed.jpg",
-                  );
-                } catch (error) {
-                  if (kDebugMode) debugPrint("$error");
-                }
-                compressed ??= tempPhoto;
-                newPhotoUrl = await apiHandler.postPhoto(compressed!);
-                if (newPhotoUrl == null) {
+              List<String> newPhotoUrls = [];
+              if (tempPhotos.isNotEmpty) {
+                List<XFile> compressed = await tempPhotos.map((p) async {
+                  try {
+                    return await FlutterImageCompress.compressAndGetFile(
+                          p.path,
+                          "${p.path}_compressed.jpg",
+                        ) ??
+                        p;
+                  } catch (error) {
+                    return p;
+                  }
+                }).wait;
+                newPhotoUrls = await apiHandler.postPhotos(compressed);
+                if (newPhotoUrls.isEmpty) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
                   waiting.value = false;
@@ -583,7 +581,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? feeController.text.replaceAll(r',', '.')
                     : null,
                 "advance": advanceController.text.replaceAll(r',', '.'),
-                "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
+                "photos": newPhotoUrls,
                 "mechanic": userId == 0 ? mechanic : userId,
                 "hasWarranty": hasWarranty.value,
                 "warrantyDate": hasWarranty.value && warrantyDate != null
@@ -922,13 +920,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             ),
                           ],
                         ),
-                        PhotoField(
-                          photoUrl: photoUrl,
-                          onPhotoSet: (newImage, removePhoto) {
-                            tempPhoto = newImage;
-                            if (removePhoto) this.removePhoto = removePhoto;
-                          },
-                        ),
+                        // PhotoField(
+                        //   photoUrl: photoUrl,
+                        //   onPhotoSet: (newImage, removePhoto) {
+                        //     tempPhoto = newImage;
+                        //     if (removePhoto) this.removePhoto = removePhoto;
+                        //   },
+                        // ),
                       ],
                     ),
                   ],

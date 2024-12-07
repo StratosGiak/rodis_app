@@ -99,24 +99,28 @@ class ApiHandler {
     return true;
   }
 
-  Future<String?> postPhoto(XFile file) async {
+  Future<List<String>> postPhotos(List<XFile> files) async {
     final request = http.MultipartRequest('POST', Uri.parse("$apiUrl/media"))
       ..headers.addAll(headers);
 
     if (kIsWeb) {
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          await file.readAsBytes(),
-          filename: file.name,
-        ),
-      );
+      for (final file in files) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'file',
+            await file.readAsBytes(),
+            filename: file.name,
+          ),
+        );
+      }
     } else {
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+      for (final file in files) {
+        request.files.add(await http.MultipartFile.fromPath('file', file.path));
+      }
     }
     final response = await http.Response.fromStream(await request.send());
-    if (response.statusCode != 200) return null;
-    return response.body;
+    if (response.statusCode != 200) return [];
+    return (jsonDecode(response.body) as List).cast<String>();
   }
 
   Future<bool> getForm(int id) async {

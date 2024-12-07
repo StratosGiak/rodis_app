@@ -52,7 +52,7 @@ class Record extends ChangeNotifier {
   String? serial;
   String product;
   String? manufacturer;
-  String? photo;
+  List<String> photos;
   int mechanic;
   bool hasWarranty;
   DateTime? warrantyDate;
@@ -78,7 +78,7 @@ class Record extends ChangeNotifier {
     required this.serial,
     required this.product,
     required this.manufacturer,
-    required this.photo,
+    required this.photos,
     required this.mechanic,
     required this.hasWarranty,
     required this.warrantyDate,
@@ -105,7 +105,7 @@ class Record extends ChangeNotifier {
         "serial": serial,
         "product": product,
         "manufacturer": manufacturer,
-        "photo": photo,
+        "photos": photos,
         "mechanic": mechanic,
         "hasWarranty": hasWarranty,
         "warrantyDate": warrantyDate,
@@ -135,7 +135,7 @@ class Record extends ChangeNotifier {
         serial = map['serial'],
         product = map['product'],
         manufacturer = map['manufacturer'],
-        photo = map['photo'],
+        photos = (map['photos'] as List).cast<String>(),
         mechanic = map['mechanic'],
         hasWarranty = map['hasWarranty'] == 1,
         warrantyDate = map['warrantyDate'] != null
