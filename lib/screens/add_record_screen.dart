@@ -308,28 +308,6 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 ? Text("Ενημέρωση εντολής (ID: $id)")
                 : const Text("Νέα εντολή"),
             actions: [
-              if (widget.record != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextButton.icon(
-                    label: const Text(
-                      "Ιστορικό",
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                    icon: const Icon(Icons.history_edu_rounded, size: 26),
-                    style:
-                        TextButton.styleFrom(fixedSize: const Size(150, 100)),
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => HistoryDialog(
-                          history: widget.record!.history,
-                          newHistory: newHistory,
-                        ),
-                      );
-                    },
-                  ),
-                ),
               if (widget.record != null && userId == 0)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -360,6 +338,35 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     },
                   ),
                 ),
+              if (widget.record != null)
+                Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: IconButton(
+                    tooltip: "Λήψη δελτίου",
+                    icon: const Icon(Icons.print, size: 26),
+                    onPressed: () async {
+                      await apiHandler.getForm(widget.record!.id);
+                    },
+                  ),
+                ),
+              if (widget.record != null)
+                Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: IconButton(
+                    tooltip: "Ιστορικό",
+                    icon: const Icon(Icons.history_edu_rounded, size: 26),
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => HistoryDialog(
+                          history: widget.record!.history,
+                          newHistory: newHistory,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(width: 6.0),
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
