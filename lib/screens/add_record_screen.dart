@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:popover/popover.dart';
 import 'package:rodis_service/api_handler.dart';
 import 'package:rodis_service/components/form_field.dart';
 import 'package:rodis_service/components/history.dart';
@@ -83,6 +84,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     ),
   );
 
+  String smsTypeToLabel(SmsType type) {
+    return switch (type) {
+      SmsType.repaired => "Επισκευασμένο",
+      SmsType.unrepairable => "Ανεπισκεύαστο",
+      SmsType.thanks => "Ευχαριστήριο",
+    };
+  }
+
   bool notEqualOrEmpty(String? a, String? b) {
     if (a == null && b == null) return false;
     if (a == null) return b!.isNotEmpty;
@@ -137,6 +146,33 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.store != store ||
         tempPhoto != null ||
         newHistory.isNotEmpty;
+  }
+
+  Future<void> sendSms(
+    BuildContext dialogContext,
+    ValueNotifier<bool> waiting,
+    SmsType smsType,
+  ) async {
+    if (widget.record == null) return;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    waiting.value = true;
+    final success = await apiHandler.postSMS(id!, smsType);
+    waiting.value = false;
+    if (dialogContext.mounted) Navigator.pop(dialogContext);
+    final type = switch (smsType) {
+      SmsType.repaired => "επισκευής",
+      SmsType.unrepairable => "ανεπισκεύαστου",
+      SmsType.thanks => "ευχαριστίας"
+    };
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? "Επιτυχής αποστολή SMS $type στον πελάτη ${widget.record!.name} (${widget.record!.phoneMobile})"
+              : "Αποτυχία αποστολής SMS $type στον πελάτη ${widget.record!.name} (${widget.record!.phoneMobile})",
+        ),
+      ),
+    );
   }
 
   Future<bool> showDiscardDialog() async {
@@ -199,6 +235,94 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       ),
     );
     return result ?? false;
+  }
+
+  Future<SmsType?> showSmsDialog(BuildContext dialogContext) async {
+    final waiting = ValueNotifier(false);
+
+    final type = await showPopover<SmsType>(
+      context: dialogContext,
+      barrierColor: Colors.transparent,
+      direction: PopoverDirection.top,
+      bodyBuilder: (context) => SizedBox(
+        width: 180,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: SmsType.values.length,
+          itemBuilder: (context, index) => ListTile(
+            title: Text(smsTypeToLabel(SmsType.values[index])),
+            onTap: () => Navigator.pop(context, SmsType.values[index]),
+          ),
+        ),
+      ),
+    );
+    if (type == null) return null;
+    final result = showDialog<SmsType>(
+      context: dialogContext,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Αποστολή SMS;"),
+        icon: ValueListenableBuilder(
+          valueListenable: waiting,
+          builder: (context, value, child) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            transitionBuilder: (child, animation) => ScaleTransition(
+              scale: animation,
+              child: child,
+            ),
+            child: value
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(strokeWidth: 3.0),
+                  )
+                : const Icon(Icons.email),
+          ),
+        ),
+        content: SizedBox(
+          width: 300,
+          child: RichText(
+            text: TextSpan(
+              text: "Είστε σίγουρος ότι θέλετε να αποστείλετε το SMS ",
+              style: DefaultTextStyle.of(dialogContext).style,
+              children: [
+                TextSpan(
+                  text: switch (type) {
+                    SmsType.repaired => "ολοκλήρωσης επισκευής",
+                    SmsType.unrepairable => "αδυναμίας επισκευής",
+                    SmsType.thanks => "ευχαριστίας"
+                  },
+                  style: DefaultTextStyle.of(dialogContext)
+                      .style
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: " στον αριθμό ${widget.record!.phoneMobile};",
+                  style: DefaultTextStyle.of(dialogContext).style,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          ValueListenableBuilder(
+            valueListenable: waiting,
+            builder: (_, value, __) => TextButton(
+              onPressed:
+                  value ? null : () => sendSms(dialogContext, waiting, type),
+              child: const Text("Αποστολή"),
+            ),
+          ),
+          ValueListenableBuilder(
+            valueListenable: waiting,
+            builder: (_, value, __) => TextButton(
+              onPressed: value ? null : () => Navigator.pop(dialogContext),
+              child: const Text("Ακύρωση"),
+            ),
+          ),
+        ],
+      ),
+    );
+    return result;
   }
 
   Future<String?> showDamagesDialog() async {
@@ -346,6 +470,21 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     icon: const Icon(Icons.print, size: 26),
                     onPressed: () async {
                       await apiHandler.getForm(widget.record!.id);
+                    },
+                  ),
+                ),
+              if (widget.record != null)
+                Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: Builder(
+                    builder: (context) {
+                      return IconButton(
+                        tooltip: "Αποστολή SMS",
+                        icon: const Icon(Icons.email, size: 26),
+                        onPressed: () async {
+                          await showSmsDialog(context);
+                        },
+                      );
                     },
                   ),
                 ),

@@ -5,6 +5,8 @@ import 'package:rodis_service/models/record.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum SmsType { repaired, unrepairable, thanks }
+
 class ApiHandler {
   static const baseUrl = "http://188.245.190.233";
   static const apiUrl = "$baseUrl/api";
@@ -122,4 +124,15 @@ class ApiHandler {
     return launchUrl(Uri.parse("$baseUrl/form/${filename.body}"));
   }
 
+  Future<bool> postSMS(int id, SmsType type) async {
+    try {
+      final response =
+          await _post(Uri.parse("$apiUrl/records/$id/sms/${type.name}"))
+              .timeout(const Duration(minutes: 1));
+      if (response.statusCode != 200) return false;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
