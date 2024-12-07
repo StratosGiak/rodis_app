@@ -181,7 +181,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       builder: (context) => AlertDialog(
         title: const Text("Απόρριψη αλλαγών;"),
         content: const SizedBox(
-          width: 350,
+          width: 300,
           child: Text(
             "Έχετε πραγματοποιήσει αλλαγές στη φόρμα οι οποίες θα χαθούν αν συνεχίσετε.",
             textAlign: TextAlign.justify,
@@ -212,13 +212,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       builder: (context) => AlertDialog(
         title: const Text("Διαγραφή εντολής;"),
         content: const SizedBox(
-          width: 350,
+          width: 300,
           child: Text(
             "Είστε σίγουροι ότι θέλετε να διαγράψετε την παρούσα εντολή;\nΑυτή η πράξη δεν μπορεί να αναιρεθεί.",
             textAlign: TextAlign.justify,
           ),
         ),
-        icon: Icon(Icons.delete, color: Colors.red.shade700),
+        icon: const Icon(Icons.delete),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -429,25 +429,19 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: id != null
-                ? Text("Ενημέρωση εντολής (ID: $id)")
+                ? Text("Ενημέρωση εντολής (ID $id)")
                 : const Text("Νέα εντολή"),
             actions: [
               if (widget.record != null && userId == 0)
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextButton.icon(
-                    label: Text(
-                      "Διαγραφή",
-                      style:
-                          TextStyle(fontSize: 16.0, color: Colors.red.shade700),
-                    ),
+                  padding: const EdgeInsets.all(6.0),
+                  child: IconButton(
+                    tooltip: "Διαγραφή",
                     icon: Icon(
                       Icons.delete,
                       size: 26,
                       color: Colors.red.shade700,
                     ),
-                    style:
-                        TextButton.styleFrom(fixedSize: const Size(150, 100)),
                     onPressed: () async {
                       final delete = await showDeleteDialog();
                       if (!delete) return;
