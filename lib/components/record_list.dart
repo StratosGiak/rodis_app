@@ -144,7 +144,7 @@ class _RecordRowState extends State<RecordRow> {
                   RecordCell(
                     text: record.id.toString(),
                     flex: 3,
-                    align: TextAlign.end,
+                    align: TextAlign.center,
                   ),
                 RecordCell(
                   text: dateTimeFormat.format(record.date),
@@ -202,7 +202,7 @@ class RecordCell extends StatelessWidget {
     return Expanded(
       flex: flex,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
         child: Text(
           text,
           style: const TextStyle(fontWeight: FontWeight.w500),
@@ -317,30 +317,33 @@ class RecordListHeaderItem extends StatelessWidget {
       child: InkWell(
         splashFactory: InkSparkle.splashFactory,
         onTap: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Flexible(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                  overflow: TextOverflow.ellipsis,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-            ),
-            Visibility(
-              visible: visible,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: Icon(
-                reverse ? Icons.arrow_drop_down : Icons.arrow_drop_up,
-                size: 30,
+              Visibility(
+                visible: visible,
+                maintainSize: true,
+                maintainAnimation: true,
+                maintainState: true,
+                child: Icon(
+                  reverse ? Icons.arrow_drop_down : Icons.arrow_drop_up,
+                  size: 30,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
