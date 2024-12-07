@@ -80,6 +80,10 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),
                       DropdownMenuEntry(value: COLUMN.id, label: "ID"),
                       DropdownMenuEntry(
+                        value: COLUMN.store,
+                        label: "Κατάστημα",
+                      ),
+                      DropdownMenuEntry(
                         value: COLUMN.status,
                         label: "Κατάσταση",
                       ),

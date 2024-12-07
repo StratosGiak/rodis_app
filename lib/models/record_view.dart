@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rodis_service/models/record.dart';
 import 'package:rodis_service/models/suggestions.dart';
 
-enum COLUMN { id, name, phone, product, date, status }
+enum COLUMN { id, name, phone, product, date, status, store }
 
 class RecordView extends ChangeNotifier {
   RecordView({required this.suggestions, required this.records})
@@ -74,6 +74,9 @@ class RecordView extends ChangeNotifier {
           record.phoneMobile.toLowerCase().contains(value.toLowerCase()),
       COLUMN.product => (record, value) =>
           record.product.toLowerCase().contains(value.toLowerCase()),
+      COLUMN.store => (record, value) => suggestions.stores[record.store]!
+          .toLowerCase()
+          .contains(value.toLowerCase()),
       COLUMN.status => (record, value) => suggestions.statuses[record.status]!
           .toLowerCase()
           .contains(value.toLowerCase()),
