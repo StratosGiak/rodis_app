@@ -89,62 +89,63 @@ class Record extends ChangeNotifier {
 
   Map<String, dynamic> toJSON() => {
         "id": id,
-        "datek": date,
-        "onomatep": name,
-        "tilefono": phoneHome,
-        "kinito": phoneMobile,
+        "date": date,
+        "name": name,
+        "phoneHome": phoneHome,
+        "phoneMobile": phoneMobile,
         "email": email,
-        "tk": postalCode,
-        "poli": city,
-        "perioxi": area,
-        "odos": address,
-        "paratiriseis_para": notesReceived,
-        "paratiriseis_epi": notesRepaired,
-        "pliromi": fee,
-        "prokatavoli": advance,
-        "serialnr": serial,
-        "eidos": product,
-        "marka": manufacturer,
+        "postalCode": postalCode,
+        "city": city,
+        "area": area,
+        "address": address,
+        "notesReceived": notesReceived,
+        "notesRepaired": notesRepaired,
+        "fee": fee,
+        "advance": advance,
+        "serial": serial,
+        "product": product,
+        "manufacturer": manufacturer,
         "photo": photo,
-        "mastoras_p": mechanic,
-        "warranty": hasWarranty,
-        "datekwarr": warrantyDate,
-        "katastasi_p": status,
-        "katastima": store,
+        "mechanic": mechanic,
+        "hasWarranty": hasWarranty,
+        "warrantyDate": warrantyDate,
+        "status": status,
+        "store": store,
+        "history": history,
       };
 
   Record.fromJSON(Map<String, dynamic> map)
       : id = map['id'],
-        date = map['datek'] != null
-            ? DateTime.tryParse(map['datek']) ??
+        date = map['date'] != null
+            ? DateTime.tryParse(map['date']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : DateTime.fromMillisecondsSinceEpoch(0),
-        name = map['onomatep'],
-        phoneHome = map['tilefono'],
-        phoneMobile = map['kinito'],
+        name = map['name'],
+        phoneHome = map['phoneHome'],
+        phoneMobile = map['phoneMobile'],
         email = map['email'],
-        postalCode = map['tk'],
-        city = map['poli'],
-        area = map['perioxi'],
-        address = map['odos'],
-        notesReceived = map['paratiriseis_para'],
-        notesRepaired = map['paratiriseis_epi'],
-        fee = map['pliromi'],
-        advance = map['prokatavoli'],
-        serial = map['serialnr'],
-        product = map['eidos'],
-        manufacturer = map['marka'],
+        postalCode = map['postalCode'],
+        city = map['city'],
+        area = map['area'],
+        address = map['address'],
+        notesReceived = map['notesReceived'],
+        notesRepaired = map['notesRepaired'],
+        fee = map['fee'],
+        advance = map['advance'],
+        serial = map['serial'],
+        product = map['product'],
+        manufacturer = map['manufacturer'],
         photo = map['photo'],
-        mechanic = map['mastoras_p'],
-        hasWarranty = map['warranty'] == 1,
-        warrantyDate = map['datekwarr'] != null
-            ? DateTime.tryParse(map['datekwarr']) ??
+        mechanic = map['mechanic'],
+        hasWarranty = map['hasWarranty'] == 1,
+        warrantyDate = map['warrantyDate'] != null
+            ? DateTime.tryParse(map['warrantyDate']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : null,
-        status = map['katastasi_p'],
-        store = map['katastima'],
+        status = map['status'],
+        store = map['store'],
         history =
-            ((map['istorika'] as List).map((e) => History.fromJSON(e)).toList()
+            ((map['history'] as List).map((e) => History.fromJSON(e)).toList()
               ..sort(
                 (a, b) => b.date.compareTo(a.date),
               ));
@@ -160,11 +161,11 @@ class History {
   });
 
   History.fromJSON(Map<String, dynamic> map)
-      : date = map['datek'] != null
-            ? DateTime.tryParse(map['datek']) ??
+      : date = map['date'] != null
+            ? DateTime.tryParse(map['date']) ??
                 DateTime.fromMillisecondsSinceEpoch(0)
             : DateTime.fromMillisecondsSinceEpoch(0),
-        notes = map['paratiriseis'];
+        notes = map['notes'];
 
   Map<String, dynamic> toJSON() => {
         "date": dateTimeFormatDB.format(date),
