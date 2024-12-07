@@ -44,6 +44,8 @@ class RecordView extends ChangeNotifier {
             a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         COLUMN.product => (a, b) =>
             a.product.toLowerCase().compareTo(b.product.toLowerCase()),
+        COLUMN.store => (a, b) => suggestions.stores[a.store]!
+            .compareTo(suggestions.stores[a.store]!),
         COLUMN.date => (a, b) => a.date.compareTo(b.date),
         COLUMN.status => (a, b) => a.status.compareTo(b.status),
         _ => (a, b) => -1,
