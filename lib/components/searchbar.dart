@@ -73,6 +73,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       contentPadding: EdgeInsets.only(left: 16.0),
                       border: InputBorder.none,
                     ),
+                    requestFocusOnTap: false,
                     dropdownMenuEntries: const [
                       DropdownMenuEntry(value: COLUMN.name, label: "Πελάτης"),
                       DropdownMenuEntry(value: COLUMN.phone, label: "Τηλέφωνο"),

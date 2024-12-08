@@ -65,6 +65,8 @@ class FormFieldItem extends StatelessWidget {
           TextFormField(
             controller: controller,
             maxLines: lines,
+            canRequestFocus: !readOnly,
+            mouseCursor: readOnly ? WidgetStateMouseCursor.clickable : null,
             maxLength: maxLength,
             keyboardType: textInputType,
             readOnly: readOnly,

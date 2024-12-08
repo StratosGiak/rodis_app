@@ -860,6 +860,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                               keyboardType: TextInputType.datetime,
                               enabled: value,
                               readOnly: true,
+                              canRequestFocus: false,
+                              mouseCursor: WidgetStateMouseCursor.clickable,
                               onTap: () async {
                                 final newDate = await showDatePicker(
                                   context: context,
