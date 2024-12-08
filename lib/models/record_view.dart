@@ -59,9 +59,7 @@ class RecordView extends ChangeNotifier {
 
   void setFilterValue(String filterValue) {
     this.filterValue = filterValue;
-    filtered = records
-        .where((record) => filterValue.isEmpty || filter(record, filterValue))
-        .toList()
+    filtered = records.where((record) => filter(record, filterValue)).toList()
       ..sort(sorter);
     notifyListeners();
   }
@@ -69,7 +67,7 @@ class RecordView extends ChangeNotifier {
   void setFilterType(COLUMN filterType) {
     this.filterType = filterType;
     filter = switch (filterType) {
-      COLUMN.id => (record, value) => record.id == int.tryParse(value),
+      COLUMN.id => (record, value) => record.id.toString().startsWith(value),
       COLUMN.name => (record, value) =>
           record.name.toLowerCase().contains(value.toLowerCase()),
       COLUMN.phone => (record, value) =>
