@@ -55,9 +55,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                         if (view.filterValue == value.toLowerCase()) {
                           return;
                         }
-                        context
-                            .read<RecordView>()
-                            .setFilterValue(value.toLowerCase());
+                        context.read<RecordView>().setFilterValue(value);
                       },
                     ),
                   ),
