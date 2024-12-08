@@ -356,7 +356,9 @@ class AutocompleteOption extends StatelessWidget {
                     if (highlight) {
                       SchedulerBinding.instance.addPostFrameCallback(
                         (Duration timeStamp) {
-                          Scrollable.ensureVisible(context, alignment: 0.5);
+                          if (context.mounted) {
+                            Scrollable.ensureVisible(context, alignment: 0.5);
+                          }
                         },
                         debugLabel: 'AutocompleteOptions.ensureVisible',
                       );
