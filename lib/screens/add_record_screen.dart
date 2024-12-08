@@ -920,13 +920,16 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             ),
                           ],
                         ),
-                        // PhotoField(
-                        //   photoUrl: photoUrl,
-                        //   onPhotoSet: (newImage, removePhoto) {
-                        //     tempPhoto = newImage;
-                        //     if (removePhoto) this.removePhoto = removePhoto;
-                        //   },
-                        // ),
+                        PhotoField(
+                          photoUrl: photoUrls.isNotEmpty ? photoUrls[0] : null,
+                          onPhotoSet: (newImage, removePhoto) {
+                            tempPhotos.clear();
+                            if (newImage != null)
+                              tempPhotos.insert(0, newImage);
+                            else
+                              tempPhotos.remove(newImage);
+                          },
+                        ),
                       ],
                     ),
                   ],
