@@ -63,38 +63,13 @@ class PhotoFieldState extends State<PhotoField> {
     );
   }
 
-  late final pickPhotoBottomSheet = Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      ListTile(
-        leading: const Icon(Icons.camera),
-        title: const Text("Κάμερα"),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20.0,
-          vertical: 6.0,
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
-        ),
-        onTap: pickCamera,
-      ),
-      ListTile(
-        title: const Text("Gallery"),
-        leading: const Icon(Icons.photo),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20.0,
-          vertical: 6.0,
-        ),
-        onTap: pickGallery,
-      ),
-    ],
-  );
-
   void addPhoto() async {
     await showModalBottomSheet(
       context: context,
-      builder: (context) => pickPhotoBottomSheet,
+      builder: (context) => PhotoPickerBottomSheet(
+        onCameraTap: pickCamera,
+        onGalleryTap: pickGallery,
+      ),
     );
   }
 
@@ -233,6 +208,48 @@ class PhotoDialog extends StatelessWidget {
             icon: const Icon(Icons.close),
             style: IconButton.styleFrom(backgroundColor: Colors.white54),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class PhotoPickerBottomSheet extends StatelessWidget {
+  const PhotoPickerBottomSheet({
+    super.key,
+    required this.onCameraTap,
+    required this.onGalleryTap,
+  });
+
+  final void Function() onCameraTap;
+  final void Function() onGalleryTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.camera),
+          title: const Text("Κάμερα"),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 6.0,
+          ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+          ),
+          onTap: onCameraTap,
+        ),
+        ListTile(
+          title: const Text("Gallery"),
+          leading: const Icon(Icons.photo),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 6.0,
+          ),
+          onTap: onGalleryTap,
         ),
       ],
     );
