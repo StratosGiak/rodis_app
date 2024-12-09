@@ -56,10 +56,10 @@ class PhotoFieldState extends State<PhotoField> {
     widget.onPhotoSet(null, true);
   }
 
-  void onTap(Widget child) async {
+  void onTap(Widget photo) async {
     await showDialog(
       context: context,
-      builder: (context) => PhotoDialog(child: child),
+      builder: (context) => PhotoDialog(child: photo),
     );
   }
 
