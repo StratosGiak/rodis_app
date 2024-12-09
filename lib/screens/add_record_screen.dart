@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:popover/popover.dart';
@@ -55,9 +56,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         : null,
   );
   List<History> newHistory = [];
-  List<String> photoUrls = [];
-  List<XFile> tempPhotos = [];
-  bool removePhoto = false;
+  final photos = <Photo>[];
   int status = 1;
   int? mechanic;
   int store = 1;
@@ -115,7 +114,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           serialController.text.isNotEmpty ||
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
-          tempPhotos.isNotEmpty;
+          photos.isNotEmpty;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
         notEqualOrEmpty(record.phoneHome, phoneHomeController.text) ||
@@ -143,7 +142,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.warrantyDate != warrantyDate ||
         record.status != status ||
         record.store != store ||
-        tempPhotos.isNotEmpty ||
+        listEquals(photos.map((p) => p.url).toList(), record.photos) ||
         newHistory.isNotEmpty;
   }
 
@@ -378,7 +377,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     warrantyController.text = record.warrantyDate != null
         ? dateFormat.format(record.warrantyDate!).toString()
         : "";
-    photoUrls = record.photos;
+    photos.addAll(record.photos.map((p) => (url: p, file: null)));
     productController.text = record.product;
     manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
@@ -525,9 +524,13 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 return;
               }
               waiting.value = true;
-              List<String> newPhotoUrls = [];
-              if (tempPhotos.isNotEmpty) {
-                List<XFile> compressed = await tempPhotos.map((p) async {
+              final newPhotos = photos
+                  .where((e) => e.file != null)
+                  .map((e) => e.file)
+                  .toList() as List<XFile>;
+              final newPhotoUrls = [];
+              if (newPhotos.isNotEmpty) {
+                final compressed = await newPhotos.map((p) async {
                   try {
                     return await FlutterImageCompress.compressAndGetFile(
                           p.path,
@@ -538,12 +541,21 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     return p;
                   }
                 }).wait;
-                newPhotoUrls = await apiHandler.postPhotos(compressed);
+                newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
                 if (newPhotoUrls.isEmpty) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
                   waiting.value = false;
                   return;
+                }
+              }
+              final finalPhotos = <String>[];
+              int index = 0;
+              for (final p in photos) {
+                if (p.file != null) {
+                  finalPhotos.add(newPhotoUrls[index++]);
+                } else {
+                  finalPhotos.add(p.url!);
                 }
               }
               final record = {
@@ -581,7 +593,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? feeController.text.replaceAll(r',', '.')
                     : null,
                 "advance": advanceController.text.replaceAll(r',', '.'),
-                "photos": newPhotoUrls,
+                "photos": finalPhotos,
                 "mechanic": userId == 0 ? mechanic : userId,
                 "hasWarranty": hasWarranty.value,
                 "warrantyDate": hasWarranty.value && warrantyDate != null

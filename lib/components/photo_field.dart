@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rodis_service/api_handler.dart';
 
+typedef Photo = ({String? url, XFile? file});
+
 class PhotoField extends StatefulWidget {
   PhotoField({super.key, this.photoUrl, required this.onPhotoSet});
 
