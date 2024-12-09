@@ -8,10 +8,10 @@ import 'package:rodis_service/api_handler.dart';
 typedef Photo = ({String? url, XFile? file});
 
 class PhotoField extends StatefulWidget {
-  PhotoField({super.key, this.photoUrl, required this.onPhotoSet});
+  PhotoField({super.key, required this.photos, required this.onPhotosChanged});
 
-  final String? photoUrl;
-  final void Function(XFile? newImage, bool removePhoto) onPhotoSet;
+  final List<Photo> photos;
+  final void Function(List<Photo> newPhotos) onPhotosChanged;
   final picker = ImagePicker();
 
   @override
@@ -19,8 +19,18 @@ class PhotoField extends StatefulWidget {
 }
 
 class PhotoFieldState extends State<PhotoField> {
-  XFile? pickedImage;
-  bool removePhoto = false;
+  late final _photos = widget.photos;
+  int _index = 0;
+
+  set setIndex(index) {
+    if (index < 0) {
+      _index = 0;
+    } else if (index > _photos.length - 1) {
+      _index = _photos.length - 1;
+    } else {
+      _index = index;
+    }
+  }
 
   void pickGallery() async {
     final image = await widget.picker.pickImage(
@@ -29,8 +39,8 @@ class PhotoFieldState extends State<PhotoField> {
     );
     Navigator.pop(context);
     if (image == null) return;
-    setState(() => pickedImage = image);
-    widget.onPhotoSet(image, removePhoto);
+    setState(() => _photos.add((url: null, file: image)));
+    widget.onPhotosChanged(_photos);
   }
 
   void pickCamera() async {
@@ -44,16 +54,13 @@ class PhotoFieldState extends State<PhotoField> {
     );
     Navigator.pop(context);
     if (image == null) return;
-    setState(() => pickedImage = image);
-    widget.onPhotoSet(image, removePhoto);
+    setState(() => _photos.add((url: null, file: image)));
+    widget.onPhotosChanged(_photos);
   }
 
-  void onRemovePressed() {
-    setState(() {
-      pickedImage = null;
-      removePhoto = true;
-    });
-    widget.onPhotoSet(null, true);
+  void onRemovePressed(int index) {
+    setState(() => _photos.removeAt(index));
+    widget.onPhotosChanged(_photos);
   }
 
   void onTap(Widget photo) async {
