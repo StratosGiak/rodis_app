@@ -19,7 +19,7 @@ class PhotoField extends StatefulWidget {
 
 class PhotoFieldState extends State<PhotoField> {
   late final _photos = widget.photos;
-  late final photoWidgets = _photos.map((p) => PlatformPhoto(p)).toList();
+  late final platformPhotos = _photos.map((p) => PlatformPhoto(p)).toList();
 
   int _index = 0;
   int get index => _index;
@@ -43,7 +43,7 @@ class PhotoFieldState extends State<PhotoField> {
     final photo = (url: null, file: image);
     setState(() {
       _photos.add(photo);
-      photoWidgets.add(PlatformPhoto(photo));
+      platformPhotos.add(PlatformPhoto(photo));
     });
   }
 
@@ -61,7 +61,7 @@ class PhotoFieldState extends State<PhotoField> {
     final photo = (url: null, file: image);
     setState(() {
       _photos.add(photo);
-      photoWidgets.add(PlatformPhoto(photo));
+      platformPhotos.add(PlatformPhoto(photo));
       index = _photos.length - 1;
     });
   }
@@ -69,7 +69,7 @@ class PhotoFieldState extends State<PhotoField> {
   void onRemovePressed(int index) {
     setState(() {
       _photos.removeAt(index);
-      photoWidgets.removeAt(index);
+      platformPhotos.removeAt(index);
       if (this.index > _photos.length - 1) this.index--;
     });
   }
@@ -88,7 +88,7 @@ class PhotoFieldState extends State<PhotoField> {
   @override
   Widget build(BuildContext context) {
     final Widget mainPhoto;
-    if (photoWidgets.isEmpty) {
+    if (platformPhotos.isEmpty) {
       mainPhoto = Center(
         child: TextButton.icon(
           onPressed: addPhoto,
@@ -98,11 +98,11 @@ class PhotoFieldState extends State<PhotoField> {
       );
     } else {
       mainPhoto = PhotoOverlay(
-        onRemovePressed: () => onRemovePressed(_index),
+        onRemovePressed: () => onRemovePressed(index),
         onNextPressed:
             index >= _photos.length - 1 ? null : () => setState(() => index++),
         onPreviousPressed: index <= 0 ? null : () => setState(() => index--),
-        photo: photoWidgets[index],
+        photo: platformPhotos[index],
       );
     }
 
@@ -151,7 +151,7 @@ class PhotoFieldState extends State<PhotoField> {
                                 opacity: this.index == index ? 1 : 0.5,
                                 child: FittedBox(
                                   fit: BoxFit.cover,
-                                  child: photoWidgets[index],
+                                  child: platformPhotos[index],
                                 ),
                               ),
                             ),
