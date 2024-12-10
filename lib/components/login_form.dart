@@ -80,83 +80,91 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: SizedBox(
-        width: 350,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 80,
-              child: TextFormField(
-                controller: usernameController,
-                validator: (value) => value == null || value.isEmpty
-                    ? "Εισάγετε όνομα χρήστη"
-                    : null,
-                decoration: const InputDecoration(
-                  labelText: "Username",
-                  border: OutlineInputBorder(),
-                ),
-                textInputAction: TextInputAction.next,
-              ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            SizedBox(
-              height: 80,
-              child: TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                validator: (value) =>
-                    value == null || value.isEmpty ? "Εισάγετε κωδικό" : null,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                ),
-                textInputAction: TextInputAction.done,
-                keyboardType: TextInputType.visiblePassword,
-                onFieldSubmitted: (value) => onSubmit(),
-              ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: SizedBox(
-                height: 40,
-                width: 80,
-                child: TextButton(
-                  onPressed: onSubmit,
-                  style: TextButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).primaryColor.withOpacity(0.35),
+    return AutofillGroup(
+      child: Form(
+        key: _formKey,
+        child: SizedBox(
+          width: 350,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 80,
+                child: TextFormField(
+                  controller: usernameController,
+                  validator: (value) => value == null || value.isEmpty
+                      ? "Εισάγετε όνομα χρήστη"
+                      : null,
+                  decoration: const InputDecoration(
+                    labelText: "Username",
+                    border: OutlineInputBorder(),
                   ),
-                  child: ValueListenableBuilder(
-                    valueListenable: waiting,
-                    builder: (context, value, child) => AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 150),
-                      transitionBuilder: (child, animation) => ScaleTransition(
-                        scale: animation,
-                        child: child,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  autocorrect: false,
+                  autofillHints: const [AutofillHints.username],
+                ),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              SizedBox(
+                height: 80,
+                child: TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? "Εισάγετε κωδικό" : null,
+                  decoration: const InputDecoration(
+                    labelText: "Password",
+                    border: OutlineInputBorder(),
+                  ),
+                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.visiblePassword,
+                  autocorrect: false,
+                  autofillHints: const [AutofillHints.password],
+                  onFieldSubmitted: (value) => onSubmit(),
+                ),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  height: 40,
+                  width: 80,
+                  child: TextButton(
+                    onPressed: onSubmit,
+                    style: TextButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).primaryColor.withOpacity(0.35),
+                    ),
+                    child: ValueListenableBuilder(
+                      valueListenable: waiting,
+                      builder: (context, value, child) => AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 150),
+                        transitionBuilder: (child, animation) =>
+                            ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        ),
+                        child: value
+                            ? const SizedBox(
+                                height: 15,
+                                width: 15,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3.0,
+                                ),
+                              )
+                            : const Text("Log in"),
                       ),
-                      child: value
-                          ? const SizedBox(
-                              height: 15,
-                              width: 15,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3.0,
-                              ),
-                            )
-                          : const Text("Log in"),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
