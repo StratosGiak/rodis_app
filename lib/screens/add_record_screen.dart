@@ -142,7 +142,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.warrantyDate != warrantyDate ||
         record.status != status ||
         record.store != store ||
-        listEquals(photos.map((p) => p.url).toList(), record.photos) ||
+        !listEquals(photos.map((p) => p.url).toList(), record.photos) ||
         newHistory.isNotEmpty;
   }
 
