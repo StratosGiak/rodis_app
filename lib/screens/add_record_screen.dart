@@ -351,6 +351,105 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     return result;
   }
 
+  void onSubmit(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(requiredFieldsSnackbar);
+      return;
+    }
+    waiting.value = true;
+    final newPhotos = photos
+        .where((e) => e.file != null)
+        .map((e) => e.file)
+        .toList()
+        .cast<XFile>();
+    final newPhotoUrls = [];
+    if (newPhotos.isNotEmpty) {
+      final compressed = await newPhotos.map((p) async {
+        try {
+          return await FlutterImageCompress.compressAndGetFile(
+                p.path,
+                "${p.path}_compressed.jpg",
+              ) ??
+              p;
+        } catch (error) {
+          return p;
+        }
+      }).wait;
+      try {
+        newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(photoErrorSnackbar);
+        waiting.value = false;
+        return;
+      }
+    }
+    final finalPhotos = <String>[];
+    int index = 0;
+    for (final p in photos) {
+      if (p.file != null) {
+        finalPhotos.add(newPhotoUrls[index++]);
+      } else {
+        finalPhotos.add(p.url!);
+      }
+    }
+    final record = {
+      "date": dateTimeFormatDB.format(date),
+      "name": nameController.text,
+      "phoneHome":
+          phoneHomeController.text.isNotEmpty ? phoneHomeController.text : null,
+      "phoneMobile": phoneMobileController.text,
+      "email": emailController.text.isNotEmpty ? emailController.text : null,
+      "postalCode": postalCodeController.text.isNotEmpty
+          ? postalCodeController.text
+          : null,
+      "city": cityController.text.isNotEmpty ? cityController.text : null,
+      "area": areaController.text.isNotEmpty ? areaController.text : null,
+      "address":
+          addressController.text.isNotEmpty ? addressController.text : null,
+      "notesReceived": notesReceivedController.text,
+      "notesRepaired": notesRepairedController.text.isNotEmpty
+          ? notesRepairedController.text
+          : null,
+      "serial": serialController.text.isNotEmpty ? serialController.text : null,
+      "product": productController.text,
+      "manufacturer": manufacturerController.text.isNotEmpty
+          ? manufacturerController.text
+          : null,
+      "fee": feeController.text.isNotEmpty
+          ? feeController.text.replaceAll(r',', '.')
+          : null,
+      "advance": advanceController.text.replaceAll(r',', '.'),
+      "photos": finalPhotos,
+      "mechanic": userId == 0 ? mechanic : userId,
+      "hasWarranty": hasWarranty.value,
+      "warrantyDate": hasWarranty.value && warrantyDate != null
+          ? dateTimeFormatDB.format(warrantyDate!)
+          : null,
+      "status": status,
+      "store": store,
+      "newHistory": newHistory.map((e) => e.toJSON()).toList(),
+    };
+    try {
+      if (id == null) {
+        final response = await apiHandler.postRecord(record);
+        if (response != null) {
+          context.read<Records>().add(Record.fromJSON(response));
+          Navigator.pop(context);
+        }
+      } else {
+        final response = await apiHandler.putRecord(id!, record);
+        if (response != null) {
+          context.read<Records>().setRecord(Record.fromJSON(response));
+          Navigator.pop(context);
+        }
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(uploadErrorSnackbar);
+    } finally {
+      waiting.value = false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -517,116 +616,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     : const Icon(Icons.check),
               ),
             ),
-            onPressed: () async {
-              if (!_formKey.currentState!.validate()) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(requiredFieldsSnackbar);
-                return;
-              }
-              waiting.value = true;
-              final newPhotos = photos
-                  .where((e) => e.file != null)
-                  .map((e) => e.file)
-                  .toList()
-                  .cast<XFile>();
-              final newPhotoUrls = [];
-              if (newPhotos.isNotEmpty) {
-                final compressed = await newPhotos.map((p) async {
-                  try {
-                    return await FlutterImageCompress.compressAndGetFile(
-                          p.path,
-                          "${p.path}_compressed.jpg",
-                        ) ??
-                        p;
-                  } catch (error) {
-                    return p;
-                  }
-                }).wait;
-                try {
-                  newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
-                } catch (error) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(photoErrorSnackbar);
-                  waiting.value = false;
-                  return;
-                }
-              }
-              final finalPhotos = <String>[];
-              int index = 0;
-              for (final p in photos) {
-                if (p.file != null) {
-                  finalPhotos.add(newPhotoUrls[index++]);
-                } else {
-                  finalPhotos.add(p.url!);
-                }
-              }
-              final record = {
-                "date": dateTimeFormatDB.format(date),
-                "name": nameController.text,
-                "phoneHome": phoneHomeController.text.isNotEmpty
-                    ? phoneHomeController.text
-                    : null,
-                "phoneMobile": phoneMobileController.text,
-                "email": emailController.text.isNotEmpty
-                    ? emailController.text
-                    : null,
-                "postalCode": postalCodeController.text.isNotEmpty
-                    ? postalCodeController.text
-                    : null,
-                "city":
-                    cityController.text.isNotEmpty ? cityController.text : null,
-                "area":
-                    areaController.text.isNotEmpty ? areaController.text : null,
-                "address": addressController.text.isNotEmpty
-                    ? addressController.text
-                    : null,
-                "notesReceived": notesReceivedController.text,
-                "notesRepaired": notesRepairedController.text.isNotEmpty
-                    ? notesRepairedController.text
-                    : null,
-                "serial": serialController.text.isNotEmpty
-                    ? serialController.text
-                    : null,
-                "product": productController.text,
-                "manufacturer": manufacturerController.text.isNotEmpty
-                    ? manufacturerController.text
-                    : null,
-                "fee": feeController.text.isNotEmpty
-                    ? feeController.text.replaceAll(r',', '.')
-                    : null,
-                "advance": advanceController.text.replaceAll(r',', '.'),
-                "photos": finalPhotos,
-                "mechanic": userId == 0 ? mechanic : userId,
-                "hasWarranty": hasWarranty.value,
-                "warrantyDate": hasWarranty.value && warrantyDate != null
-                    ? dateTimeFormatDB.format(warrantyDate!)
-                    : null,
-                "status": status,
-                "store": store,
-                "newHistory": newHistory.map((e) => e.toJSON()).toList(),
-              };
-              try {
-                if (id == null) {
-                  final response = await apiHandler.postRecord(record);
-                  if (response != null) {
-                    context.read<Records>().add(Record.fromJSON(response));
-                    Navigator.pop(context);
-                  }
-                } else {
-                  final response = await apiHandler.putRecord(id!, record);
-                  if (response != null) {
-                    context
-                        .read<Records>()
-                        .setRecord(Record.fromJSON(response));
-                    Navigator.pop(context);
-                  }
-                }
-              } catch (err) {
-                ScaffoldMessenger.of(context).showSnackBar(uploadErrorSnackbar);
-              } finally {
-                waiting.value = false;
-              }
-            },
+            onPressed: () => onSubmit(context),
           ),
           body: SingleChildScrollView(
             child: Form(
