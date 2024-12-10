@@ -542,8 +542,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     return p;
                   }
                 }).wait;
-                newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
-                if (newPhotoUrls.isEmpty) {
+                try {
+                  newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
+                } catch (error) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
                   waiting.value = false;
