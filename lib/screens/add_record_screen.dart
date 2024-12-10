@@ -56,9 +56,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         : null,
   );
   List<History> newHistory = [];
-  String? photoUrl;
-  XFile? tempPhoto;
-  bool removePhoto = false;
+  final photos = <Photo>[];
   int status = 1;
   int? mechanic;
   int store = 1;
@@ -116,7 +114,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
           serialController.text.isNotEmpty ||
           productController.text.isNotEmpty ||
           manufacturerController.text.isNotEmpty ||
-          tempPhoto != null;
+          photos.isNotEmpty;
     }
     return notEqualOrEmpty(record.name, nameController.text) ||
         notEqualOrEmpty(record.phoneHome, phoneHomeController.text) ||
@@ -144,7 +142,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         record.warrantyDate != warrantyDate ||
         record.status != status ||
         record.store != store ||
-        tempPhoto != null ||
+        listEquals(photos.map((p) => p.url).toList(), record.photos) ||
         newHistory.isNotEmpty;
   }
 
@@ -379,9 +377,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
     warrantyController.text = record.warrantyDate != null
         ? dateFormat.format(record.warrantyDate!).toString()
         : "";
-    photoUrl = record.photo != null
-        ? (record.photo!.isEmpty ? null : record.photo)
-        : null;
+    photos.addAll(record.photos.map((p) => (url: p, file: null)));
     productController.text = record.product;
     manufacturerController.text = record.manufacturer ?? "";
     status = record.status;
@@ -528,24 +524,39 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                 return;
               }
               waiting.value = true;
-              String? newPhotoUrl;
-              if (tempPhoto != null) {
-                XFile? compressed;
-                try {
-                  compressed = await FlutterImageCompress.compressAndGetFile(
-                    tempPhoto!.path,
-                    "${tempPhoto!.path}_compressed.jpg",
-                  );
-                } catch (error) {
-                  if (kDebugMode) debugPrint("$error");
-                }
-                compressed ??= tempPhoto;
-                newPhotoUrl = await apiHandler.postPhoto(compressed!);
-                if (newPhotoUrl == null) {
+              final newPhotos = photos
+                  .where((e) => e.file != null)
+                  .map((e) => e.file)
+                  .toList()
+                  .cast<XFile>();
+              final newPhotoUrls = [];
+              if (newPhotos.isNotEmpty) {
+                final compressed = await newPhotos.map((p) async {
+                  try {
+                    return await FlutterImageCompress.compressAndGetFile(
+                          p.path,
+                          "${p.path}_compressed.jpg",
+                        ) ??
+                        p;
+                  } catch (error) {
+                    return p;
+                  }
+                }).wait;
+                newPhotoUrls.addAll(await apiHandler.postPhotos(compressed));
+                if (newPhotoUrls.isEmpty) {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(photoErrorSnackbar);
                   waiting.value = false;
                   return;
+                }
+              }
+              final finalPhotos = <String>[];
+              int index = 0;
+              for (final p in photos) {
+                if (p.file != null) {
+                  finalPhotos.add(newPhotoUrls[index++]);
+                } else {
+                  finalPhotos.add(p.url!);
                 }
               }
               final record = {
@@ -583,7 +594,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                     ? feeController.text.replaceAll(r',', '.')
                     : null,
                 "advance": advanceController.text.replaceAll(r',', '.'),
-                "photo": newPhotoUrl ?? (removePhoto ? null : photoUrl),
+                "photos": finalPhotos,
                 "mechanic": userId == 0 ? mechanic : userId,
                 "hasWarranty": hasWarranty.value,
                 "warrantyDate": hasWarranty.value && warrantyDate != null
@@ -922,13 +933,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             ),
                           ],
                         ),
-                        PhotoField(
-                          photoUrl: photoUrl,
-                          onPhotoSet: (newImage, removePhoto) {
-                            tempPhoto = newImage;
-                            if (removePhoto) this.removePhoto = removePhoto;
-                          },
-                        ),
+                        PhotoField(photos: photos),
                       ],
                     ),
                   ],
