@@ -55,7 +55,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         ? dateFormat.format(warrantyDate!).toString()
         : null,
   );
-  List<History> newHistory = [];
+  final newHistory = <History>[];
   final photos = <Photo>[];
   int status = 1;
   int? mechanic;
