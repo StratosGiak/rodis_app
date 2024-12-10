@@ -631,9 +631,11 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
             child: Form(
               key: _formKey,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 20.0,
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20.0,
+                  top: 20.0,
+                  bottom: 65.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
