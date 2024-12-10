@@ -527,7 +527,8 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
               final newPhotos = photos
                   .where((e) => e.file != null)
                   .map((e) => e.file)
-                  .toList() as List<XFile>;
+                  .toList()
+                  .cast<XFile>();
               final newPhotoUrls = [];
               if (newPhotos.isNotEmpty) {
                 final compressed = await newPhotos.map((p) async {
@@ -932,16 +933,7 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                             ),
                           ],
                         ),
-                        PhotoField(
-                          photoUrl: photoUrls.isNotEmpty ? photoUrls[0] : null,
-                          onPhotoSet: (newImage, removePhoto) {
-                            tempPhotos.clear();
-                            if (newImage != null)
-                              tempPhotos.insert(0, newImage);
-                            else
-                              tempPhotos.remove(newImage);
-                          },
-                        ),
+                        PhotoField(photos: photos),
                       ],
                     ),
                   ],

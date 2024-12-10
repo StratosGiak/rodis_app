@@ -8,10 +8,9 @@ import 'package:rodis_service/api_handler.dart';
 typedef Photo = ({String? url, XFile? file});
 
 class PhotoField extends StatefulWidget {
-  PhotoField({super.key, required this.photos, required this.onPhotosChanged});
+  PhotoField({super.key, required this.photos});
 
   final List<Photo> photos;
-  final void Function(List<Photo> newPhotos) onPhotosChanged;
   final picker = ImagePicker();
 
   @override
@@ -20,15 +19,17 @@ class PhotoField extends StatefulWidget {
 
 class PhotoFieldState extends State<PhotoField> {
   late final _photos = widget.photos;
-  int _index = 0;
+  late final photoWidgets = _photos.map((p) => PlatformPhoto(p)).toList();
 
-  set setIndex(index) {
-    if (index < 0) {
+  int _index = 0;
+  int get index => _index;
+  set index(int value) {
+    if (value < 0) {
       _index = 0;
-    } else if (index > _photos.length - 1) {
+    } else if (value > _photos.length - 1) {
       _index = _photos.length - 1;
     } else {
-      _index = index;
+      _index = value;
     }
   }
 
@@ -37,10 +38,13 @@ class PhotoFieldState extends State<PhotoField> {
       source: ImageSource.gallery,
       requestFullMetadata: false,
     );
-    Navigator.pop(context);
+    Navigator.pop(context, image);
     if (image == null) return;
-    setState(() => _photos.add((url: null, file: image)));
-    widget.onPhotosChanged(_photos);
+    final photo = (url: null, file: image);
+    setState(() {
+      _photos.add(photo);
+      photoWidgets.add(PlatformPhoto(photo));
+    });
   }
 
   void pickCamera() async {
@@ -52,90 +56,164 @@ class PhotoFieldState extends State<PhotoField> {
       source: ImageSource.camera,
       requestFullMetadata: false,
     );
-    Navigator.pop(context);
+    Navigator.pop(context, image);
     if (image == null) return;
-    setState(() => _photos.add((url: null, file: image)));
-    widget.onPhotosChanged(_photos);
+    final photo = (url: null, file: image);
+    setState(() {
+      _photos.add(photo);
+      photoWidgets.add(PlatformPhoto(photo));
+      index = _photos.length - 1;
+    });
   }
 
   void onRemovePressed(int index) {
-    setState(() => _photos.removeAt(index));
-    widget.onPhotosChanged(_photos);
-  }
-
-  void onTap(Widget photo) async {
-    await showDialog(
-      context: context,
-      builder: (context) => PhotoDialog(child: photo),
-    );
+    setState(() {
+      _photos.removeAt(index);
+      photoWidgets.removeAt(index);
+      if (this.index > _photos.length - 1) this.index--;
+    });
   }
 
   void addPhoto() async {
-    await showModalBottomSheet(
+    final addedPhoto = await showModalBottomSheet<XFile?>(
       context: context,
       builder: (context) => PhotoPickerBottomSheet(
         onCameraTap: pickCamera,
         onGalleryTap: pickGallery,
       ),
     );
+    if (addedPhoto != null) index = _photos.length - 1;
   }
 
   @override
   Widget build(BuildContext context) {
-    final Widget child;
-    if (pickedImage != null) {
-      child = ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: PhotoOverlay(
-          onTap: () async => onTap(
-            kIsWeb
-                ? Image.memory(await pickedImage!.readAsBytes())
-                : Image.file(File(pickedImage!.path)),
-          ),
-          onLongPress: addPhoto,
-          onRemovePressed: onRemovePressed,
-          child: kIsWeb
-              ? FutureBuilder(
-                  future: Future(() async => await pickedImage!.readAsBytes()),
-                  builder: (context, snapshot) => snapshot.hasData
-                      ? Image.memory(snapshot.data!)
-                      : const SizedBox.shrink(),
-                )
-              : Image.file(File(pickedImage!.path)),
-        ),
-      );
-    } else if (widget.photoUrl != null && !removePhoto) {
-      child = ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: PhotoOverlay(
-          onTap: () => onTap(
-            Image.network("${ApiHandler.photoUrl}/${widget.photoUrl}"),
-          ),
-          onLongPress: addPhoto,
-          onRemovePressed: onRemovePressed,
-          child: Image.network("${ApiHandler.photoUrl}/${widget.photoUrl}"),
+    final Widget mainPhoto;
+    if (photoWidgets.isEmpty) {
+      mainPhoto = Center(
+        child: TextButton.icon(
+          onPressed: addPhoto,
+          label: const Text("Προσθήκη εικόνας"),
+          icon: const Icon(Icons.camera_alt),
         ),
       );
     } else {
-      child = TextButton.icon(
-        onPressed: addPhoto,
-        label: const Text("Προσθήκη εικόνας"),
-        icon: const Icon(Icons.camera_alt),
+      mainPhoto = PhotoOverlay(
+        onRemovePressed: () => onRemovePressed(_index),
+        onNextPressed:
+            index >= _photos.length - 1 ? null : () => setState(() => index++),
+        onPreviousPressed: index <= 0 ? null : () => setState(() => index--),
+        photo: photoWidgets[index],
       );
     }
-    final decoration =
-        pickedImage == null && (widget.photoUrl == null || removePhoto)
-            ? BoxDecoration(
-                color: Colors.black.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(12.0),
-              )
-            : null;
 
-    return Container(
-      height: 350,
-      width: 500,
-      decoration: decoration,
-      child: Center(child: child),
+    return Column(
+      children: [
+        Container(
+          height: 350,
+          width: 500,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.03),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: mainPhoto,
+        ),
+        if (_photos.isNotEmpty)
+          SizedBox(
+            height: 65,
+            child: ListView.separated(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              separatorBuilder: (_, index) => index < _photos.length - 1
+                  ? const SizedBox(width: 4.0)
+                  : const SizedBox(width: 10.0),
+              itemCount: _photos.length + 1,
+              itemBuilder: (context, index) => Center(
+                child: index == _photos.length
+                    ? IconButton(
+                        tooltip: "Προσθήκη εικόνας",
+                        onPressed: _photos.length < 5 ? addPhoto : null,
+                        icon: const Icon(Icons.add),
+                        color: Theme.of(context).primaryColor,
+                      )
+                    : SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              splashColor: Colors.transparent,
+                              onTap: this.index == index
+                                  ? null
+                                  : () => setState(() => this.index = index),
+                              child: Opacity(
+                                opacity: this.index == index ? 1 : 0.5,
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: photoWidgets[index],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class PlatformPhoto extends StatelessWidget {
+  const PlatformPhoto(this.photo, {super.key});
+
+  final Photo photo;
+
+  @override
+  Widget build(BuildContext context) {
+    final ImageProvider provider;
+    if (photo.url != null) {
+      provider = NetworkImage("${ApiHandler.photoUrl}/${photo.url!}");
+    } else if (!kIsWeb) {
+      provider = FileImage(File(photo.file!.path));
+    } else {
+      return FutureBuilder(
+        future: Future(() async => await photo.file!.readAsBytes()),
+        builder: (context, snapshot) => snapshot.hasData
+            ? Image.memory(
+                snapshot.data!,
+                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                  if (frame == null) {
+                    return const SizedBox(
+                      height: 60,
+                      width: 60,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  return child;
+                },
+              )
+            : const SizedBox(
+                height: 60,
+                width: 60,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+      );
+    }
+    return Image(
+      image: provider,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (frame == null) {
+          return const SizedBox(
+            height: 60,
+            width: 60,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return child;
+      },
     );
   }
 }
@@ -143,44 +221,96 @@ class PhotoFieldState extends State<PhotoField> {
 class PhotoOverlay extends StatelessWidget {
   const PhotoOverlay({
     super.key,
-    required this.onTap,
-    required this.onLongPress,
+    required this.photo,
+    this.onLongPress,
     required this.onRemovePressed,
-    required this.child,
+    required this.onNextPressed,
+    required this.onPreviousPressed,
   });
 
-  final void Function() onTap;
-  final void Function() onLongPress;
-  final void Function() onRemovePressed;
-  final Widget child;
+  final PlatformPhoto photo;
+  final void Function()? onLongPress;
+  final void Function()? onRemovePressed;
+  final void Function()? onNextPressed;
+  final void Function()? onPreviousPressed;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.center,
       children: [
-        child,
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onLongPress: onLongPress,
-              onTap: onTap,
-              splashFactory: InkSplash.splashFactory,
+        Stack(
+          children: [
+            photo,
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                clipBehavior: Clip.hardEdge,
+                child: InkWell(
+                  onLongPress: onLongPress,
+                  onTap: () async {
+                    showDialog(
+                      context: context,
+                      builder: (context) => PhotoDialog(child: photo),
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+          ],
         ),
         Positioned(
           top: 6.0,
           right: 6.0,
           child: SizedBox(
-            height: 25.0,
-            width: 25.0,
+            height: 30.0,
+            width: 30.0,
             child: IconButton(
               iconSize: 16.0,
               padding: EdgeInsets.zero,
               onPressed: onRemovePressed,
               icon: const Icon(Icons.close),
               style: IconButton.styleFrom(backgroundColor: Colors.white54),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: onNextPressed != null,
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 35.0,
+                width: 35.0,
+                child: IconButton(
+                  iconSize: 22.0,
+                  padding: EdgeInsets.zero,
+                  onPressed: onNextPressed,
+                  icon: const Icon(Icons.chevron_right),
+                  style: IconButton.styleFrom(backgroundColor: Colors.white54),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible: onPreviousPressed != null,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 35.0,
+                width: 35.0,
+                child: IconButton(
+                  iconSize: 22.0,
+                  padding: EdgeInsets.zero,
+                  onPressed: onPreviousPressed,
+                  icon: const Icon(Icons.chevron_left),
+                  style: IconButton.styleFrom(backgroundColor: Colors.white54),
+                ),
+              ),
             ),
           ),
         ),
@@ -198,7 +328,6 @@ class PhotoDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GestureDetector(onTap: () => Navigator.pop(context)),
         Positioned.fill(
           child: InteractiveViewer(
             child: Padding(
@@ -211,9 +340,9 @@ class PhotoDialog extends StatelessWidget {
           left: 30,
           top: 30,
           child: IconButton(
-            onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.close),
             style: IconButton.styleFrom(backgroundColor: Colors.white54),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
       ],
