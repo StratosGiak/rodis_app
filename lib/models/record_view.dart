@@ -12,10 +12,10 @@ class RecordView extends ChangeNotifier {
   List<Record> records;
   List<Record> filtered;
 
-  COLUMN column = COLUMN.date;
+  COLUMN column = COLUMN.id;
   bool reverse = true;
-  Comparator<Record> sorterInner = (a, b) => a.date.compareTo(b.date);
-  Comparator<Record> sorter = (a, b) => a.date.compareTo(b.date);
+  Comparator<Record> sorterInner = (a, b) => a.id.compareTo(b.id);
+  Comparator<Record> sorter = (a, b) => a.id.compareTo(b.id);
   String filterValue = '';
   COLUMN filterType = COLUMN.name;
   bool Function(Record, String) filter = (record, value) =>
