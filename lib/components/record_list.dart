@@ -70,16 +70,17 @@ class _RecordRowState extends State<RecordRow> {
   }
 
   String makeCustomerString(Record record) {
-    String address = "";
+    final fullAddress = [];
     if (record.address != null && record.address!.isNotEmpty) {
-      address += record.address!;
+      fullAddress.add(record.address);
     }
     if (record.area != null && record.area!.isNotEmpty) {
-      address += ", ${record.area}";
-    } else if (record.city != null && record.city!.isNotEmpty) {
-      address += ", ${record.city}";
+      fullAddress.add(record.area);
     }
-    return "${record.name}\n${record.phoneMobile}${address.isNotEmpty ? "\n$address" : ""}";
+    if (record.city != null && record.city!.isNotEmpty) {
+      fullAddress.add(record.city);
+    }
+    return "${record.name}\n${record.phoneMobile}${fullAddress.isEmpty ? "" : "\n${fullAddress.join(", ")}"}";
   }
 
   @override
