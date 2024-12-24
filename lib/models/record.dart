@@ -121,20 +121,42 @@ class Record extends ChangeNotifier {
                 DateTime.fromMillisecondsSinceEpoch(0)
             : DateTime.fromMillisecondsSinceEpoch(0),
         name = map['name'],
-        phoneHome = map['phoneHome'],
+        phoneHome =
+            map['phoneHome'] == null || (map['phoneHome'] as String).isEmpty
+                ? null
+                : map['phoneHome'],
         phoneMobile = map['phoneMobile'],
-        email = map['email'],
-        postalCode = map['postalCode'],
-        city = map['city'],
-        area = map['area'],
-        address = map['address'],
+        email = map['email'] == null || (map['email'] as String).isEmpty
+            ? null
+            : map['email'],
+        postalCode =
+            map['postalCode'] == null || (map['postalCode'] as String).isEmpty
+                ? null
+                : map['postalCode'],
+        city = map['city'] == null || (map['city'] as String).isEmpty
+            ? null
+            : map['city'],
+        area = map['area'] == null || (map['area'] as String).isEmpty
+            ? null
+            : map['area'],
+        address = map['address'] == null || (map['address'] as String).isEmpty
+            ? null
+            : map['address'],
         notesReceived = map['notesReceived'],
-        notesRepaired = map['notesRepaired'],
+        notesRepaired = map['notesRepaired'] == null ||
+                (map['notesRepaired'] as String).isEmpty
+            ? null
+            : map['notesRepaired'],
         fee = map['fee'],
         advance = map['advance'],
-        serial = map['serial'],
+        serial = map['serial'] == null || (map['serial'] as String).isEmpty
+            ? null
+            : map['serial'],
         product = map['product'],
-        manufacturer = map['manufacturer'],
+        manufacturer = map['manufacturer'] == null ||
+                (map['manufacturer'] as String).isEmpty
+            ? null
+            : map['manufacturer'],
         photos = (map['photos'] as List).cast<String>(),
         mechanic = map['mechanic'],
         hasWarranty = map['hasWarranty'] == 1,
