@@ -655,8 +655,9 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
                           },
                         ),
                         Selector<Suggestions, Map<int, String>>(
-                          selector: (context, suggestions) =>
-                              suggestions.statuses,
+                          selector: (context, suggestions) => userId == 0
+                              ? suggestions.statuses
+                              : (Map.from(suggestions.statuses)..remove(4)),
                           builder: (context, statuses, child) => FormComboItem(
                             label: "Κατάσταση",
                             initialSelection: status,
