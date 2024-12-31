@@ -1,4 +1,4 @@
-package com.example.indevche
+package gr.stratosgiak.rodis
 
 import io.flutter.embedding.android.FlutterActivity
 
